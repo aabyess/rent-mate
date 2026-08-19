@@ -6,7 +6,10 @@ import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { REGIONS } from "@/constants/regions";
-import { PartnerPhotoUploader } from "@/features/partners/components/PartnerPhotoUploader";
+import {
+	MIN_PARTNER_PHOTOS,
+	PartnerPhotoUploader,
+} from "@/features/partners/components/PartnerPhotoUploader";
 import { useCreatePartnerProfileMutation } from "@/features/partners/mutations";
 import { cn } from "@/utils/cn";
 
@@ -103,7 +106,8 @@ export function PartnerRegisterForm(): JSX.Element {
 		Number(hourlyRate) >= MIN_HOURLY_RATE_KRW &&
 		interests.length > 0 &&
 		availableWeekdays.length > 0 &&
-		region !== null;
+		region !== null &&
+		photos.length >= MIN_PARTNER_PHOTOS;
 
 	return (
 		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -165,10 +169,10 @@ export function PartnerRegisterForm(): JSX.Element {
 			</section>
 
 			<section className="flex flex-col gap-2">
-				<span className="text-sm font-medium">프로필 사진 (선택, 최대 3장)</span>
+				<span className="text-sm font-medium">프로필 사진 (3~9장 필수)</span>
 				<PartnerPhotoUploader photos={photos} onPhotosChange={setPhotos} />
 				<p className="text-sub text-xs">
-					첫 번째 사진이 대표 사진으로 표시돼요. 밝은 곳에서 찍은 사진일수록 좋아요.
+					최소 3장을 올려야 등록할 수 있어요. 첫 번째 사진이 대표 사진이에요.
 				</p>
 			</section>
 
