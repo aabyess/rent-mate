@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import type { PartnerCardItem } from "@/features/partners/types";
+import type { PartnerRatingSummary } from "@/features/reviews/types";
 import { calculateAgeFromBirthYear, formatKrw } from "@/features/partners/utils";
 
 // 사진 없을 때 쓰는 플레이스홀더 팔레트 — 카드 순서대로 순환
@@ -15,9 +16,10 @@ const PLACEHOLDER_STYLES = [
 type PartnerListCardProps = {
 	partner: PartnerCardItem;
 	index: number;
+	rating?: PartnerRatingSummary;
 };
 
-export function PartnerListCard({ partner, index }: PartnerListCardProps): JSX.Element {
+export function PartnerListCard({ partner, index, rating }: PartnerListCardProps): JSX.Element {
 	const placeholder = PLACEHOLDER_STYLES[index % PLACEHOLDER_STYLES.length];
 
 	return (
@@ -64,10 +66,25 @@ export function PartnerListCard({ partner, index }: PartnerListCardProps): JSX.E
 			{partner.interests.length > 0 && (
 				<p className="text-sub text-xs">{partner.interests.join(" · ")}</p>
 			)}
-			<p className="text-[15px] font-bold tabular-nums">
-				{formatKrw(partner.hourly_rate_krw)}
-				<span className="text-sub text-xs font-normal"> /시간</span>
-			</p>
+			<div className="flex items-center justify-between">
+				<p className="text-[15px] font-bold tabular-nums">
+					{formatKrw(partner.hourly_rate_krw)}
+					<span className="text-sub text-xs font-normal"> /시간</span>
+				</p>
+				{rating && (
+					<span className="text-body flex items-center gap-1 text-xs tabular-nums">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="text-accent-500">
+							<path d="M12 17.3l-5.5 3 1.1-6.2-4.5-4.4 6.2-.9L12 3l2.7 5.8 6.2.9-4.5 4.4 1.1 6.2z" />
+						</svg>
+						{rating.average} ({rating.count})
+					</span>
+				)}
+			</div>
 		</article>
 	);
 }
