@@ -3,6 +3,7 @@
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useState, type JSX } from "react";
+import { BlockConfirmDialog } from "@/features/safety/components/BlockConfirmDialog";
 import { ReportDialog } from "@/features/safety/components/ReportDialog";
 
 type PartnerDetailMenuProps = {
@@ -15,6 +16,7 @@ export function PartnerDetailMenu({
 	targetNickname,
 }: PartnerDetailMenuProps): JSX.Element {
 	const [isReportOpen, setIsReportOpen] = useState(false);
+	const [isBlockOpen, setIsBlockOpen] = useState(false);
 
 	return (
 		<>
@@ -41,6 +43,16 @@ export function PartnerDetailMenu({
 							신고하기
 						</button>
 					</MenuItem>
+					<MenuItem>
+						<button
+							type="button"
+							onClick={function () {
+								setIsBlockOpen(true);
+							}}
+							className="text-body data-focus:bg-surface-alt w-full rounded-lg px-3 py-2.5 text-left text-sm">
+							차단하기
+						</button>
+					</MenuItem>
 				</MenuItems>
 			</Menu>
 
@@ -48,6 +60,16 @@ export function PartnerDetailMenu({
 				<ReportDialog
 					onClose={function () {
 						setIsReportOpen(false);
+					}}
+					targetId={targetId}
+					targetNickname={targetNickname}
+				/>
+			)}
+
+			{isBlockOpen && (
+				<BlockConfirmDialog
+					onClose={function () {
+						setIsBlockOpen(false);
 					}}
 					targetId={targetId}
 					targetNickname={targetNickname}

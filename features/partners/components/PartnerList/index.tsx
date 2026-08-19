@@ -5,15 +5,17 @@ import Link from "next/link";
 import { useState, type JSX } from "react";
 import { PartnerListCard } from "@/features/partners/components/PartnerList/PartnerListCard";
 import { usePartnerListQuery } from "@/features/partners/queries";
+import { useMyBlocksQuery } from "@/features/safety/queries";
 import { cn } from "@/utils/cn";
 
 const INTEREST_FILTERS = ["전체", "카페", "전시", "산책", "맛집", "영화"];
 
 export function PartnerList(): JSX.Element {
 	const { data: partners, isPending, isError } = usePartnerListQuery();
+	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
 	const [activeFilter, setActiveFilter] = useState("전체");
 
-	if (isPending) {
+	if (isPending || isBlocksPending) {
 		return (
 			<div className="grid grid-cols-2 gap-3.5">
 				{Array.from({ length: 4 }, function (_, index) {
@@ -33,10 +35,18 @@ export function PartnerList(): JSX.Element {
 		return <p className="text-sub py-16 text-center text-sm">파트너 목록을 불러오지 못했어요.</p>;
 	}
 
+	const blockedIds = new Set(
+		(blocks ?? []).map(function (block) {
+			return block.blocked_id;
+		}),
+	);
+	const visiblePartners = partners.filter(function (partner) {
+		return !blockedIds.has(partner.profile_id);
+	});
 	const filteredPartners =
 		activeFilter === "전체"
-			? partners
-			: partners.filter(function (partner) {
+			? visiblePartners
+			: visiblePartners.filter(function (partner) {
 					return partner.interests.some(function (interest) {
 						return interest.includes(activeFilter);
 					});
