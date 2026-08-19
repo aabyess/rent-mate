@@ -19,6 +19,7 @@ export type CreatePartnerProfileInput = {
 	interests: string[];
 	availableWeekdays: number[];
 	photos: File[];
+	region: string;
 };
 
 export type PartnerListItem = {
@@ -30,5 +31,6 @@ export type PartnerListItem = {
 	birth_year: number | null;
 	interests: string[];
 	available_weekdays: number[];
+	region: string;
 	created_at: string;
 };

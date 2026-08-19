@@ -63,9 +63,7 @@ export function PartnerListCard({ partner, index, rating }: PartnerListCardProps
 					/>
 				</svg>
 			</div>
-			{partner.interests.length > 0 && (
-				<p className="text-sub text-xs">{partner.interests.join(" · ")}</p>
-			)}
+			<p className="text-sub text-xs">{[partner.region, ...partner.interests].join(" · ")}</p>
 			<div className="flex items-center justify-between">
 				<p className="text-[15px] font-bold tabular-nums">
 					{formatKrw(partner.hourly_rate_krw)}
