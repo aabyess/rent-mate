@@ -13,6 +13,11 @@ export function toAuthEmail(username: string): string {
 	return `${username.toLowerCase()}@${AUTH_EMAIL_DOMAIN}`;
 }
 
+// 계정 설정 화면에서 아이디를 표시(수정 불가)하기 위한 역변환
+export function fromAuthEmail(email: string): string {
+	return email.replace(`@${AUTH_EMAIL_DOMAIN}`, "");
+}
+
 export function getSignUpErrorMessage(error: Error): string {
 	const code = (error as { code?: string }).code;
 	if (code === "user_already_exists") {

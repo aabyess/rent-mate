@@ -31,3 +31,12 @@ export type CreateProfileInput = {
 	birthDate: string;
 	gender: Gender;
 };
+
+export type PatchMyProfileInput = {
+	name: string;
+	gender: Gender;
+};
+
+export type ChangePasswordInput = {
+	password: string;
+};
