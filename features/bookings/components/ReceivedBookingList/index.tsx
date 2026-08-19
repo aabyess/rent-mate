@@ -7,9 +7,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useUpdateBookingStatusMutation } from "@/features/bookings/mutations";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
-import type { BookingStatus, MyBookingItem } from "@/features/bookings/types";
+import type { BookingStatus } from "@/features/bookings/types";
 import {
 	BOOKING_STATUS_LABELS,
+	canCompleteBookingNow,
 	formatBookingPeriod,
 	sumBookingAmountsKrw,
 } from "@/features/bookings/utils";
@@ -24,10 +25,6 @@ const STATUS_BADGE_VARIANTS: Record<BookingStatus, "warning" | "trust" | "neutra
 	canceled: "neutral",
 	completed: "neutral",
 };
-
-function canCompleteNow(booking: MyBookingItem): boolean {
-	return booking.status === "accepted" && Date.now() >= new Date(booking.starts_at).getTime();
-}
 
 export function ReceivedBookingList(): JSX.Element {
 	const { data: bookings, isPending, isError } = useMyBookingsQuery();
@@ -87,42 +84,42 @@ export function ReceivedBookingList(): JSX.Element {
 			)}
 			{received.map(function (booking) {
 				const paymentStatus = paymentStatuses?.[booking.id];
-				const isCompletable = canCompleteNow(booking);
+				const isCompletable = canCompleteBookingNow(booking);
 				return (
 					<article
 						key={booking.id}
 						className="bg-surface-alt flex flex-col gap-2.5 rounded-2xl p-4">
-						<div className="flex items-center justify-between">
-							<span className="text-base font-semibold">{booking.counterpartName} 님의 요청</span>
-							<div className="flex items-center gap-1.5">
-								{paymentStatus && (
-									<Badge variant={PAYMENT_STATUS_BADGE_VARIANTS[paymentStatus]}>
-										{PAYMENT_STATUS_LABELS[paymentStatus]}
+						<Link href={`/bookings/${booking.id}`} className="flex flex-col gap-2.5">
+							<div className="flex items-center justify-between">
+								<span className="text-base font-semibold">{booking.counterpartName} 님의 요청</span>
+								<div className="flex items-center gap-1.5">
+									{paymentStatus && (
+										<Badge variant={PAYMENT_STATUS_BADGE_VARIANTS[paymentStatus]}>
+											{PAYMENT_STATUS_LABELS[paymentStatus]}
+										</Badge>
+									)}
+									<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
+										{BOOKING_STATUS_LABELS[booking.status]}
 									</Badge>
-								)}
-								<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
-									{BOOKING_STATUS_LABELS[booking.status]}
-								</Badge>
+								</div>
 							</div>
-						</div>
-						<div className="text-sub flex flex-col gap-1 text-sm">
-							<span className="tabular-nums">
-								{formatBookingPeriod(booking.starts_at, booking.ends_at)}
-							</span>
-							<span>{booking.place}</span>
-						</div>
-						<div className="flex items-center justify-between">
+							<div className="text-sub flex flex-col gap-1 text-sm">
+								<span className="tabular-nums">
+									{formatBookingPeriod(booking.starts_at, booking.ends_at)}
+								</span>
+								<span>{booking.place}</span>
+							</div>
 							<span className="text-[15px] font-bold tabular-nums">
 								{formatKrw(booking.total_amount_krw)}
 							</span>
-							{booking.status !== "canceled" && booking.status !== "rejected" && (
-								<Link
-									href={`/chats/${booking.id}`}
-									className="text-trust text-[13px] font-medium underline">
-									채팅
-								</Link>
-							)}
-						</div>
+						</Link>
+						{booking.status !== "canceled" && booking.status !== "rejected" && (
+							<Link
+								href={`/chats/${booking.id}`}
+								className="text-trust self-end text-[13px] font-medium underline">
+								채팅
+							</Link>
+						)}
 						{booking.status === "requested" && (
 							<div className="flex gap-2">
 								<Button
