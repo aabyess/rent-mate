@@ -19,9 +19,9 @@
 
 - **밝은 배경 + 따뜻한 포인트 컬러.** 일본 렌탈카노조 1위권 사이트(코이카노 등)도 실제로 흰 배경 + 연한 핑크의 밝고 부드러운 톤을 쓴다. 다만 핑크를 그대로 가져오면 국내에서는 성인 서비스로 오독될 여지가 있어, RentMate는 핑크에서 오렌지 쪽으로 이동한 **코랄**을 주조색으로 쓴다 (따뜻함·친근함은 유지, 유흥 뉘앙스는 제거).
 - **신뢰는 청록(teal)으로.** 헬스케어·서비스 브랜딩에서 신뢰·안정은 블루-그린 계열이 담당한다. 인증 배지, 안전 관련 UI, 보조 액션에 teal을 배정해 "검증된 플랫폼" 인상을 만든다.
-- **여백과 라이트 그레이.** 캐치테이블이 여백과 톤으로 고급감을 만드는 방식을 참고 — 카드·섹션 사이 여백을 넉넉히, 구분선 대신 배경 톤 차이(흰색 vs 웜 그레이)로 구획한다.
+- **여백과 라이트 그레이.** 캐치테이블이 여백과 톤으로 고급감을 만드는 방식을 참고 — 카드·섹션 사이 여백을 넉넉히, 구분선 대신 배경 톤 차이(흰색 vs 라이트 쿨 그레이)로 구획한다.
 - **사진이 주인공, UI는 조연.** Tinder/Bumble처럼 프로필 사진을 크게, 텍스트는 최소로. 단 스와이프식 "외모 평가" 프레임 대신 에어비앤비식 "리스팅 탐색" 프레임(그리드 + 필터 + 상세)을 기본으로 한다 — 시간제 예약 상품이라는 성격에 더 맞고, 성인 서비스 연상도 피한다.
-- **다크 모드는 "어두운 유흥 톤"이 아니라 OS 설정 대응.** 순검정 대신 웜 그레이 다크 서피스를 쓰고, 네온·글로우 효과는 라이트/다크 모두 금지.
+- **다크 모드는 "어두운 유흥 톤"이 아니라 OS 설정 대응.** 순검정 대신 짙은 쿨 그레이(zinc) 다크 서피스를 쓰고, 네온·글로우 효과는 라이트/다크 모두 금지.
 
 ---
 
@@ -33,7 +33,7 @@
 - **Secondary — Trust Teal**: 신뢰·안정·차분함. 블루의 신뢰와 그린의 안전을 잇는 색. 인증·안전·보조 버튼 담당.
 - **Accent — Apricot Amber**: 뱃지·하이라이트·프로모션용 포인트. 주조색과 같은 온도의 노랑 계열이라 화면이 따뜻하게 유지된다.
 - **상태색**: 관용적 의미(초록=성공, 호박=경고, 빨강=오류)를 따르되 채도를 한 단계 낮춰 네온 느낌을 없앤다. Error 빨강은 primary 코랄과 혼동되지 않도록 순빨강 쪽으로 분리했다.
-- **Neutral**: 순수 회색 대신 **웜 그레이(stone 계열)** — 차가운 SaaS 느낌을 피하고 전체 온도를 맞춘다.
+- **Neutral**: **쿨 그레이(zinc 계열) + 순백 배경**. 초기안은 웜 그레이(stone)였으나, 크림 배경 + 코랄 조합이 Claude/Anthropic 브랜드를 연상시킨다는 피드백으로 쿨 그레이로 교체했다. 따뜻함은 코랄·앰버 포인트가 담당하고, 바탕은 중립을 유지한다. 크림/아이보리 톤(`#faf9f7` 류) 배경 사용 금지.
 
 ### Tailwind v4 `@theme` 토큰 (globals.css에 그대로 복사 가능)
 
@@ -81,18 +81,18 @@
 	--color-error-500: #e0433d; /* primary 코랄보다 명확히 '빨강' */
 	--color-error-700: #b32a25;
 
-	/* Neutral — Warm Gray (stone) */
+	/* Neutral — Cool Gray (zinc) */
 	--color-neutral-0: #ffffff;
-	--color-neutral-50: #faf9f7;
-	--color-neutral-100: #f4f2ef;
-	--color-neutral-200: #e7e4df;
-	--color-neutral-300: #d4d0c9;
-	--color-neutral-400: #a8a29b;
-	--color-neutral-500: #78716c;
-	--color-neutral-600: #57534e;
-	--color-neutral-700: #44403c;
-	--color-neutral-800: #2b2725;
-	--color-neutral-900: #1c1917;
+	--color-neutral-50: #fafafa;
+	--color-neutral-100: #f4f4f5;
+	--color-neutral-200: #e4e4e7;
+	--color-neutral-300: #d4d4d8;
+	--color-neutral-400: #a1a1aa;
+	--color-neutral-500: #71717a;
+	--color-neutral-600: #52525b;
+	--color-neutral-700: #3f3f46;
+	--color-neutral-800: #27272a;
+	--color-neutral-900: #18181b;
 }
 ```
 
@@ -102,12 +102,12 @@
 
 | 시맨틱 토큰            | 라이트                    | 다크                      | 용도                        |
 | ---------------------- | ------------------------- | ------------------------- | --------------------------- |
-| `--color-bg`           | `#faf9f7` (neutral-50)    | `#1c1917` (neutral-900)   | 페이지 배경                 |
-| `--color-surface`      | `#ffffff` (neutral-0)     | `#2b2725` (neutral-800)   | 카드, 시트, 모달            |
-| `--color-surface-alt`  | `#f4f2ef` (neutral-100)   | `#37322f`                 | 입력창, 비활성 영역         |
-| `--color-border`       | `#e7e4df` (neutral-200)   | `#44403c` (neutral-700)   | 구분선, 카드 테두리         |
-| `--color-text`         | `#1c1917` (neutral-900)   | `#f4f2ef` (neutral-100)   | 본문                        |
-| `--color-text-sub`     | `#78716c` (neutral-500)   | `#a8a29b` (neutral-400)   | 보조 텍스트, 캡션           |
+| `--color-bg`           | `#fafafa` (neutral-50)    | `#18181b` (neutral-900)   | 페이지 배경                 |
+| `--color-surface`      | `#ffffff` (neutral-0)     | `#27272a` (neutral-800)   | 카드, 시트, 모달            |
+| `--color-surface-alt`  | `#f4f4f5` (neutral-100)   | `#313136`                 | 입력창, 비활성 영역         |
+| `--color-border`       | `#e4e4e7` (neutral-200)   | `#3f3f46` (neutral-700)   | 구분선, 카드 테두리         |
+| `--color-text`         | `#18181b` (neutral-900)   | `#f4f4f5` (neutral-100)   | 본문                        |
+| `--color-text-sub`     | `#71717a` (neutral-500)   | `#a1a1aa` (neutral-400)   | 보조 텍스트, 캡션           |
 | `--color-brand`        | `#f26b4a` (primary-500)   | `#fb8666` (primary-400)   | CTA — 다크에선 한 단계 밝게 |
 | `--color-brand-subtle` | `#fff5f2` (primary-50)    | `#3a2620`                 | 선택 상태 배경              |
 | `--color-trust`        | `#2e9995` (secondary-500) | `#4bb3b0` (secondary-400) | 인증·안전 UI                |
