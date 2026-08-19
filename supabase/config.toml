@@ -3,7 +3,8 @@
 project_id = "rent-mate"
 
 [auth]
-site_url = "http://localhost:3000"
+site_url = "https://rent-mate-dun.vercel.app"
+additional_redirect_urls = ["http://localhost:3000"]
 
 [auth.email]
 enable_signup = true
