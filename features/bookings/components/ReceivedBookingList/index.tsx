@@ -7,13 +7,15 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useUpdateBookingStatusMutation } from "@/features/bookings/mutations";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
-import type { BookingStatus } from "@/features/bookings/types";
+import type { BookingStatus, MyBookingItem } from "@/features/bookings/types";
 import {
 	BOOKING_STATUS_LABELS,
 	formatBookingPeriod,
 	sumBookingAmountsKrw,
 } from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
+import { usePaymentStatusesQuery } from "@/features/payments/queries";
+import { PAYMENT_STATUS_BADGE_VARIANTS, PAYMENT_STATUS_LABELS } from "@/features/payments/utils";
 
 const STATUS_BADGE_VARIANTS: Record<BookingStatus, "warning" | "trust" | "neutral" | "error"> = {
 	requested: "warning",
@@ -23,8 +25,17 @@ const STATUS_BADGE_VARIANTS: Record<BookingStatus, "warning" | "trust" | "neutra
 	completed: "neutral",
 };
 
+function canCompleteNow(booking: MyBookingItem): boolean {
+	return booking.status === "accepted" && Date.now() >= new Date(booking.starts_at).getTime();
+}
+
 export function ReceivedBookingList(): JSX.Element {
 	const { data: bookings, isPending, isError } = useMyBookingsQuery();
+	const { data: paymentStatuses } = usePaymentStatusesQuery(
+		(bookings ?? []).map(function (booking) {
+			return booking.id;
+		}),
+	);
 	const updateStatusMutation = useUpdateBookingStatusMutation();
 
 	if (isPending) {
@@ -75,15 +86,24 @@ export function ReceivedBookingList(): JSX.Element {
 				</div>
 			)}
 			{received.map(function (booking) {
+				const paymentStatus = paymentStatuses?.[booking.id];
+				const isCompletable = canCompleteNow(booking);
 				return (
 					<article
 						key={booking.id}
 						className="bg-surface-alt flex flex-col gap-2.5 rounded-2xl p-4">
 						<div className="flex items-center justify-between">
 							<span className="text-base font-semibold">{booking.counterpartName} 님의 요청</span>
-							<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
-								{BOOKING_STATUS_LABELS[booking.status]}
-							</Badge>
+							<div className="flex items-center gap-1.5">
+								{paymentStatus && (
+									<Badge variant={PAYMENT_STATUS_BADGE_VARIANTS[paymentStatus]}>
+										{PAYMENT_STATUS_LABELS[paymentStatus]}
+									</Badge>
+								)}
+								<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
+									{BOOKING_STATUS_LABELS[booking.status]}
+								</Badge>
+							</div>
 						</div>
 						<div className="text-sub flex flex-col gap-1 text-sm">
 							<span className="tabular-nums">
@@ -128,16 +148,23 @@ export function ReceivedBookingList(): JSX.Element {
 							</div>
 						)}
 						{booking.status === "accepted" && (
-							<Button
-								variant="outline"
-								size="sm"
-								fullWidth
-								disabled={updateStatusMutation.isPending}
-								onClick={function () {
-									handleStatusUpdate(booking.id, "completed");
-								}}>
-								데이트 완료 처리
-							</Button>
+							<div className="flex flex-col gap-1.5">
+								<Button
+									variant="outline"
+									size="sm"
+									fullWidth
+									disabled={updateStatusMutation.isPending || !isCompletable}
+									onClick={function () {
+										handleStatusUpdate(booking.id, "completed");
+									}}>
+									데이트 완료 처리
+								</Button>
+								{!isCompletable && (
+									<p className="text-sub text-center text-xs">
+										예약 시작 시각 이후에 완료 처리할 수 있어요.
+									</p>
+								)}
+							</div>
 						)}
 					</article>
 				);

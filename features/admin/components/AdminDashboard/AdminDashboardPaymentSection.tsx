@@ -10,6 +10,7 @@ import { BOOKING_STATUS_LABELS } from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
 import type { PaymentStatus } from "@/features/payments/types";
 
+// 관리자용 상태 라벨 — 고객·파트너에게 보이는 features/payments/utils의 라벨과는 문맥이 달라 별도 유지
 const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
 	pending: "대기",
 	paid: "에스크로 보관",
