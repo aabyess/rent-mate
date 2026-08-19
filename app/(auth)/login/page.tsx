@@ -4,6 +4,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type JSX } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { useSignInMutation } from "@/features/auth/mutations";
 
 export default function LoginPage(): JSX.Element {
@@ -27,9 +29,12 @@ export default function LoginPage(): JSX.Element {
 
 	return (
 		<div className="flex flex-col gap-6">
-			<h1 className="text-2xl font-bold">로그인</h1>
+			<div className="flex flex-col gap-1">
+				<span className="text-brand text-[22px] font-bold tracking-tight">RentMate</span>
+				<h1 className="text-2xl font-bold">로그인</h1>
+			</div>
 			<form onSubmit={handleSubmit} className="flex flex-col gap-3">
-				<input
+				<Input
 					type="email"
 					value={email}
 					onChange={function (event) {
@@ -37,9 +42,8 @@ export default function LoginPage(): JSX.Element {
 					}}
 					placeholder="이메일"
 					required
-					className="rounded-lg border border-gray-300 px-3 py-2"
 				/>
-				<input
+				<Input
 					type="password"
 					value={password}
 					onChange={function (event) {
@@ -47,21 +51,17 @@ export default function LoginPage(): JSX.Element {
 					}}
 					placeholder="비밀번호"
 					required
-					className="rounded-lg border border-gray-300 px-3 py-2"
 				/>
 				{signInMutation.isError && (
-					<p className="text-sm text-red-500">이메일 또는 비밀번호를 확인해주세요.</p>
+					<p className="text-error-500 text-sm">이메일 또는 비밀번호를 확인해주세요.</p>
 				)}
-				<button
-					type="submit"
-					disabled={signInMutation.isPending}
-					className="rounded-lg bg-black px-3 py-2 font-medium text-white disabled:opacity-50">
+				<Button type="submit" fullWidth disabled={signInMutation.isPending}>
 					{signInMutation.isPending ? "로그인 중..." : "로그인"}
-				</button>
+				</Button>
 			</form>
-			<p className="text-sm text-gray-500">
+			<p className="text-sub text-sm">
 				계정이 없나요?{" "}
-				<Link href="/signup" className="font-medium text-black underline">
+				<Link href="/signup" className="text-brand font-medium underline">
 					회원가입
 				</Link>
 			</p>

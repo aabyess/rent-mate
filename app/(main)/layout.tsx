@@ -1,6 +1,7 @@
 // app/(main)/layout.tsx
 import { redirect } from "next/navigation";
 import type { JSX, ReactNode } from "react";
+import { BottomTabBar } from "@/components/layout/BottomTabBar";
 import { createClient } from "@/libs/supabase/server";
 
 type MainLayoutProps = {
@@ -28,5 +29,10 @@ export default async function MainLayout({ children }: MainLayoutProps): Promise
 		redirect("/onboarding");
 	}
 
-	return <>{children}</>;
+	return (
+		<div className="mx-auto flex min-h-screen w-full max-w-md flex-col">
+			<div className="flex-1 pb-24">{children}</div>
+			<BottomTabBar />
+		</div>
+	);
 }

@@ -100,17 +100,17 @@
 
 라이트/다크는 시맨틱 변수(`--color-bg` 등)를 `:root` / `.dark`(또는 `prefers-color-scheme`)에서 스왑하는 방식을 권장. `@theme`의 원시 스케일은 고정하고, 컴포넌트는 시맨틱 토큰만 참조한다.
 
-| 시맨틱 토큰            | 라이트                      | 다크                        | 용도                       |
-| ---------------------- | --------------------------- | --------------------------- | -------------------------- |
-| `--color-bg`           | `#faf9f7` (neutral-50)      | `#1c1917` (neutral-900)     | 페이지 배경                |
-| `--color-surface`      | `#ffffff` (neutral-0)       | `#2b2725` (neutral-800)     | 카드, 시트, 모달           |
-| `--color-surface-alt`  | `#f4f2ef` (neutral-100)     | `#37322f`                   | 입력창, 비활성 영역        |
-| `--color-border`       | `#e7e4df` (neutral-200)     | `#44403c` (neutral-700)     | 구분선, 카드 테두리        |
-| `--color-text`         | `#1c1917` (neutral-900)     | `#f4f2ef` (neutral-100)     | 본문                       |
-| `--color-text-sub`     | `#78716c` (neutral-500)     | `#a8a29b` (neutral-400)     | 보조 텍스트, 캡션          |
-| `--color-brand`        | `#f26b4a` (primary-500)     | `#fb8666` (primary-400)     | CTA — 다크에선 한 단계 밝게 |
-| `--color-brand-subtle` | `#fff5f2` (primary-50)      | `#3a2620`                   | 선택 상태 배경             |
-| `--color-trust`        | `#2e9995` (secondary-500)   | `#4bb3b0` (secondary-400)   | 인증·안전 UI               |
+| 시맨틱 토큰            | 라이트                    | 다크                      | 용도                        |
+| ---------------------- | ------------------------- | ------------------------- | --------------------------- |
+| `--color-bg`           | `#faf9f7` (neutral-50)    | `#1c1917` (neutral-900)   | 페이지 배경                 |
+| `--color-surface`      | `#ffffff` (neutral-0)     | `#2b2725` (neutral-800)   | 카드, 시트, 모달            |
+| `--color-surface-alt`  | `#f4f2ef` (neutral-100)   | `#37322f`                 | 입력창, 비활성 영역         |
+| `--color-border`       | `#e7e4df` (neutral-200)   | `#44403c` (neutral-700)   | 구분선, 카드 테두리         |
+| `--color-text`         | `#1c1917` (neutral-900)   | `#f4f2ef` (neutral-100)   | 본문                        |
+| `--color-text-sub`     | `#78716c` (neutral-500)   | `#a8a29b` (neutral-400)   | 보조 텍스트, 캡션           |
+| `--color-brand`        | `#f26b4a` (primary-500)   | `#fb8666` (primary-400)   | CTA — 다크에선 한 단계 밝게 |
+| `--color-brand-subtle` | `#fff5f2` (primary-50)    | `#3a2620`                 | 선택 상태 배경              |
+| `--color-trust`        | `#2e9995` (secondary-500) | `#4bb3b0` (secondary-400) | 인증·안전 UI                |
 
 **금지 사항**: 배경에 순검정(#000)·네이비 금지, 보라(#8B00FF 계열)·마젠타 네온 금지, 글로우/네온 이펙트 금지, 붉은 조명 톤의 사진 필터 금지.
 
@@ -120,18 +120,19 @@
 
 ### 한글 웹폰트 후보 비교
 
-| 후보                   | 특징                                                                            | 판단                                     |
-| ---------------------- | ------------------------------------------------------------------------------- | ---------------------------------------- |
-| **Pretendard** (권장)  | system-ui 대체 목적으로 설계, 9 웨이트 + variable, Inter 기반이라 숫자·라틴 품질 우수. 국내 서비스 사실상 표준 | **본문·UI 전체에 채택**                  |
-| SUIT                   | Pretendard 대비 폭이 좁고 기하학적. 9 스타일                                     | 밀도 높은 표에는 유리하나 따뜻함이 덜함  |
-| Wanted Sans            | 원티드 브랜드 폰트, 기하학적 산세리프, variable 지원                             | 헤드라인 전용으로 쓸 수 있으나 굳이 2폰트 체제로 갈 이유 없음 |
+| 후보                  | 특징                                                                                                           | 판단                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **Pretendard** (권장) | system-ui 대체 목적으로 설계, 9 웨이트 + variable, Inter 기반이라 숫자·라틴 품질 우수. 국내 서비스 사실상 표준 | **본문·UI 전체에 채택**                                       |
+| SUIT                  | Pretendard 대비 폭이 좁고 기하학적. 9 스타일                                                                   | 밀도 높은 표에는 유리하나 따뜻함이 덜함                       |
+| Wanted Sans           | 원티드 브랜드 폰트, 기하학적 산세리프, variable 지원                                                           | 헤드라인 전용으로 쓸 수 있으나 굳이 2폰트 체제로 갈 이유 없음 |
 
 **결론: Pretendard Variable 단일 체제.** 요금·시간 등 숫자가 많은 서비스라 tabular numbers(`font-variant-numeric: tabular-nums`)를 요금표·타이머에 적용한다.
 
 ```css
 @theme {
-	--font-sans: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo",
-		"Noto Sans KR", sans-serif;
+	--font-sans:
+		"Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR",
+		sans-serif;
 }
 ```
 
@@ -141,15 +142,15 @@ CDN: `https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variabl
 
 모바일 우선. 한글은 라틴보다 시각 밀도가 높아 line-height를 넉넉히(1.5~1.6) 잡는다.
 
-| 토큰            | 크기/행간        | 웨이트  | 용도                          |
-| --------------- | ---------------- | ------- | ----------------------------- |
-| `--text-xs`     | 12px / 1.5       | 400–500 | 캡션, 법적 고지, 타임스탬프   |
-| `--text-sm`     | 14px / 1.5       | 400–500 | 보조 텍스트, 태그, 리스트 메타 |
-| `--text-base`   | 16px / 1.6       | 400     | 본문, 채팅 말풍선             |
-| `--text-lg`     | 18px / 1.55      | 500–600 | 카드 제목, 파트너 이름        |
-| `--text-xl`     | 20px / 1.5       | 600     | 섹션 제목                     |
-| `--text-2xl`    | 24px / 1.4       | 700     | 페이지 제목, 요금 강조        |
-| `--text-3xl`    | 30px / 1.3       | 700     | 홈 히어로, 온보딩             |
+| 토큰          | 크기/행간   | 웨이트  | 용도                           |
+| ------------- | ----------- | ------- | ------------------------------ |
+| `--text-xs`   | 12px / 1.5  | 400–500 | 캡션, 법적 고지, 타임스탬프    |
+| `--text-sm`   | 14px / 1.5  | 400–500 | 보조 텍스트, 태그, 리스트 메타 |
+| `--text-base` | 16px / 1.6  | 400     | 본문, 채팅 말풍선              |
+| `--text-lg`   | 18px / 1.55 | 500–600 | 카드 제목, 파트너 이름         |
+| `--text-xl`   | 20px / 1.5  | 600     | 섹션 제목                      |
+| `--text-2xl`  | 24px / 1.4  | 700     | 페이지 제목, 요금 강조         |
+| `--text-3xl`  | 30px / 1.3  | 700     | 홈 히어로, 온보딩              |
 
 웨이트 규칙: 400(본문) / 500(강조 본문·레이블) / 600(제목) / 700(페이지 타이틀·금액). 300 이하는 한글 가독성이 나빠 사용 금지.
 
@@ -221,7 +222,7 @@ CDN: `https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variabl
 - [Tinder vs Bumble UI/UX 비교 (Medium)](https://medium.com/design-bootcamp/decoding-ui-ux-quick-comparison-of-tinder-and-bumble-9a3cb2b76f28)
 - [Bumble vs CMB vs Tinder UX 오딧 (Snappymob)](https://blog.snappymob.com/uiux-audit-bumble-vs-cmb-vs-tinder)
 - [데이팅 앱 UI/UX 10계명 (Icons8)](https://icons8.com/blog/articles/10-dos-and-donts-of-ui-ux-design-for-dating-apps/)
-- [글램 앱 개요 (나무위키)](https://namu.wiki/w/%EA%B8%80%EB%9E%A8(%EC%95%A0%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98)) — AI 프로필 사진 검수·인증 시스템 참고
+- [글램 앱 개요 (나무위키)](<https://namu.wiki/w/%EA%B8%80%EB%9E%A8(%EC%95%A0%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98)>) — AI 프로필 사진 검수·인증 시스템 참고
 
 **예약 플랫폼 UX**
 

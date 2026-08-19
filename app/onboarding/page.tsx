@@ -3,6 +3,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type JSX } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { useCreateProfileMutation } from "@/features/auth/mutations";
 import { isAdultByYouthProtectionAct } from "@/features/auth/utils";
 
@@ -37,12 +39,15 @@ export default function OnboardingPage(): JSX.Element {
 	return (
 		<main className="flex min-h-screen items-center justify-center px-4">
 			<div className="flex w-full max-w-sm flex-col gap-6">
-				<h1 className="text-2xl font-bold">프로필 만들기</h1>
-				<p className="text-sm text-gray-500">
+				<div className="flex flex-col gap-1">
+					<span className="text-brand text-[22px] font-bold tracking-tight">RentMate</span>
+					<h1 className="text-2xl font-bold">프로필 만들기</h1>
+				</div>
+				<p className="bg-brand-subtle text-sub rounded-xl px-4 py-3 text-sm">
 					RentMate는 만 19세 이상만 이용할 수 있습니다. 생년월일은 성인 여부 확인에만 사용됩니다.
 				</p>
 				<form onSubmit={handleSubmit} className="flex flex-col gap-3">
-					<input
+					<Input
 						type="text"
 						value={name}
 						onChange={function (event) {
@@ -51,31 +56,26 @@ export default function OnboardingPage(): JSX.Element {
 						placeholder="이름"
 						required
 						maxLength={20}
-						className="rounded-lg border border-gray-300 px-3 py-2"
 					/>
-					<input
+					<Input
 						type="date"
 						value={birthDate}
 						onChange={function (event) {
 							setBirthDate(event.target.value);
 						}}
 						required
-						className="rounded-lg border border-gray-300 px-3 py-2"
 					/>
 					{isUnderage && (
-						<p className="text-sm text-red-500">
+						<p className="text-error-500 text-sm">
 							만 19세 미만은 RentMate를 이용할 수 없습니다. (청소년보호법)
 						</p>
 					)}
 					{createProfileMutation.isError && (
-						<p className="text-sm text-red-500">{createProfileMutation.error.message}</p>
+						<p className="text-error-500 text-sm">{createProfileMutation.error.message}</p>
 					)}
-					<button
-						type="submit"
-						disabled={createProfileMutation.isPending}
-						className="rounded-lg bg-black px-3 py-2 font-medium text-white disabled:opacity-50">
+					<Button type="submit" fullWidth disabled={createProfileMutation.isPending}>
 						{createProfileMutation.isPending ? "저장 중..." : "시작하기"}
-					</button>
+					</Button>
 				</form>
 			</div>
 		</main>
