@@ -21,7 +21,7 @@ export default function LoginPage(): JSX.Element {
 			{ username, password },
 			{
 				onSuccess: function (): void {
-					router.replace("/");
+					router.replace("/intro");
 					router.refresh();
 				},
 			},
