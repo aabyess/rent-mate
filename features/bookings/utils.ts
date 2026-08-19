@@ -1,6 +1,6 @@
 // features/bookings/utils.ts
 import Decimal from "decimal.js";
-import type { BookingSchedule, BookingStatus } from "@/features/bookings/types";
+import type { BookingSchedule, BookingStatus, MyBookingItem } from "@/features/bookings/types";
 
 export const MIN_DURATION_MINUTES = 120;
 export const MAX_DURATION_MINUTES = 480;
@@ -68,6 +68,11 @@ export function sumBookingAmountsKrw(amounts: number[]): number {
 			return total.plus(amount);
 		}, new Decimal(0))
 		.toNumber();
+}
+
+// DB의 상태 전이 잠금 트리거(accepted→completed는 파트너·시작 이후만)와 동일한 규칙
+export function canCompleteBookingNow(booking: MyBookingItem): boolean {
+	return booking.status === "accepted" && Date.now() >= new Date(booking.starts_at).getTime();
 }
 
 export const BOOKING_STATUS_LABELS: Record<BookingStatus, string> = {

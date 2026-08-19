@@ -83,59 +83,59 @@ export function MyBookingList(): JSX.Element {
 					<article
 						key={booking.id}
 						className="bg-surface-alt flex flex-col gap-2.5 rounded-2xl p-4">
-						<div className="flex items-center justify-between">
-							<span className="text-base font-semibold">{booking.counterpartName}</span>
-							<div className="flex items-center gap-1.5">
-								{paymentStatus && (
-									<Badge variant={PAYMENT_STATUS_BADGE_VARIANTS[paymentStatus]}>
-										{PAYMENT_STATUS_LABELS[paymentStatus]}
+						<Link href={`/bookings/${booking.id}`} className="flex flex-col gap-2.5">
+							<div className="flex items-center justify-between">
+								<span className="text-base font-semibold">{booking.counterpartName}</span>
+								<div className="flex items-center gap-1.5">
+									{paymentStatus && (
+										<Badge variant={PAYMENT_STATUS_BADGE_VARIANTS[paymentStatus]}>
+											{PAYMENT_STATUS_LABELS[paymentStatus]}
+										</Badge>
+									)}
+									<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
+										{BOOKING_STATUS_LABELS[booking.status]}
 									</Badge>
-								)}
-								<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
-									{BOOKING_STATUS_LABELS[booking.status]}
-								</Badge>
+								</div>
 							</div>
-						</div>
-						<div className="text-sub flex flex-col gap-1 text-sm">
-							<span className="tabular-nums">
-								{formatBookingPeriod(booking.starts_at, booking.ends_at)}
-							</span>
-							<span>{booking.place}</span>
-						</div>
-						<div className="flex items-center justify-between">
+							<div className="text-sub flex flex-col gap-1 text-sm">
+								<span className="tabular-nums">
+									{formatBookingPeriod(booking.starts_at, booking.ends_at)}
+								</span>
+								<span>{booking.place}</span>
+							</div>
 							<span className="text-[15px] font-bold tabular-nums">
 								{formatKrw(booking.total_amount_krw)}
 							</span>
-							<div className="flex items-center gap-3.5">
-								{hasChatRoom(booking) && (
-									<Link
-										href={`/chats/${booking.id}`}
-										className="text-trust text-[13px] font-medium underline">
-										채팅
-									</Link>
-								)}
-								{isCancelable(booking) && (
+						</Link>
+						<div className="flex items-center justify-end gap-3.5">
+							{hasChatRoom(booking) && (
+								<Link
+									href={`/chats/${booking.id}`}
+									className="text-trust text-[13px] font-medium underline">
+									채팅
+								</Link>
+							)}
+							{isCancelable(booking) && (
+								<button
+									type="button"
+									onClick={function () {
+										setCancelTarget(booking);
+									}}
+									className="text-sub text-[13px] underline">
+									예약 취소
+								</button>
+							)}
+							{booking.status === "completed" &&
+								!(reviewedBookingIds ?? []).includes(booking.id) && (
 									<button
 										type="button"
 										onClick={function () {
-											setCancelTarget(booking);
+											setReviewTarget(booking);
 										}}
-										className="text-sub text-[13px] underline">
-										예약 취소
+										className="text-brand text-[13px] font-medium underline">
+										후기 작성
 									</button>
 								)}
-								{booking.status === "completed" &&
-									!(reviewedBookingIds ?? []).includes(booking.id) && (
-										<button
-											type="button"
-											onClick={function () {
-												setReviewTarget(booking);
-											}}
-											className="text-brand text-[13px] font-medium underline">
-											후기 작성
-										</button>
-									)}
-							</div>
 						</div>
 					</article>
 				);
