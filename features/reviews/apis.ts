@@ -1,5 +1,10 @@
 // features/reviews/apis.ts
-import type { CreateReviewInput, PartnerRatingSummary, ReviewRow } from "@/features/reviews/types";
+import type {
+	CreateReviewInput,
+	MyReviewItem,
+	PartnerRatingSummary,
+	ReviewRow,
+} from "@/features/reviews/types";
 import { createClient } from "@/libs/supabase/client";
 
 export async function postCreateReview({
@@ -39,6 +44,58 @@ export async function getPartnerReviews(partnerId: string): Promise<ReviewRow[]>
 		throw error;
 	}
 	return (data ?? []) as ReviewRow[];
+}
+
+export async function getMyReviews(): Promise<MyReviewItem[]> {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		return [];
+	}
+
+	const { data, error } = await supabase
+		.from("reviews")
+		.select("id, booking_id, partner_id, author_id, rating, content, created_at")
+		.eq("author_id", user.id)
+		.order("created_at", { ascending: false });
+	if (error) {
+		throw error;
+	}
+	const reviews = (data ?? []) as ReviewRow[];
+	if (reviews.length === 0) {
+		return [];
+	}
+
+	const { data: partners, error: partnersError } = await supabase
+		.from("partner_profiles")
+		.select("profile_id, nickname")
+		.in(
+			"profile_id",
+			Array.from(
+				new Set(
+					reviews.map(function (review) {
+						return review.partner_id;
+					}),
+				),
+			),
+		);
+	if (partnersError) {
+		throw partnersError;
+	}
+	const nicknameByProfileId = new Map(
+		((partners ?? []) as { profile_id: string; nickname: string }[]).map(function (partner) {
+			return [partner.profile_id, partner.nickname] as const;
+		}),
+	);
+
+	return reviews.map(function (review) {
+		return {
+			...review,
+			partnerNickname: nicknameByProfileId.get(review.partner_id) ?? "알 수 없음",
+		};
+	});
 }
 
 export async function getMyReviewedBookingIds(): Promise<string[]> {
