@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type JSX, type UIEvent } from "react";
+import { useEffect, useRef, useState, type JSX, type UIEvent } from "react";
 import { PartnerListDeckCard } from "@/features/partners/components/PartnerList/PartnerListDeckCard";
 import { usePartnerListQuery } from "@/features/partners/queries";
 import { usePartnerRatingsQuery } from "@/features/reviews/queries";
@@ -25,39 +25,15 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	);
 	const [activeFilter, setActiveFilter] = useState("전체");
 	const [deckIndex, setDeckIndex] = useState(0);
+	const [isDeckPaused, setIsDeckPaused] = useState(false);
 	const deckRef = useRef<HTMLDivElement>(null);
-
-	function handleDeckScroll(event: UIEvent<HTMLDivElement>): void {
-		const deck = event.currentTarget;
-		setDeckIndex(Math.round(deck.scrollLeft / deck.clientWidth));
-	}
-
-	function handleDeckStep(direction: -1 | 1): void {
-		const deck = deckRef.current;
-		if (deck) {
-			deck.scrollBy({ left: direction * deck.clientWidth, behavior: "smooth" });
-		}
-	}
-
-	if (isPending || isBlocksPending) {
-		return (
-			<div className="flex flex-col gap-3">
-				<div className="bg-surface-alt aspect-[3/4] w-full animate-pulse rounded-3xl" />
-				<div className="bg-surface-alt mx-auto h-4 w-1/3 animate-pulse rounded" />
-			</div>
-		);
-	}
-
-	if (isError) {
-		return <p className="text-sub py-16 text-center text-sm">파트너 목록을 불러오지 못했어요.</p>;
-	}
 
 	const blockedIds = new Set(
 		(blocks ?? []).map(function (block) {
 			return block.blocked_id;
 		}),
 	);
-	const visiblePartners = partners.filter(function (partner) {
+	const visiblePartners = (partners ?? []).filter(function (partner) {
 		return !blockedIds.has(partner.profile_id);
 	});
 	const chipFilteredPartners =
@@ -85,6 +61,53 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 						})
 					);
 				});
+	const deckCount = filteredPartners.length;
+
+	// 3초마다 다음 카드로 자동 넘김 — 마지막에서 처음으로 순환, 사용자가 만지는 동안은 정지
+	useEffect(
+		function () {
+			if (isDeckPaused || deckCount <= 1) {
+				return;
+			}
+			const timer = setInterval(function () {
+				const deck = deckRef.current;
+				if (!deck) {
+					return;
+				}
+				const nextIndex = (Math.round(deck.scrollLeft / deck.clientWidth) + 1) % deckCount;
+				deck.scrollTo({ left: nextIndex * deck.clientWidth, behavior: "smooth" });
+			}, 3000);
+			return function () {
+				clearInterval(timer);
+			};
+		},
+		[isDeckPaused, deckCount],
+	);
+
+	function handleDeckScroll(event: UIEvent<HTMLDivElement>): void {
+		const deck = event.currentTarget;
+		setDeckIndex(Math.round(deck.scrollLeft / deck.clientWidth));
+	}
+
+	function handleDeckStep(direction: -1 | 1): void {
+		const deck = deckRef.current;
+		if (deck) {
+			deck.scrollBy({ left: direction * deck.clientWidth, behavior: "smooth" });
+		}
+	}
+
+	if (isPending || isBlocksPending) {
+		return (
+			<div className="flex flex-col gap-3">
+				<div className="bg-surface-alt aspect-[3/4] w-full animate-pulse rounded-3xl" />
+				<div className="bg-surface-alt mx-auto h-4 w-1/3 animate-pulse rounded" />
+			</div>
+		);
+	}
+
+	if (isError) {
+		return <p className="text-sub py-16 text-center text-sm">파트너 목록을 불러오지 못했어요.</p>;
+	}
 
 	function getEmptyMessage(): string {
 		if (normalizedQuery !== "") {
@@ -127,6 +150,18 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 					<div
 						ref={deckRef}
 						onScroll={handleDeckScroll}
+						onTouchStart={function () {
+							setIsDeckPaused(true);
+						}}
+						onTouchEnd={function () {
+							setIsDeckPaused(false);
+						}}
+						onMouseEnter={function () {
+							setIsDeckPaused(true);
+						}}
+						onMouseLeave={function () {
+							setIsDeckPaused(false);
+						}}
 						className="-mx-5 flex snap-x snap-mandatory scrollbar-none gap-3 overflow-x-auto px-5">
 						{filteredPartners.map(function (partner, index) {
 							return (
