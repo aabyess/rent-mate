@@ -1,6 +1,7 @@
 // app/(main)/page.tsx
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
+import { PartnerList } from "@/features/partners/components/PartnerList";
 
 export default function HomePage(): JSX.Element {
 	return (
@@ -43,7 +44,7 @@ export default function HomePage(): JSX.Element {
 				<div className="flex items-baseline justify-between">
 					<h2 className="text-lg font-semibold">지금 만날 수 있는 파트너</h2>
 				</div>
-				<p className="text-sub py-16 text-center text-sm">파트너 목록 기능 준비 중입니다.</p>
+				<PartnerList />
 			</section>
 		</main>
 	);
