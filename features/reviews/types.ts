@@ -21,3 +21,7 @@ export type PartnerRatingSummary = {
 	average: number;
 	count: number;
 };
+
+export type MyReviewItem = ReviewRow & {
+	partnerNickname: string;
+};
