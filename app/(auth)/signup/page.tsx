@@ -7,7 +7,7 @@ import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useSignUpMutation } from "@/features/auth/mutations";
-import { isValidUsername } from "@/features/auth/utils";
+import { getSignUpErrorMessage, isValidUsername } from "@/features/auth/utils";
 
 export default function SignupPage(): JSX.Element {
 	const router = useRouter();
@@ -73,9 +73,7 @@ export default function SignupPage(): JSX.Element {
 					</p>
 				)}
 				{signUpMutation.isError && (
-					<p className="text-error-500 text-sm">
-						가입에 실패했어요. 이미 사용 중인 아이디일 수 있어요.
-					</p>
+					<p className="text-error-500 text-sm">{getSignUpErrorMessage(signUpMutation.error)}</p>
 				)}
 				<Button type="submit" fullWidth disabled={signUpMutation.isPending}>
 					{signUpMutation.isPending ? "가입 중..." : "회원가입"}
