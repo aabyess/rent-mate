@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+	<!-- 수민 · 미술관, 사진 산책 — 라이트 틸 배경, 코랄 베레모 + 숏컷 -->
+	<rect width="300" height="400" fill="#f0faf9" />
+	<circle cx="150" cy="210" r="125" fill="#aee3e0" opacity="0.5" />
+	<g stroke="#2e9995" stroke-width="4" fill="none" opacity="0.4" stroke-linejoin="round">
+		<rect x="36" y="58" width="46" height="34" rx="7" />
+		<circle cx="59" cy="75" r="9" />
+		<path d="M46 58l6-8h14l6 8" />
+	</g>
+	<path d="M72 400v-64c0-40 30-64 78-64s78 24 78 64v64z" fill="#ffab93" />
+	<rect x="138" y="210" width="24" height="68" rx="11" fill="#f4c4a8" />
+	<ellipse cx="150" cy="168" rx="52" ry="56" fill="#ffdcc7" />
+	<path d="M96 178c-2-40 12-62 34-70l44 6c18 12 26 34 24 64 -2-24-16-40-44-42l-14 10-10-8c-20 6-32 20-34 40z" fill="#503a30" />
+	<path d="M96 178c-2 20 2 34 10 42 -4-18-4-32-3-44z" fill="#503a30" />
+	<path d="M204 178c2 20-2 34-10 42 4-18 4-32 3-44z" fill="#503a30" />
+	<path d="M92 138c-4-30 18-52 58-52s62 22 58 52c-4-8-12-12-20-12h-76c-8 0-16 4-20 12z" fill="#f26b4a" />
+	<circle cx="150" cy="82" r="7" fill="#dd5230" />
+	<g fill="#3a2c2a">
+		<circle cx="128" cy="178" r="4.5" />
+		<circle cx="172" cy="178" r="4.5" />
+	</g>
+	<g stroke="#503a30" stroke-width="3" stroke-linecap="round" fill="none">
+		<path d="M120 163q8-5 16-1" />
+		<path d="M164 162q8-4 16 1" />
+	</g>
+	<path d="M140 197q10 9 20 0" stroke="#c96a4e" stroke-width="3.5" stroke-linecap="round" fill="none" />
+	<ellipse cx="116" cy="191" rx="8" ry="5" fill="#ffb199" opacity="0.55" />
+	<ellipse cx="184" cy="191" rx="8" ry="5" fill="#ffb199" opacity="0.55" />
+</svg>

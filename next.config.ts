@@ -8,6 +8,10 @@ const supabaseHostname = new URL(
 
 const nextConfig: NextConfig = {
 	images: {
+		// 시드 파트너 일러스트(public/partners/*.svg) 렌더용. SVG 허용 시 Next 권장 안전조치 세트 동반
+		dangerouslyAllowSVG: true,
+		contentDispositionType: "attachment",
+		contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 		remotePatterns: [
 			{
 				protocol: "https",

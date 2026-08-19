@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+	<!-- 예린 · 커피, 디저트 투어 — 웜 앰버 배경, 긴 웨이브 브라운 머리 -->
+	<rect width="300" height="400" fill="#fdf3e1" />
+	<circle cx="150" cy="210" r="125" fill="#ffd08a" opacity="0.4" />
+	<g stroke="#dd7f1f" stroke-width="4" fill="none" opacity="0.4" stroke-linecap="round">
+		<path d="M40 74h38v20a19 16 0 0 1-38 0z" />
+		<path d="M78 78h8a8 8 0 0 1 0 16h-8" />
+		<path d="M50 62q-3-7 3-12M64 62q-3-7 3-12" />
+	</g>
+	<path d="M94 166c-16 56-20 128-2 170l16-6q-8-60 0-108 8 48 0 108h84q-8-60 0-108 8 48 0 108l16 6c18-42 14-114-2-170z" fill="#7a5240" />
+	<path d="M80 400v-60c0-38 26-60 70-60s70 22 70 60v60z" fill="#ffffff" />
+	<path d="M80 400v-60c0-38 26-60 70-60s70 22 70 60v60z" fill="none" stroke="#e4e4e7" stroke-width="2" />
+	<rect x="138" y="210" width="24" height="34" rx="11" fill="#f4c4a8" />
+	<ellipse cx="150" cy="166" rx="52" ry="56" fill="#ffdcc7" />
+	<path d="M94 178c-6-70 24-88 56-88s62 18 56 88c0-30-12-50-36-54l-22 10-14-6c-24 10-38 26-40 50z" fill="#7a5240" />
+	<g fill="#3a2c2a">
+		<circle cx="128" cy="176" r="4.5" />
+		<circle cx="172" cy="176" r="4.5" />
+	</g>
+	<g stroke="#6b4634" stroke-width="3" stroke-linecap="round" fill="none">
+		<path d="M120 161q8-5 16-1" />
+		<path d="M164 160q8-4 16 1" />
+	</g>
+	<path d="M141 195q9 9 18 0" stroke="#c96a4e" stroke-width="3.5" stroke-linecap="round" fill="none" />
+	<ellipse cx="116" cy="189" rx="8" ry="5" fill="#ffb199" opacity="0.55" />
+	<ellipse cx="184" cy="189" rx="8" ry="5" fill="#ffb199" opacity="0.55" />
+</svg>

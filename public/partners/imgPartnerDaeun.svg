@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+	<!-- 다은 · 영화, 서점 데이트 — 연코랄 배경, 안경 + 어깨 길이 머리, 머스터드 상의 -->
+	<rect width="300" height="400" fill="#fff5f2" />
+	<circle cx="150" cy="210" r="125" fill="#ffe8e1" opacity="0.9" />
+	<g stroke="#f26b4a" stroke-width="4" fill="none" opacity="0.35" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M232 58l30-8v40l-30 8z" />
+		<path d="M232 58l-26-8v40l26 8" />
+	</g>
+	<path d="M100 168c-10 44-12 84-2 108l20 8h64l20-8c10-24 8-64-2-108z" fill="#3a2c2a" />
+	<path d="M76 400v-62c0-38 28-62 74-62s74 24 74 62v62z" fill="#f0b429" />
+	<path d="M76 400v-62c0-38 28-62 74-62s74 24 74 62v62z" fill="none" stroke="#dd9a12" stroke-width="2" opacity="0.5" />
+	<rect x="138" y="210" width="24" height="34" rx="11" fill="#eec2a4" />
+	<ellipse cx="150" cy="166" rx="52" ry="56" fill="#f8d7c2" />
+	<path d="M94 176c-4-66 24-86 56-86s60 20 56 86c0-28-16-48-50-48l-12 12-6-12c-26 4-44 24-44 48z" fill="#3a2c2a" />
+	<g fill="none" stroke="#7a5240" stroke-width="3.5">
+		<circle cx="128" cy="177" r="13" />
+		<circle cx="172" cy="177" r="13" />
+		<path d="M141 177h18" />
+	</g>
+	<g fill="#332a2e">
+		<circle cx="128" cy="177" r="4.5" />
+		<circle cx="172" cy="177" r="4.5" />
+	</g>
+	<g stroke="#3a2c2a" stroke-width="3" stroke-linecap="round" fill="none">
+		<path d="M119 157q9-5 17-2" />
+		<path d="M164 155q8-3 17 2" />
+	</g>
+	<path d="M142 198q8 7 16 0" stroke="#c96a4e" stroke-width="3.5" stroke-linecap="round" fill="none" />
+	<ellipse cx="113" cy="192" rx="7" ry="4.5" fill="#f5a98f" opacity="0.5" />
+	<ellipse cx="187" cy="192" rx="7" ry="4.5" fill="#f5a98f" opacity="0.5" />
+</svg>
