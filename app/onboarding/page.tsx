@@ -90,7 +90,7 @@ export default function OnboardingPage(): JSX.Element {
 										}}
 										className={cn(
 											"h-11 flex-1 rounded-xl text-sm",
-											selected && "bg-neutral-900 font-semibold text-white",
+											selected && "bg-inverse text-inverse-fg font-semibold",
 											!selected && "bg-surface-alt text-body",
 										)}>
 										{option.label}
