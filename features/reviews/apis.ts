@@ -1,5 +1,5 @@
 // features/reviews/apis.ts
-import type { CreateReviewInput, ReviewRow } from "@/features/reviews/types";
+import type { CreateReviewInput, PartnerRatingSummary, ReviewRow } from "@/features/reviews/types";
 import { createClient } from "@/libs/supabase/client";
 
 export async function postCreateReview({
@@ -60,4 +60,32 @@ export async function getMyReviewedBookingIds(): Promise<string[]> {
 	return ((data ?? []) as { booking_id: string }[]).map(function (row) {
 		return row.booking_id;
 	});
+}
+
+export async function getPartnerRatingSummaries(
+	partnerIds: string[],
+): Promise<Record<string, PartnerRatingSummary>> {
+	if (partnerIds.length === 0) {
+		return {};
+	}
+	const supabase = createClient();
+	const { data, error } = await supabase
+		.from("reviews")
+		.select("partner_id, rating")
+		.in("partner_id", partnerIds);
+	if (error) {
+		throw error;
+	}
+
+	const summaries: Record<string, { total: number; count: number }> = {};
+	for (const row of (data ?? []) as { partner_id: string; rating: number }[]) {
+		summaries[row.partner_id] ??= { total: 0, count: 0 };
+		summaries[row.partner_id].total += row.rating;
+		summaries[row.partner_id].count += 1;
+	}
+	return Object.fromEntries(
+		Object.entries(summaries).map(function ([partnerId, { total, count }]) {
+			return [partnerId, { average: Math.round((total / count) * 10) / 10, count }];
+		}),
+	);
 }

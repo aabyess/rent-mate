@@ -16,3 +16,8 @@ export type CreateReviewInput = {
 	rating: number;
 	content: string;
 };
+
+export type PartnerRatingSummary = {
+	average: number;
+	count: number;
+};

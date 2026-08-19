@@ -2,14 +2,21 @@
 "use client";
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { getMyReviewedBookingIds, getPartnerReviews } from "@/features/reviews/apis";
-import type { ReviewRow } from "@/features/reviews/types";
+import {
+	getMyReviewedBookingIds,
+	getPartnerRatingSummaries,
+	getPartnerReviews,
+} from "@/features/reviews/apis";
+import type { PartnerRatingSummary, ReviewRow } from "@/features/reviews/types";
 
 export const REVIEWS_QUERY_KEYS = {
 	partnerList: function (partnerId: string) {
 		return ["reviews", "partnerList", partnerId] as const;
 	},
 	myReviewedBookingIds: ["reviews", "myReviewedBookingIds"] as const,
+	ratingSummaries: function (partnerIds: string[]) {
+		return ["reviews", "ratingSummaries", ...partnerIds] as const;
+	},
 };
 
 export function usePartnerReviewsQuery(partnerId: string): UseQueryResult<ReviewRow[]> {
@@ -25,5 +32,18 @@ export function useMyReviewedBookingIdsQuery(): UseQueryResult<string[]> {
 	return useQuery({
 		queryKey: REVIEWS_QUERY_KEYS.myReviewedBookingIds,
 		queryFn: getMyReviewedBookingIds,
+	});
+}
+
+export function usePartnerRatingsQuery(
+	partnerIds: string[],
+): UseQueryResult<Record<string, PartnerRatingSummary>> {
+	const sortedIds = [...partnerIds].sort();
+	return useQuery({
+		queryKey: REVIEWS_QUERY_KEYS.ratingSummaries(sortedIds),
+		queryFn: function () {
+			return getPartnerRatingSummaries(sortedIds);
+		},
+		enabled: sortedIds.length > 0,
 	});
 }

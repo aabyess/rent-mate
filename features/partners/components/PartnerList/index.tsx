@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, type JSX } from "react";
 import { PartnerListCard } from "@/features/partners/components/PartnerList/PartnerListCard";
 import { usePartnerListQuery } from "@/features/partners/queries";
+import { usePartnerRatingsQuery } from "@/features/reviews/queries";
 import { useMyBlocksQuery } from "@/features/safety/queries";
 import { cn } from "@/utils/cn";
 
@@ -13,6 +14,11 @@ const INTEREST_FILTERS = ["전체", "카페", "전시", "산책", "맛집", "영
 export function PartnerList(): JSX.Element {
 	const { data: partners, isPending, isError } = usePartnerListQuery();
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
+	const { data: ratings } = usePartnerRatingsQuery(
+		(partners ?? []).map(function (partner) {
+			return partner.profile_id;
+		}),
+	);
 	const [activeFilter, setActiveFilter] = useState("전체");
 
 	if (isPending || isBlocksPending) {
@@ -85,7 +91,11 @@ export function PartnerList(): JSX.Element {
 					{filteredPartners.map(function (partner, index) {
 						return (
 							<Link key={partner.profile_id} href={`/partners/${partner.profile_id}`}>
-								<PartnerListCard partner={partner} index={index} />
+								<PartnerListCard
+									partner={partner}
+									index={index}
+									rating={ratings?.[partner.profile_id]}
+								/>
 							</Link>
 						);
 					})}
