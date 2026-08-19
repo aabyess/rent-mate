@@ -9,6 +9,8 @@ import { useMyBookingsQuery } from "@/features/bookings/queries";
 import type { BookingStatus, MyBookingItem } from "@/features/bookings/types";
 import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
+import { usePaymentStatusesQuery } from "@/features/payments/queries";
+import { PAYMENT_STATUS_BADGE_VARIANTS, PAYMENT_STATUS_LABELS } from "@/features/payments/utils";
 import { ReviewDialog } from "@/features/reviews/components/ReviewDialog";
 import { useMyReviewedBookingIdsQuery } from "@/features/reviews/queries";
 
@@ -36,6 +38,11 @@ function hasChatRoom(booking: MyBookingItem): boolean {
 export function MyBookingList(): JSX.Element {
 	const { data: bookings, isPending, isError } = useMyBookingsQuery();
 	const { data: reviewedBookingIds } = useMyReviewedBookingIdsQuery();
+	const { data: paymentStatuses } = usePaymentStatusesQuery(
+		(bookings ?? []).map(function (booking) {
+			return booking.id;
+		}),
+	);
 	const [cancelTarget, setCancelTarget] = useState<MyBookingItem | null>(null);
 	const [reviewTarget, setReviewTarget] = useState<MyBookingItem | null>(null);
 
@@ -71,15 +78,23 @@ export function MyBookingList(): JSX.Element {
 	return (
 		<div className="flex flex-col gap-3">
 			{myBookings.map(function (booking) {
+				const paymentStatus = paymentStatuses?.[booking.id];
 				return (
 					<article
 						key={booking.id}
 						className="bg-surface-alt flex flex-col gap-2.5 rounded-2xl p-4">
 						<div className="flex items-center justify-between">
 							<span className="text-base font-semibold">{booking.counterpartName}</span>
-							<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
-								{BOOKING_STATUS_LABELS[booking.status]}
-							</Badge>
+							<div className="flex items-center gap-1.5">
+								{paymentStatus && (
+									<Badge variant={PAYMENT_STATUS_BADGE_VARIANTS[paymentStatus]}>
+										{PAYMENT_STATUS_LABELS[paymentStatus]}
+									</Badge>
+								)}
+								<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
+									{BOOKING_STATUS_LABELS[booking.status]}
+								</Badge>
+							</div>
 						</div>
 						<div className="text-sub flex flex-col gap-1 text-sm">
 							<span className="tabular-nums">

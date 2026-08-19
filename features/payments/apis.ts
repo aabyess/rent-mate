@@ -1,6 +1,7 @@
 // features/payments/apis.ts
 import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
-import type { StartTossCheckoutInput } from "@/features/payments/types";
+import type { PaymentStatus, StartTossCheckoutInput } from "@/features/payments/types";
+import { createClient } from "@/libs/supabase/client";
 
 export function getTossClientKey(): string | null {
 	return process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY ?? null;
@@ -28,4 +29,26 @@ export async function startTossCheckout({
 		successUrl: `${window.location.origin}/payments/success`,
 		failUrl: `${window.location.origin}/payments/fail`,
 	});
+}
+
+export async function getPaymentStatusesByBookingIds(
+	bookingIds: string[],
+): Promise<Record<string, PaymentStatus>> {
+	if (bookingIds.length === 0) {
+		return {};
+	}
+	const supabase = createClient();
+	const { data, error } = await supabase
+		.from("payments")
+		.select("booking_id, status")
+		.in("booking_id", Array.from(new Set(bookingIds)));
+	if (error) {
+		throw error;
+	}
+
+	const statusByBookingId: Record<string, PaymentStatus> = {};
+	for (const row of (data ?? []) as { booking_id: string; status: PaymentStatus }[]) {
+		statusByBookingId[row.booking_id] = row.status;
+	}
+	return statusByBookingId;
 }
