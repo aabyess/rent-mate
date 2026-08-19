@@ -240,3 +240,58 @@ CDN: `https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variabl
 - [Pretendard (GitHub)](https://github.com/orioncactus/pretendard)
 - [Wanted Sans](https://www.freekoreanfont.com/wanted-sans-free-download/)
 - [눈누 — 한글 폰트 모음](https://noonnu.cc/en)
+
+---
+
+## ⑥ 애플스러운 UI 원칙 (조사·분석, 2026-08-19 추가)
+
+Apple HIG의 3원칙 — **Clarity(명료), Deference(콘텐츠 우선), Depth(깊이로 위계)** — 를 RentMate에 맞게 번역한 실행 규칙. "이쁘고 간편하게"의 애플식 답은 **요소를 더하는 게 아니라 빼고, 남은 것의 위계를 타이포와 여백으로 만드는 것**이다.
+
+### 핵심 규칙 6가지
+
+**1. 구획은 보더가 아니라 배경 대비로.**
+현재 시안은 카드마다 1px 보더인데, 애플은 보더를 거의 안 쓴다. `bg #fafafa` 위에 `surface #ffffff` 라운드 블록을 얹는 **grouped inset list**(iOS 설정 앱 패턴)가 기본. 보더·배경·그림자를 동시에 쓰는 삼중 구획 금지 — 셋 중 하나만.
+→ 마이페이지 메뉴, 파트너 상세 요금표에 즉시 적용 가능. 반경은 카드 16~20px, 버튼 12px, 칩 full — 계층마다 다르게.
+
+**2. 위계는 타이포 점프로.**
+애플 스케일은 본문 17pt ↔ Large Title 34pt로 **2배 점프**한다. 완만한 14→16→18 계단 대신, 화면당 "큰 것 하나 + 나머지는 본문/캡션" 구조로.
+→ 각 화면 상단에 **Large Title 패턴**: 28~30px/700 타이틀로 시작, 스크롤하면 컴팩트 헤더로 축소(iOS 네비게이션 바 관성). 홈의 "지금 만날 수 있는 파트너"(18px)를 이 자리로 승격.
+
+**3. 색은 역할제, 화면당 코랄 2곳.**
+애플은 hex가 아니라 시맨틱 역할(label, systemBackground)로 색을 쓴다. 우리도 ② 시맨틱 토큰만 참조하고, **코랄은 화면당 주 CTA + 활성 상태 2곳으로 제한**. 텍스트는 `text`/`text-sub` 2단계면 충분하다. 아이콘 기본색은 코랄이 아니라 `text-sub`.
+
+**4. 깊이는 블러 머티리얼로, 콘텐츠엔 금지.**
+iOS 26 Liquid Glass의 핵심 규칙: 유리/반투명 효과는 **떠 있는 내비게이션 레이어에만**, 콘텐츠(리스트·사진·표)에는 절대 적용하지 않는다.
+→ 탭바·상단 헤더·하단 고정 예약 바를 `background: rgba(255,255,255,0.8) + backdrop-filter: blur(20px)`로 — 콘텐츠가 밑으로 스크롤되며 비쳐 보이는 것만으로 "애플 느낌"의 8할이 나온다. 그림자는 `0 1px 3px rgba(0,0,0,0.06)` 한 종류를 떠 있는 요소에만.
+
+**5. 시트(sheet) 중심 플로우.**
+페이지 전환 대신 바텀 시트: 필터, 시간 선택, 예약 확인을 상단 모서리만 둥근(radius 24px 상단) 시트로 띄운다. 뒤 콘텐츠가 살짝 보이는 dimmed 배경이 곧 Depth. Headless UI Dialog + motion 스프링 전환으로 구현.
+→ 예약 플로우도 "One thing per page"(토스가 쓰는 포스텔식 단계 분해)와 결합: 시트 하나 = 결정 하나.
+
+**6. 모션은 스프링, 목적 있는 것만.**
+장식 애니메이션 금지. 시트 등장/카드 탭 스케일(0.97)/탭 전환에만 스프링 커브(motion 라이브러리 `type: "spring"`). 로딩엔 스켈레톤 — 스피너보다 애플스럽다.
+
+### 화면별 적용 포인트
+
+| 화면        | 애플화 포인트                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------------- |
+| 홈          | Large Title + 블러 탭바. 필터 칩 활성색을 코랄 solid → `#18181b` solid로 (코랄 예산 아끼기)        |
+| 파트너 상세 | 사진을 풀블리드로 더 크게(Deference), 정보 섹션은 보더 없는 inset 블록, 하단 예약 바 블러 처리     |
+| 예약        | 단계를 페이지가 아닌 시트 스택으로. 캘린더 선택일만 코랄, 나머지는 무채색                          |
+| 채팅        | 말풍선 보더 제거(상대 = `#f4f4f5` solid), 입력바 블러. 안전 배너는 첫 진입 시 1회 + 접기            |
+| 마이페이지  | 전체를 iOS 설정식 grouped inset list로 재구성 — 이 화면이 가장 큰 수혜자                           |
+
+### 하지 말 것 (애플이 안 하는 것)
+
+- 콘텐츠 카드에 유리·그라데이션·이중 그림자
+- 모든 요소에 같은 반경·같은 보더 (균일함 = 템플릿 티)
+- 아이콘 남발 — 메뉴 행에 아이콘은 있어도 되지만, 없어도 읽히면 빼는 쪽이 애플식
+- 화면당 CTA 2개 이상 — 주 액션 하나만 solid, 나머지는 텍스트/아웃라인
+
+**참고 자료**
+
+- [Apple Design System 분석 + 수치 (Superdesign)](https://superdesign.dev/blog/apple-design-system) — 본문 17pt, Large Title 34pt, 8pt 그리드, 44pt 탭 타깃, 시맨틱 컬러 역할제
+- [Liquid Glass 원칙 (Create with Swift)](https://www.createwithswift.com/liquid-glass-redefining-design-through-hierarchy-harmony-and-consistency/) — 유리는 내비 레이어에만, 콘텐츠에 금지
+- [iOS 26 Liquid Glass 개요 (Qic)](https://www.qicapp.com/blog/liquid-glass-ios-26-design-language-explained/)
+- [HIG 핵심 원칙 정리 (Netguru)](https://www.netguru.com/blog/ios-human-interface-guidelines)
+- [토스에서 찾아본 10가지 UX 법칙 (Brunch)](https://brunch.co.kr/@chadwick/33) — 1 thing/1 page, 익숙한 패턴 존중, 둥근 심미성

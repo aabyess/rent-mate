@@ -1,4 +1,5 @@
 // features/partners/utils.ts
+import Decimal from "decimal.js";
 import type { PartnerCardItem, PartnerListItem } from "@/features/partners/types";
 
 const NEW_BADGE_DAYS = 14;
@@ -19,4 +20,12 @@ export function calculateAgeFromBirthYear(birthYear: number): number {
 
 export function formatKrw(amount: number): string {
 	return `₩${amount.toLocaleString("ko-KR")}`;
+}
+
+export function calculateBaseTwoHourPrice(hourlyRateKrw: number): number {
+	return new Decimal(hourlyRateKrw).times(2).toNumber();
+}
+
+export function calculateHalfHourExtensionPrice(hourlyRateKrw: number): number {
+	return new Decimal(hourlyRateKrw).div(2).toNumber();
 }

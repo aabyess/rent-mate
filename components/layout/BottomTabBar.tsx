@@ -87,7 +87,7 @@ export function BottomTabBar(): JSX.Element {
 	const pathname = usePathname();
 
 	return (
-		<nav className="border-line bg-surface fixed bottom-0 left-1/2 z-10 flex w-full max-w-md -translate-x-1/2 items-center border-t px-3 pt-2 pb-5">
+		<nav className="border-line bg-surface/80 fixed bottom-0 left-1/2 z-10 flex w-full max-w-md -translate-x-1/2 items-center border-t px-3 pt-2 pb-5 backdrop-blur-xl">
 			{TAB_ITEMS.map(function (item) {
 				const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 				return (

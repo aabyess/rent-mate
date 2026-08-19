@@ -1,9 +1,10 @@
 // features/partners/components/PartnerList/index.tsx
 "use client";
 
+import Link from "next/link";
 import type { JSX } from "react";
-import { usePartnerListQuery } from "@/features/partners/queries";
 import { PartnerListCard } from "@/features/partners/components/PartnerList/PartnerListCard";
+import { usePartnerListQuery } from "@/features/partners/queries";
 
 export function PartnerList(): JSX.Element {
 	const { data: partners, isPending, isError } = usePartnerListQuery();
@@ -35,7 +36,11 @@ export function PartnerList(): JSX.Element {
 	return (
 		<div className="grid grid-cols-2 gap-3.5">
 			{partners.map(function (partner, index) {
-				return <PartnerListCard key={partner.profile_id} partner={partner} index={index} />;
+				return (
+					<Link key={partner.profile_id} href={`/partners/${partner.profile_id}`}>
+						<PartnerListCard partner={partner} index={index} />
+					</Link>
+				);
 			})}
 		</div>
 	);

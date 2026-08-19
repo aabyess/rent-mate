@@ -4,6 +4,8 @@ export type PartnerCardItem = PartnerListItem & {
 	isNew: boolean;
 };
 
+export type PartnerDetailItem = PartnerListItem;
+
 export type PartnerListItem = {
 	profile_id: string;
 	nickname: string;

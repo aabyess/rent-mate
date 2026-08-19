@@ -1,5 +1,5 @@
 // features/partners/apis.ts
-import type { PartnerListItem } from "@/features/partners/types";
+import type { PartnerDetailItem, PartnerListItem } from "@/features/partners/types";
 import { createClient } from "@/libs/supabase/client";
 
 export async function getPartnerList(): Promise<PartnerListItem[]> {
@@ -16,4 +16,21 @@ export async function getPartnerList(): Promise<PartnerListItem[]> {
 		throw error;
 	}
 	return (data ?? []) as PartnerListItem[];
+}
+
+export async function getPartnerDetail(profileId: string): Promise<PartnerDetailItem | null> {
+	const supabase = createClient();
+	const { data, error } = await supabase
+		.from("partner_profiles")
+		.select(
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, created_at",
+		)
+		.eq("profile_id", profileId)
+		.eq("is_approved", true)
+		.eq("is_active", true)
+		.maybeSingle();
+	if (error) {
+		throw error;
+	}
+	return (data ?? null) as PartnerDetailItem | null;
 }
