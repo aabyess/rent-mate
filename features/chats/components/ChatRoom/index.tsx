@@ -12,6 +12,7 @@ import { ChatRoomMessageList } from "@/features/chats/components/ChatRoom/ChatRo
 import { useChatRoomRealtime } from "@/features/chats/hooks";
 import { useSendChatMessageMutation } from "@/features/chats/mutations";
 import { useChatMessagesQuery } from "@/features/chats/queries";
+import { BlockConfirmDialog } from "@/features/safety/components/BlockConfirmDialog";
 import { ReportDialog } from "@/features/safety/components/ReportDialog";
 
 type ChatRoomProps = {
@@ -28,6 +29,7 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 
 	const [content, setContent] = useState("");
 	const [isReportOpen, setIsReportOpen] = useState(false);
+	const [isBlockOpen, setIsBlockOpen] = useState(false);
 
 	function handleBack(): void {
 		router.back();
@@ -108,6 +110,16 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 									신고하기
 								</button>
 							</MenuItem>
+							<MenuItem>
+								<button
+									type="button"
+									onClick={function () {
+										setIsBlockOpen(true);
+									}}
+									className="text-body data-focus:bg-surface-alt w-full rounded-lg px-3 py-2.5 text-left text-sm">
+									차단하기
+								</button>
+							</MenuItem>
 						</MenuItems>
 					</Menu>
 				</div>
@@ -165,6 +177,16 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 				<ReportDialog
 					onClose={function () {
 						setIsReportOpen(false);
+					}}
+					targetId={booking.counterpartId}
+					targetNickname={booking.counterpartName}
+				/>
+			)}
+
+			{isBlockOpen && (
+				<BlockConfirmDialog
+					onClose={function () {
+						setIsBlockOpen(false);
 					}}
 					targetId={booking.counterpartId}
 					targetNickname={booking.counterpartName}

@@ -6,11 +6,13 @@ import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
 import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
+import { useMyBlocksQuery } from "@/features/safety/queries";
 
 export function ChatRoomList(): JSX.Element {
 	const { data: bookings, isPending, isError } = useMyBookingsQuery();
+	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
 
-	if (isPending) {
+	if (isPending || isBlocksPending) {
 		return (
 			<div className="flex flex-col gap-3">
 				{Array.from({ length: 3 }, function (_, index) {
@@ -24,8 +26,17 @@ export function ChatRoomList(): JSX.Element {
 		return <p className="text-sub py-16 text-center text-sm">채팅 목록을 불러오지 못했어요.</p>;
 	}
 
+	const blockedIds = new Set(
+		(blocks ?? []).map(function (block) {
+			return block.blocked_id;
+		}),
+	);
 	const rooms = bookings.filter(function (booking) {
-		return booking.status !== "canceled" && booking.status !== "rejected";
+		return (
+			booking.status !== "canceled" &&
+			booking.status !== "rejected" &&
+			!blockedIds.has(booking.counterpartId)
+		);
 	});
 
 	if (rooms.length === 0) {

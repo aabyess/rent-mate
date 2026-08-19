@@ -10,6 +10,7 @@ import { PartnerDetailMenu } from "@/features/partners/components/PartnerDetail/
 import { PartnerDetailPricing } from "@/features/partners/components/PartnerDetail/PartnerDetailPricing";
 import { usePartnerDetailQuery } from "@/features/partners/queries";
 import { calculateAgeFromBirthYear } from "@/features/partners/utils";
+import { useMyBlocksQuery } from "@/features/safety/queries";
 import { PartnerReviewList } from "@/features/reviews/components/PartnerReviewList";
 
 const DATE_COURSES = [
@@ -73,12 +74,13 @@ type PartnerDetailProps = {
 export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 	const router = useRouter();
 	const { data: partner, isPending, isError } = usePartnerDetailQuery(profileId);
+	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
 
 	function handleBackClick(): void {
 		router.back();
 	}
 
-	if (isPending) {
+	if (isPending || isBlocksPending) {
 		return (
 			<div className="flex flex-col gap-5">
 				<div className="bg-surface-alt h-[400px] animate-pulse" />
@@ -97,6 +99,20 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 				<p className="text-sub text-sm">파트너를 찾을 수 없어요.</p>
 				<Link href="/" className="text-brand font-medium underline">
 					홈으로 돌아가기
+				</Link>
+			</div>
+		);
+	}
+
+	const isBlocked = (blocks ?? []).some(function (block) {
+		return block.blocked_id === profileId;
+	});
+	if (isBlocked) {
+		return (
+			<div className="flex flex-col items-center gap-4 py-24">
+				<p className="text-sub text-sm">차단한 파트너예요.</p>
+				<Link href="/safety-center#blocks" className="text-brand font-medium underline">
+					차단 목록에서 해제하기
 				</Link>
 			</div>
 		);

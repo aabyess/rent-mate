@@ -151,15 +151,23 @@ export function MyPageContent(): JSX.Element {
 			)}
 
 			<MyPageContentMenuGroup
-				items={[{ label: "결제 수단" }, { label: "후기 관리" }, { label: "차단 목록" }]}
+				items={[
+					{ label: "결제 수단" },
+					{ label: "후기 관리" },
+					{ label: "차단 목록", href: "/safety-center#blocks" },
+				]}
 			/>
 
 			<MyPageContentMenuGroup
 				title="안전"
 				items={[
-					{ label: "안전 센터" },
-					{ label: "신고 내역" },
-					{ label: "긴급 연락", labelClassName: "font-medium text-error-700" },
+					{ label: "안전 센터", href: "/safety-center" },
+					{ label: "신고 내역", href: "/safety-center#reports" },
+					{
+						label: "긴급 연락",
+						labelClassName: "font-medium text-error-700",
+						href: "/safety-center#emergency",
+					},
 				]}
 			/>
 
