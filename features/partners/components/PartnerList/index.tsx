@@ -11,7 +11,11 @@ import { cn } from "@/utils/cn";
 
 const INTEREST_FILTERS = ["전체", "카페", "전시", "산책", "맛집", "영화"];
 
-export function PartnerList(): JSX.Element {
+type PartnerListProps = {
+	searchQuery?: string;
+};
+
+export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element {
 	const { data: partners, isPending, isError } = usePartnerListQuery();
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
 	const { data: ratings } = usePartnerRatingsQuery(
@@ -49,7 +53,7 @@ export function PartnerList(): JSX.Element {
 	const visiblePartners = partners.filter(function (partner) {
 		return !blockedIds.has(partner.profile_id);
 	});
-	const filteredPartners =
+	const chipFilteredPartners =
 		activeFilter === "전체"
 			? visiblePartners
 			: visiblePartners.filter(function (partner) {
@@ -57,6 +61,29 @@ export function PartnerList(): JSX.Element {
 						return interest.includes(activeFilter);
 					});
 				});
+
+	const normalizedQuery = searchQuery.trim().toLowerCase();
+	const filteredPartners =
+		normalizedQuery === ""
+			? chipFilteredPartners
+			: chipFilteredPartners.filter(function (partner) {
+					return (
+						partner.nickname.toLowerCase().includes(normalizedQuery) ||
+						partner.interests.some(function (interest) {
+							return interest.toLowerCase().includes(normalizedQuery);
+						})
+					);
+				});
+
+	function getEmptyMessage(): string {
+		if (normalizedQuery !== "") {
+			return `'${searchQuery.trim()}' 검색 결과가 없어요.`;
+		}
+		if (activeFilter !== "전체") {
+			return `'${activeFilter}' 관심사를 가진 파트너가 아직 없어요.`;
+		}
+		return "아직 등록된 파트너가 없어요.";
+	}
 
 	return (
 		<div className="flex flex-col gap-3.5">
@@ -81,11 +108,7 @@ export function PartnerList(): JSX.Element {
 				})}
 			</div>
 			{filteredPartners.length === 0 ? (
-				<p className="text-sub py-16 text-center text-sm">
-					{activeFilter === "전체"
-						? "아직 등록된 파트너가 없어요."
-						: `'${activeFilter}' 관심사를 가진 파트너가 아직 없어요.`}
-				</p>
+				<p className="text-sub py-16 text-center text-sm">{getEmptyMessage()}</p>
 			) : (
 				<div className="grid grid-cols-2 gap-3.5">
 					{filteredPartners.map(function (partner, index) {
