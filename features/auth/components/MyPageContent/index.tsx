@@ -204,7 +204,10 @@ export function MyPageContent(): JSX.Element {
 			</Link>
 
 			<MyPageContentMenuGroup
-				items={[{ label: "고객센터" }, { label: "약관 및 정책", href: "/policies" }]}
+				items={[
+					{ label: "고객센터", href: "/support" },
+					{ label: "약관 및 정책", href: "/policies" },
+				]}
 			/>
 
 			{profile.role === "admin" && (
