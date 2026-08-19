@@ -1,7 +1,7 @@
 // features/auth/utils.ts
 
 // 아이디 로그인: Supabase 인증은 이메일 기반이라 내부용 합성 이메일로 변환한다
-const AUTH_EMAIL_DOMAIN = "id.rentmate.dev";
+const AUTH_EMAIL_DOMAIN = "rentmate-id.com";
 
 export const USERNAME_PATTERN = "^[a-z0-9]{4,20}$";
 
