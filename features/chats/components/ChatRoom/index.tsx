@@ -86,7 +86,7 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 							<path d="M15 5l-7 7 7 7" />
 						</svg>
 					</button>
-					<h1 className="text-lg font-bold">{booking.partnerNickname}</h1>
+					<h1 className="text-lg font-bold">{booking.counterpartName}</h1>
 					<Menu>
 						<MenuButton aria-label="더보기 메뉴" className="ml-auto">
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -166,8 +166,8 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 					onClose={function () {
 						setIsReportOpen(false);
 					}}
-					targetId={booking.partner_id}
-					targetNickname={booking.partnerNickname}
+					targetId={booking.counterpartId}
+					targetNickname={booking.counterpartName}
 				/>
 			)}
 		</div>

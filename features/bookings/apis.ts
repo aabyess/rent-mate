@@ -1,6 +1,12 @@
 // features/bookings/apis.ts
-import type { BookingRow, CreateBookingInput, MyBookingItem } from "@/features/bookings/types";
+import type {
+	BookingRow,
+	BookingStatus,
+	CreateBookingInput,
+	MyBookingItem,
+} from "@/features/bookings/types";
 import { createClient } from "@/libs/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export async function postCreateBooking({
 	partnerId,
@@ -30,11 +36,87 @@ export async function postCreateBooking({
 	}
 }
 
+export async function patchBookingStatus(bookingId: string, status: BookingStatus): Promise<void> {
+	const supabase = createClient();
+	const { error } = await supabase.from("bookings").update({ status }).eq("id", bookingId);
+	if (error) {
+		throw error;
+	}
+}
+
+// 상대방 표시명: 내가 고객이면 파트너 닉네임, 내가 파트너면 고객 이름
+async function attachCounterparts(
+	supabase: SupabaseClient,
+	myUserId: string,
+	bookings: BookingRow[],
+): Promise<MyBookingItem[]> {
+	const partnerIds = bookings
+		.filter(function (booking) {
+			return booking.customer_id === myUserId;
+		})
+		.map(function (booking) {
+			return booking.partner_id;
+		});
+	const customerIds = bookings
+		.filter(function (booking) {
+			return booking.partner_id === myUserId;
+		})
+		.map(function (booking) {
+			return booking.customer_id;
+		});
+
+	const nicknameByProfileId = new Map<string, string>();
+	if (partnerIds.length > 0) {
+		const { data, error } = await supabase
+			.from("partner_profiles")
+			.select("profile_id, nickname")
+			.in("profile_id", Array.from(new Set(partnerIds)));
+		if (error) {
+			throw error;
+		}
+		for (const row of (data ?? []) as { profile_id: string; nickname: string }[]) {
+			nicknameByProfileId.set(row.profile_id, row.nickname);
+		}
+	}
+
+	const nameByProfileId = new Map<string, string>();
+	if (customerIds.length > 0) {
+		const { data, error } = await supabase
+			.from("profiles")
+			.select("id, name")
+			.in("id", Array.from(new Set(customerIds)));
+		if (error) {
+			throw error;
+		}
+		for (const row of (data ?? []) as { id: string; name: string }[]) {
+			nameByProfileId.set(row.id, row.name);
+		}
+	}
+
+	return bookings.map(function (booking) {
+		const isReceived = booking.partner_id === myUserId;
+		const counterpartId = isReceived ? booking.customer_id : booking.partner_id;
+		const counterpartName = isReceived
+			? (nameByProfileId.get(counterpartId) ?? "알 수 없음")
+			: (nicknameByProfileId.get(counterpartId) ?? "알 수 없음");
+		return { ...booking, isReceived, counterpartId, counterpartName };
+	});
+}
+
 export async function getBookingDetail(bookingId: string): Promise<MyBookingItem | null> {
 	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		return null;
+	}
+
 	const { data, error } = await supabase
 		.from("bookings")
-		.select("id, partner_id, starts_at, ends_at, place, status, total_amount_krw, created_at")
+		.select(
+			"id, customer_id, partner_id, starts_at, ends_at, place, status, total_amount_krw, created_at",
+		)
 		.eq("id", bookingId)
 		.maybeSingle();
 	if (error) {
@@ -43,21 +125,9 @@ export async function getBookingDetail(bookingId: string): Promise<MyBookingItem
 	if (!data) {
 		return null;
 	}
-	const booking = data as BookingRow;
 
-	const { data: partner, error: partnerError } = await supabase
-		.from("partner_profiles")
-		.select("nickname")
-		.eq("profile_id", booking.partner_id)
-		.maybeSingle();
-	if (partnerError) {
-		throw partnerError;
-	}
-
-	return {
-		...booking,
-		partnerNickname: (partner as { nickname: string } | null)?.nickname ?? "알 수 없음",
-	};
+	const items = await attachCounterparts(supabase, user.id, [data as BookingRow]);
+	return items[0] ?? null;
 }
 
 export async function getMyBookings(): Promise<MyBookingItem[]> {
@@ -71,8 +141,10 @@ export async function getMyBookings(): Promise<MyBookingItem[]> {
 
 	const { data, error } = await supabase
 		.from("bookings")
-		.select("id, partner_id, starts_at, ends_at, place, status, total_amount_krw, created_at")
-		.eq("customer_id", user.id)
+		.select(
+			"id, customer_id, partner_id, starts_at, ends_at, place, status, total_amount_krw, created_at",
+		)
+		.or(`customer_id.eq.${user.id},partner_id.eq.${user.id}`)
 		.order("starts_at", { ascending: false });
 	if (error) {
 		throw error;
@@ -82,31 +154,5 @@ export async function getMyBookings(): Promise<MyBookingItem[]> {
 		return [];
 	}
 
-	// bookings.partner_id ↔ partner_profiles.profile_id는 직접 FK가 없어 2차 조회로 닉네임을 붙인다
-	const partnerIds = Array.from(
-		new Set(
-			bookings.map(function (booking) {
-				return booking.partner_id;
-			}),
-		),
-	);
-	const { data: partners, error: partnersError } = await supabase
-		.from("partner_profiles")
-		.select("profile_id, nickname")
-		.in("profile_id", partnerIds);
-	if (partnersError) {
-		throw partnersError;
-	}
-	const nicknameByProfileId = new Map(
-		(partners ?? []).map(function (partner: { profile_id: string; nickname: string }) {
-			return [partner.profile_id, partner.nickname] as const;
-		}),
-	);
-
-	return bookings.map(function (booking) {
-		return {
-			...booking,
-			partnerNickname: nicknameByProfileId.get(booking.partner_id) ?? "알 수 없음",
-		};
-	});
+	return attachCounterparts(supabase, user.id, bookings);
 }

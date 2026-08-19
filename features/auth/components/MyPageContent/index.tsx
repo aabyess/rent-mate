@@ -11,6 +11,7 @@ import { useMyProfileQuery } from "@/features/auth/queries";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
 import type { MyBookingItem } from "@/features/bookings/types";
 import { formatBookingPeriod } from "@/features/bookings/utils";
+import { useMyPartnerProfileQuery } from "@/features/partners/queries";
 
 const NOW_MS = Date.now();
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -39,6 +40,7 @@ export function MyPageContent(): JSX.Element {
 	const router = useRouter();
 	const { data: profile, isPending } = useMyProfileQuery();
 	const { data: bookings } = useMyBookingsQuery();
+	const { data: myPartnerProfile } = useMyPartnerProfileQuery();
 	const signOutMutation = useSignOutMutation();
 
 	function handleSignOut(): void {
@@ -115,7 +117,7 @@ export function MyPageContent(): JSX.Element {
 					</svg>
 					<div className="flex flex-col gap-0.5">
 						<span className="text-primary-700 text-sm font-semibold">
-							{upcomingBooking.partnerNickname} 님과의 데이트 D-{dDay}
+							{upcomingBooking.counterpartName} 님과의 데이트 D-{dDay}
 						</span>
 						<span className="text-sub text-xs tabular-nums">
 							{formatBookingPeriod(upcomingBooking.starts_at, upcomingBooking.ends_at)} ·{" "}
@@ -150,7 +152,9 @@ export function MyPageContent(): JSX.Element {
 				]}
 			/>
 
-			<div className="bg-secondary-50 flex items-center gap-3 rounded-2xl px-4.5 py-4">
+			<Link
+				href={myPartnerProfile ? "/bookings" : "/partner/register"}
+				className="bg-secondary-50 flex items-center gap-3 rounded-2xl px-4.5 py-4">
 				<svg
 					width="22"
 					height="22"
@@ -163,8 +167,16 @@ export function MyPageContent(): JSX.Element {
 					<path d="M5 21c0-3.9 3.1-6.5 7-6.5s7 2.6 7 6.5" />
 				</svg>
 				<div className="flex flex-col gap-0.5">
-					<span className="text-secondary-700 text-sm font-semibold">파트너로 활동하기</span>
-					<span className="text-sub text-xs">프로필 등록 후 관리자 승인을 거쳐요</span>
+					<span className="text-secondary-700 text-sm font-semibold">
+						{myPartnerProfile
+							? `파트너 활동 중 · ${myPartnerProfile.nickname}`
+							: "파트너로 활동하기"}
+					</span>
+					<span className="text-sub text-xs">
+						{myPartnerProfile
+							? "받은 예약 요청은 예약 탭에서 확인해요"
+							: "프로필 등록 후 바로 활동할 수 있어요"}
+					</span>
 				</div>
 				<svg
 					className="text-secondary-600 ml-auto shrink-0"
@@ -178,7 +190,7 @@ export function MyPageContent(): JSX.Element {
 					strokeLinejoin="round">
 					<path d="M9 5l7 7-7 7" />
 				</svg>
-			</div>
+			</Link>
 
 			<MyPageContentMenuGroup items={[{ label: "고객센터" }, { label: "약관 및 정책" }]} />
 

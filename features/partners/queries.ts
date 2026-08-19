@@ -2,8 +2,12 @@
 "use client";
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { getPartnerDetail, getPartnerList } from "@/features/partners/apis";
-import type { PartnerCardItem, PartnerDetailItem } from "@/features/partners/types";
+import { getMyPartnerProfile, getPartnerDetail, getPartnerList } from "@/features/partners/apis";
+import type {
+	MyPartnerProfile,
+	PartnerCardItem,
+	PartnerDetailItem,
+} from "@/features/partners/types";
 import { markNewPartners } from "@/features/partners/utils";
 
 export const PARTNERS_QUERY_KEYS = {
@@ -11,7 +15,15 @@ export const PARTNERS_QUERY_KEYS = {
 	detail: function (profileId: string) {
 		return ["partners", "detail", profileId] as const;
 	},
+	myProfile: ["partners", "myProfile"] as const,
 };
+
+export function useMyPartnerProfileQuery(): UseQueryResult<MyPartnerProfile | null> {
+	return useQuery({
+		queryKey: PARTNERS_QUERY_KEYS.myProfile,
+		queryFn: getMyPartnerProfile,
+	});
+}
 
 export function usePartnerListQuery(): UseQueryResult<PartnerCardItem[]> {
 	return useQuery({

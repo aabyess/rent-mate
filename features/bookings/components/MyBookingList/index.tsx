@@ -34,7 +34,11 @@ export function MyBookingList(): JSX.Element {
 		return <p className="text-sub py-16 text-center text-sm">예약 내역을 불러오지 못했어요.</p>;
 	}
 
-	if (bookings.length === 0) {
+	const myBookings = bookings.filter(function (booking) {
+		return !booking.isReceived;
+	});
+
+	if (myBookings.length === 0) {
 		return (
 			<div className="flex flex-col items-center gap-3 py-16">
 				<p className="text-sub text-sm">아직 예약이 없어요.</p>
@@ -47,13 +51,13 @@ export function MyBookingList(): JSX.Element {
 
 	return (
 		<div className="flex flex-col gap-3">
-			{bookings.map(function (booking) {
+			{myBookings.map(function (booking) {
 				return (
 					<article
 						key={booking.id}
 						className="bg-surface-alt flex flex-col gap-2.5 rounded-2xl p-4">
 						<div className="flex items-center justify-between">
-							<span className="text-base font-semibold">{booking.partnerNickname}</span>
+							<span className="text-base font-semibold">{booking.counterpartName}</span>
 							<Badge variant={STATUS_BADGE_VARIANTS[booking.status]}>
 								{BOOKING_STATUS_LABELS[booking.status]}
 							</Badge>
