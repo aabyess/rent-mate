@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+	<!-- 지우 · 맛집 탐방, 산책 — 틸 배경, 긴 생머리 -->
+	<rect width="300" height="400" fill="#d5f1ef" />
+	<circle cx="150" cy="210" r="125" fill="#aee3e0" opacity="0.6" />
+	<g stroke="#2e9995" stroke-width="4" fill="none" opacity="0.35" stroke-linecap="round">
+		<path d="M40 70q20-26 44-8" />
+		<path d="M62 62q-2-16 12-22" />
+		<path d="M62 62q14 2 20-10" />
+	</g>
+	<path d="M96 170c-8 60-10 120 4 158h100c14-38 12-98 4-158z" fill="#2c2226" />
+	<path d="M78 400v-64c0-38 28-62 72-62s72 24 72 62v64z" fill="#ffffff" />
+	<path d="M78 400v-64c0-38 28-62 72-62s72 24 72 62v64z" fill="none" stroke="#e4e4e7" stroke-width="2" />
+	<rect x="138" y="210" width="24" height="34" rx="11" fill="#eec2a4" />
+	<ellipse cx="150" cy="166" rx="52" ry="56" fill="#f8d7c2" />
+	<path d="M94 178c-4-68 24-88 56-88s60 20 56 88c0-30-14-50-40-52l-8 14-8-16c-34-2-56 24-56 54z" fill="#2c2226" />
+	<g fill="#332a2e">
+		<circle cx="128" cy="176" r="4.5" />
+		<circle cx="172" cy="176" r="4.5" />
+	</g>
+	<g stroke="#2c2226" stroke-width="3" stroke-linecap="round" fill="none">
+		<path d="M120 161q8-5 16-1" />
+		<path d="M164 160q8-4 16 1" />
+	</g>
+	<path d="M140 195q10 10 20 0" stroke="#c96a4e" stroke-width="3.5" stroke-linecap="round" fill="none" />
+	<ellipse cx="116" cy="189" rx="8" ry="5" fill="#f5a98f" opacity="0.5" />
+	<ellipse cx="184" cy="189" rx="8" ry="5" fill="#f5a98f" opacity="0.5" />
+</svg>
