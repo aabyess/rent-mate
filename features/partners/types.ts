@@ -18,6 +18,7 @@ export type CreatePartnerProfileInput = {
 	birthYear: number;
 	interests: string[];
 	availableWeekdays: number[];
+	photos: File[];
 };
 
 export type PartnerListItem = {

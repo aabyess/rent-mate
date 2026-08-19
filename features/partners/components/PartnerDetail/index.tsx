@@ -1,6 +1,7 @@
 // features/partners/components/PartnerDetail/index.tsx
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
@@ -110,6 +111,16 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 					<circle cx="12" cy="8.5" r="3.6" />
 					<path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7z" />
 				</svg>
+				{partner.photo_urls.length > 0 && (
+					<Image
+						src={partner.photo_urls[0]}
+						alt={`${partner.nickname} 프로필 사진`}
+						fill
+						sizes="448px"
+						priority
+						className="object-cover"
+					/>
+				)}
 				<button
 					type="button"
 					onClick={handleBackClick}
