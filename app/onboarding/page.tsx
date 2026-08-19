@@ -6,17 +6,28 @@ import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useCreateProfileMutation } from "@/features/auth/mutations";
+import type { Gender } from "@/features/auth/types";
 import { isAdultByYouthProtectionAct } from "@/features/auth/utils";
+import { cn } from "@/utils/cn";
+
+const GENDER_OPTIONS: { value: Gender; label: string }[] = [
+	{ value: "male", label: "남성" },
+	{ value: "female", label: "여성" },
+];
 
 export default function OnboardingPage(): JSX.Element {
 	const router = useRouter();
 	const createProfileMutation = useCreateProfileMutation();
 	const [name, setName] = useState("");
 	const [birthDate, setBirthDate] = useState("");
+	const [gender, setGender] = useState<Gender | null>(null);
 	const [isUnderage, setIsUnderage] = useState(false);
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
+		if (!gender) {
+			return;
+		}
 
 		// 성인인증 게이트: 청소년보호법 기준 만 19세(연 나이) 미만은 이용 불가
 		if (!isAdultByYouthProtectionAct(birthDate)) {
@@ -26,7 +37,7 @@ export default function OnboardingPage(): JSX.Element {
 		setIsUnderage(false);
 
 		createProfileMutation.mutate(
-			{ name, birthDate },
+			{ name, birthDate, gender },
 			{
 				onSuccess: function (): void {
 					router.replace("/");
@@ -65,6 +76,29 @@ export default function OnboardingPage(): JSX.Element {
 						}}
 						required
 					/>
+					<div className="flex flex-col gap-1.5">
+						<span className="text-sub text-xs">성별</span>
+						<div className="flex gap-2">
+							{GENDER_OPTIONS.map(function (option) {
+								const selected = gender === option.value;
+								return (
+									<button
+										key={option.value}
+										type="button"
+										onClick={function () {
+											setGender(option.value);
+										}}
+										className={cn(
+											"h-11 flex-1 rounded-xl text-sm",
+											selected && "bg-neutral-900 font-semibold text-white",
+											!selected && "bg-surface-alt text-body",
+										)}>
+										{option.label}
+									</button>
+								);
+							})}
+						</div>
+					</div>
 					{isUnderage && (
 						<p className="text-error-500 text-sm">
 							만 19세 미만은 RentMate를 이용할 수 없습니다. (청소년보호법)
@@ -73,7 +107,7 @@ export default function OnboardingPage(): JSX.Element {
 					{createProfileMutation.isError && (
 						<p className="text-error-500 text-sm">{createProfileMutation.error.message}</p>
 					)}
-					<Button type="submit" fullWidth disabled={createProfileMutation.isPending}>
+					<Button type="submit" fullWidth disabled={!gender || createProfileMutation.isPending}>
 						{createProfileMutation.isPending ? "저장 중..." : "시작하기"}
 					</Button>
 				</form>

@@ -20,7 +20,7 @@ export async function getMyPartnerProfile(): Promise<MyPartnerProfile | null> {
 	const { data, error } = await supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, created_at, is_approved, is_active",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, gender, created_at, is_approved, is_active",
 		)
 		.eq("profile_id", user.id)
 		.maybeSingle();
@@ -66,6 +66,22 @@ export async function postCreatePartnerProfile({
 		throw new Error("로그인이 필요합니다.");
 	}
 
+	// 파트너 성별은 온보딩에서 등록한 profiles.gender를 그대로 복사한다 — 폼에서 다시 묻지 않는다
+	const { data: profile, error: profileError } = await supabase
+		.from("profiles")
+		.select("gender")
+		.eq("id", user.id)
+		.maybeSingle();
+	if (profileError) {
+		throw profileError;
+	}
+	if (!profile?.gender) {
+		// 온보딩 이전 가입자 등 성별 정보가 없는 계정 — 별도 수정 화면이 아직 없어 고객센터로 안내한다
+		throw new Error(
+			"성별 정보가 등록되지 않아 파트너로 활동할 수 없어요. 고객센터로 문의해주세요.",
+		);
+	}
+
 	const photoUrls = photos.length > 0 ? await uploadPartnerPhotos(user.id, photos) : [];
 
 	const { error } = await supabase.from("partner_profiles").insert({
@@ -78,6 +94,7 @@ export async function postCreatePartnerProfile({
 		available_weekdays: availableWeekdays,
 		photo_urls: photoUrls,
 		region,
+		gender: profile.gender,
 		purpose_tags: purposeTags,
 	});
 	if (error) {
@@ -128,14 +145,37 @@ export async function patchPartnerProfile({
 
 export async function getPartnerList(): Promise<PartnerListItem[]> {
 	const supabase = createClient();
-	const { data, error } = await supabase
+
+	// 이성 파트너만 노출 — 내 성별 정보가 없는 계정(구 가입자 등)은 필터 없이 전체 노출로 폴백한다
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	let oppositeGender: "male" | "female" | null = null;
+	if (user) {
+		const { data: myProfile } = await supabase
+			.from("profiles")
+			.select("gender")
+			.eq("id", user.id)
+			.maybeSingle();
+		if (myProfile?.gender === "male") {
+			oppositeGender = "female";
+		} else if (myProfile?.gender === "female") {
+			oppositeGender = "male";
+		}
+	}
+
+	let query = supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, created_at",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, gender, created_at",
 		)
 		.eq("is_approved", true)
-		.eq("is_active", true)
-		.order("created_at", { ascending: false });
+		.eq("is_active", true);
+	if (oppositeGender) {
+		query = query.eq("gender", oppositeGender);
+	}
+
+	const { data, error } = await query.order("created_at", { ascending: false });
 	if (error) {
 		throw error;
 	}
@@ -147,7 +187,7 @@ export async function getPartnerDetail(profileId: string): Promise<PartnerDetail
 	const { data, error } = await supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, created_at",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, gender, created_at",
 		)
 		.eq("profile_id", profileId)
 		.eq("is_approved", true)
