@@ -157,7 +157,7 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 			</header>
 
 			<div className="grow px-5 py-4 pb-28">
-				<p className="bg-warning-100 text-warning-700 mb-4 rounded-xl px-3.5 py-2.5 text-center text-xs">
+				<p className="bg-warning-500/15 text-warning-500 mb-4 rounded-xl px-3.5 py-2.5 text-center text-xs">
 					대화는 안전을 위해 저장되며 삭제할 수 없어요 · 조건만남 유도 시 제재됩니다
 				</p>
 				<ChatRoomMessageList

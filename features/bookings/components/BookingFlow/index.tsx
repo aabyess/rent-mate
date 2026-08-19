@@ -87,13 +87,13 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 	if (createBookingMutation.isSuccess && !IS_TOSS_ENABLED) {
 		return (
 			<div className="flex flex-col items-center gap-5 px-5 py-24">
-				<span className="bg-secondary-50 flex size-16 items-center justify-center rounded-full">
+				<span className="bg-secondary-50 text-trust flex size-16 items-center justify-center rounded-full">
 					<svg
 						width="32"
 						height="32"
 						viewBox="0 0 24 24"
 						fill="none"
-						stroke="#2e9995"
+						stroke="currentColor"
 						strokeWidth="2.4"
 						strokeLinecap="round"
 						strokeLinejoin="round">
@@ -220,7 +220,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 										className={cn(
 											"flex size-6 items-center justify-center rounded-full text-xs font-bold",
 											(isActive || isDone) && "bg-brand text-white",
-											!isActive && !isDone && "bg-surface-alt text-neutral-400",
+											!isActive && !isDone && "bg-surface-alt text-sub",
 										)}>
 										{stepNumber}
 									</span>
@@ -300,7 +300,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 						height="13"
 						viewBox="0 0 24 24"
 						fill="none"
-						stroke="#2e9995"
+						stroke="currentColor"
 						strokeWidth="2"
 						strokeLinecap="round"
 						strokeLinejoin="round">

@@ -21,7 +21,7 @@ function MenuGroupItemContent({ label, labelClassName }: MenuGroupItem): JSX.Ele
 		<>
 			<span className={cn("text-[15px]", labelClassName)}>{label}</span>
 			<svg
-				className="ml-auto text-neutral-300"
+				className="text-line ml-auto"
 				width="16"
 				height="16"
 				viewBox="0 0 24 24"

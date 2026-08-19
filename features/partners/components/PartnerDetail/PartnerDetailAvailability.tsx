@@ -29,7 +29,7 @@ export function PartnerDetailAvailability({
 								className={cn(
 									"text-xs",
 									isAvailable && "text-primary-600 font-semibold",
-									!isAvailable && "text-neutral-400",
+									!isAvailable && "text-sub",
 								)}>
 								{label}
 							</span>
@@ -37,7 +37,7 @@ export function PartnerDetailAvailability({
 								className={cn(
 									"size-1.5 rounded-full",
 									isAvailable && "bg-brand",
-									!isAvailable && "bg-neutral-300",
+									!isAvailable && "bg-line",
 								)}
 							/>
 						</div>

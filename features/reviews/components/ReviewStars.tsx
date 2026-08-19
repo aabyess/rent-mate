@@ -23,7 +23,7 @@ export function ReviewStars({ rating, size = 14, onSelect }: ReviewStarsProps): 
 						height={size}
 						viewBox="0 0 24 24"
 						fill="currentColor"
-						className={cn(value <= rating ? "text-accent-500" : "text-neutral-300")}>
+						className={cn(value <= rating ? "text-accent-500" : "text-line")}>
 						<path d={STAR_PATH} />
 					</svg>
 				);

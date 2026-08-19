@@ -183,7 +183,7 @@ export function PartnerRegisterForm(): JSX.Element {
 								}}
 								className={cn(
 									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-neutral-900 font-semibold text-white",
+									selected && "bg-inverse text-inverse-fg font-semibold",
 									!selected && "bg-surface-alt text-body",
 								)}>
 								{regionOption}
@@ -207,7 +207,7 @@ export function PartnerRegisterForm(): JSX.Element {
 								}}
 								className={cn(
 									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-neutral-900 font-semibold text-white",
+									selected && "bg-inverse text-inverse-fg font-semibold",
 									!selected && "bg-surface-alt text-body",
 								)}>
 								{tag}
@@ -234,7 +234,7 @@ export function PartnerRegisterForm(): JSX.Element {
 								}}
 								className={cn(
 									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-neutral-900 font-semibold text-white",
+									selected && "bg-inverse text-inverse-fg font-semibold",
 									!selected && "bg-surface-alt text-body",
 								)}>
 								{interest}
@@ -287,7 +287,7 @@ export function PartnerRegisterForm(): JSX.Element {
 			</section>
 
 			<div className="flex flex-col gap-2.5">
-				<p className="bg-warning-100 text-warning-700 rounded-xl px-4 py-3 text-xs leading-relaxed">
+				<p className="bg-warning-500/15 text-warning-500 rounded-xl px-4 py-3 text-xs leading-relaxed">
 					파트너 활동은 공개 장소 데이트 동행만 포함해요. 신체 접촉·성적 서비스 제안은 금지되며,
 					위반 시 계정이 영구 제한되고 관련 법에 따라 신고될 수 있어요. 등록 후 관리자 승인을 거쳐
 					프로필이 공개돼요.

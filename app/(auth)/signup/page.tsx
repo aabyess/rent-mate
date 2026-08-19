@@ -40,7 +40,7 @@ export default function SignupPage(): JSX.Element {
 			<AuthHero />
 			<div className="bg-surface flex flex-col gap-4 rounded-3xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
 				<h1 className="text-lg font-bold">회원가입</h1>
-				<p className="bg-warning-100 text-warning-700 rounded-xl px-4 py-3 text-[13px] leading-relaxed">
+				<p className="bg-warning-500/15 text-warning-500 rounded-xl px-4 py-3 text-[13px] leading-relaxed">
 					RentMate는 만 19세 이상만 이용할 수 있는 서비스입니다. 가입 후 성인인증이 진행됩니다.
 				</p>
 				<form onSubmit={handleSubmit} className="flex flex-col gap-3">

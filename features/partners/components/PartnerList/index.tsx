@@ -112,7 +112,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 							}}
 							className={cn(
 								"h-9 shrink-0 rounded-full px-3.5 text-[13px]",
-								isActive && "bg-neutral-900 font-semibold text-white",
+								isActive && "bg-inverse text-inverse-fg font-semibold",
 								!isActive && "border-line bg-surface text-body border",
 							)}>
 							{filter}
