@@ -17,6 +17,7 @@ export type CreatePartnerProfileInput = {
 	hourlyRateKrw: number;
 	birthYear: number;
 	interests: string[];
+	availableWeekdays: number[];
 };
 
 export type PartnerListItem = {
@@ -27,5 +28,6 @@ export type PartnerListItem = {
 	photo_urls: string[];
 	birth_year: number | null;
 	interests: string[];
+	available_weekdays: number[];
 	created_at: string;
 };
