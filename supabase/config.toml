@@ -1,0 +1,11 @@
+# supabase/config.toml
+# 원격 Auth 설정 동기화용 (supabase config push).
+project_id = "rent-mate"
+
+[auth]
+site_url = "http://localhost:3000"
+
+[auth.email]
+enable_signup = true
+# 아이디 로그인이 합성 이메일을 쓰므로 인증 메일 확인은 비활성화한다
+enable_confirmations = false
