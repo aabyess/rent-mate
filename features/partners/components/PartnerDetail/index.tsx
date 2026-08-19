@@ -1,7 +1,6 @@
 // features/partners/components/PartnerDetail/index.tsx
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
@@ -9,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { PartnerDetailActionBar } from "@/features/partners/components/PartnerDetail/PartnerDetailActionBar";
 import { PartnerDetailAvailability } from "@/features/partners/components/PartnerDetail/PartnerDetailAvailability";
 import { PartnerDetailMenu } from "@/features/partners/components/PartnerDetail/PartnerDetailMenu";
+import { PartnerDetailPhotoCarousel } from "@/features/partners/components/PartnerDetail/PartnerDetailPhotoCarousel";
 import { PartnerDetailPricing } from "@/features/partners/components/PartnerDetail/PartnerDetailPricing";
 import { usePartnerDetailQuery } from "@/features/partners/queries";
 import { calculateAgeFromBirthYear } from "@/features/partners/utils";
@@ -122,21 +122,8 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 
 	return (
 		<div className="pb-32">
-			<div className="from-primary-100 via-primary-200 to-primary-300 relative flex h-[400px] items-end justify-center bg-gradient-to-br">
-				<svg width="230" height="230" viewBox="0 0 24 24" fill="#f26b4a" opacity="0.26">
-					<circle cx="12" cy="8.5" r="3.6" />
-					<path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7z" />
-				</svg>
-				{partner.photo_urls.length > 0 && (
-					<Image
-						src={partner.photo_urls[0]}
-						alt={`${partner.nickname} 프로필 사진`}
-						fill
-						sizes="448px"
-						priority
-						className="object-cover"
-					/>
-				)}
+			<div className="relative h-[400px] overflow-hidden">
+				<PartnerDetailPhotoCarousel photoUrls={partner.photo_urls} nickname={partner.nickname} />
 				<button
 					type="button"
 					onClick={handleBackClick}

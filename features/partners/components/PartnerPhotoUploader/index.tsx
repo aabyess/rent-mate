@@ -3,7 +3,8 @@
 
 import { useEffect, useMemo, type ChangeEvent, type JSX } from "react";
 
-export const MAX_PARTNER_PHOTOS = 3;
+export const MAX_PARTNER_PHOTOS = 9;
+export const MIN_PARTNER_PHOTOS = 3;
 
 type PartnerPhotoUploaderProps = {
 	photos: File[];
