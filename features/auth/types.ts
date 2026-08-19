@@ -9,6 +9,7 @@ export type MyProfile = {
 	phone: string | null;
 	phone_verified_at: string | null;
 	adult_verified_at: string | null;
+	birth_date: string | null;
 	created_at: string;
 };
 

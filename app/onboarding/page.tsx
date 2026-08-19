@@ -26,7 +26,7 @@ export default function OnboardingPage(): JSX.Element {
 		setIsUnderage(false);
 
 		createProfileMutation.mutate(
-			{ name },
+			{ name, birthDate },
 			{
 				onSuccess: function (): void {
 					router.replace("/");

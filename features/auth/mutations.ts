@@ -30,11 +30,7 @@ export function useSignOutMutation(): UseMutationResult<void, Error, void> {
 	});
 }
 
-export function useCreateProfileMutation(): UseMutationResult<
-	void,
-	Error,
-	Pick<CreateProfileInput, "name">
-> {
+export function useCreateProfileMutation(): UseMutationResult<void, Error, CreateProfileInput> {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: postCreateProfile,
