@@ -9,6 +9,8 @@ import { useMyBookingsQuery } from "@/features/bookings/queries";
 import type { BookingStatus, MyBookingItem } from "@/features/bookings/types";
 import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
+import { ReviewDialog } from "@/features/reviews/components/ReviewDialog";
+import { useMyReviewedBookingIdsQuery } from "@/features/reviews/queries";
 
 const NOW_MS = Date.now();
 
@@ -29,7 +31,9 @@ function isCancelable(booking: MyBookingItem): boolean {
 
 export function MyBookingList(): JSX.Element {
 	const { data: bookings, isPending, isError } = useMyBookingsQuery();
+	const { data: reviewedBookingIds } = useMyReviewedBookingIdsQuery();
 	const [cancelTarget, setCancelTarget] = useState<MyBookingItem | null>(null);
+	const [reviewTarget, setReviewTarget] = useState<MyBookingItem | null>(null);
 
 	if (isPending) {
 		return (
@@ -93,6 +97,17 @@ export function MyBookingList(): JSX.Element {
 									예약 취소
 								</button>
 							)}
+							{booking.status === "completed" &&
+								!(reviewedBookingIds ?? []).includes(booking.id) && (
+									<button
+										type="button"
+										onClick={function () {
+											setReviewTarget(booking);
+										}}
+										className="text-brand text-[13px] font-medium underline">
+										후기 작성
+									</button>
+								)}
 						</div>
 					</article>
 				);
@@ -102,6 +117,16 @@ export function MyBookingList(): JSX.Element {
 					booking={cancelTarget}
 					onClose={function () {
 						setCancelTarget(null);
+					}}
+				/>
+			)}
+			{reviewTarget && (
+				<ReviewDialog
+					bookingId={reviewTarget.id}
+					partnerId={reviewTarget.partner_id}
+					partnerName={reviewTarget.counterpartName}
+					onClose={function () {
+						setReviewTarget(null);
 					}}
 				/>
 			)}

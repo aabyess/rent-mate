@@ -10,6 +10,7 @@ import { PartnerDetailMenu } from "@/features/partners/components/PartnerDetail/
 import { PartnerDetailPricing } from "@/features/partners/components/PartnerDetail/PartnerDetailPricing";
 import { usePartnerDetailQuery } from "@/features/partners/queries";
 import { calculateAgeFromBirthYear } from "@/features/partners/utils";
+import { PartnerReviewList } from "@/features/reviews/components/PartnerReviewList";
 
 const DATE_COURSES = [
 	{
@@ -190,12 +191,7 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 					</div>
 				</section>
 
-				<section className="flex flex-col gap-3">
-					<h2 className="text-[17px] font-semibold">후기</h2>
-					<p className="bg-surface-alt text-sub rounded-2xl px-4 py-8 text-center text-sm">
-						아직 후기가 없어요. 첫 데이트 후 후기를 남겨보세요.
-					</p>
-				</section>
+				<PartnerReviewList partnerId={partner.profile_id} />
 			</div>
 
 			<PartnerDetailActionBar
