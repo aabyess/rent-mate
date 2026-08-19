@@ -5,6 +5,7 @@ export type ChatMessage = {
 	booking_id: string;
 	sender_id: string;
 	content: string;
+	flagged: boolean;
 	created_at: string;
 };
 
