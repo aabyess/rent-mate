@@ -11,19 +11,23 @@ type ReportDialogProps = {
 	onClose: () => void;
 	targetId: string;
 	targetNickname: string;
+	/** 신고 대상 맥락(예: 후기 ID) — 접수 사유 앞에 붙어 운영팀이 대상을 특정할 수 있게 한다 */
+	reasonContext?: string;
 };
 
 export function ReportDialog({
 	onClose,
 	targetId,
 	targetNickname,
+	reasonContext,
 }: ReportDialogProps): JSX.Element {
 	const createReportMutation = useCreateReportMutation();
 	const [reason, setReason] = useState("");
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
-		createReportMutation.mutate({ targetId, reason });
+		const finalReason = reasonContext ? `[${reasonContext}] ${reason}` : reason;
+		createReportMutation.mutate({ targetId, reason: finalReason });
 	}
 
 	return (

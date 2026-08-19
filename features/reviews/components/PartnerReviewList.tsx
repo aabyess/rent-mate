@@ -1,10 +1,11 @@
 // features/reviews/components/PartnerReviewList.tsx
 "use client";
 
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 import { ReviewStars } from "@/features/reviews/components/ReviewStars";
 import { usePartnerReviewsQuery } from "@/features/reviews/queries";
 import { calculateAverageRating, formatReviewDate } from "@/features/reviews/utils";
+import { ReportDialog } from "@/features/safety/components/ReportDialog";
 
 type PartnerReviewListProps = {
 	partnerId: string;
@@ -12,6 +13,9 @@ type PartnerReviewListProps = {
 
 export function PartnerReviewList({ partnerId }: PartnerReviewListProps): JSX.Element {
 	const { data: reviews, isPending, isError } = usePartnerReviewsQuery(partnerId);
+	const [reportTarget, setReportTarget] = useState<{ authorId: string; reviewId: string } | null>(
+		null,
+	);
 
 	if (isPending) {
 		return (
@@ -61,9 +65,19 @@ export function PartnerReviewList({ partnerId }: PartnerReviewListProps): JSX.El
 						<article key={review.id} className="bg-surface-alt flex flex-col gap-2 rounded-2xl p-4">
 							<div className="flex items-center justify-between">
 								<ReviewStars rating={review.rating} />
-								<span className="text-sub text-xs tabular-nums">
-									{formatReviewDate(review.created_at)}
-								</span>
+								<div className="flex items-center gap-2.5">
+									<span className="text-sub text-xs tabular-nums">
+										{formatReviewDate(review.created_at)}
+									</span>
+									<button
+										type="button"
+										onClick={function () {
+											setReportTarget({ authorId: review.author_id, reviewId: review.id });
+										}}
+										className="text-sub text-[11px] underline">
+										신고
+									</button>
+								</div>
 							</div>
 							{review.content !== "" && (
 								<p className="text-body text-sm leading-relaxed">{review.content}</p>
@@ -72,6 +86,16 @@ export function PartnerReviewList({ partnerId }: PartnerReviewListProps): JSX.El
 					);
 				})}
 			</div>
+			{reportTarget && (
+				<ReportDialog
+					onClose={function () {
+						setReportTarget(null);
+					}}
+					targetId={reportTarget.authorId}
+					targetNickname="후기 작성자"
+					reasonContext={`후기 신고 ${reportTarget.reviewId}`}
+				/>
+			)}
 		</section>
 	);
 }
