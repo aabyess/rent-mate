@@ -1,13 +1,18 @@
 // features/bookings/components/ReceivedBookingList/index.tsx
 "use client";
 
+import Link from "next/link";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useUpdateBookingStatusMutation } from "@/features/bookings/mutations";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
 import type { BookingStatus } from "@/features/bookings/types";
-import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
+import {
+	BOOKING_STATUS_LABELS,
+	formatBookingPeriod,
+	sumBookingAmountsKrw,
+} from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
 
 const STATUS_BADGE_VARIANTS: Record<BookingStatus, "warning" | "trust" | "neutral" | "error"> = {
@@ -44,12 +49,31 @@ export function ReceivedBookingList(): JSX.Element {
 		return <p className="text-sub py-16 text-center text-sm">아직 받은 예약 요청이 없어요.</p>;
 	}
 
+	const completed = received.filter(function (booking) {
+		return booking.status === "completed";
+	});
+	const totalEarningsKrw = sumBookingAmountsKrw(
+		completed.map(function (booking) {
+			return booking.total_amount_krw;
+		}),
+	);
+
 	function handleStatusUpdate(bookingId: string, status: BookingStatus): void {
 		updateStatusMutation.mutate({ bookingId, status });
 	}
 
 	return (
 		<div className="flex flex-col gap-3">
+			{completed.length > 0 && (
+				<div className="bg-secondary-50 flex items-center justify-between rounded-2xl px-4.5 py-4">
+					<span className="text-secondary-700 text-sm font-semibold">
+						완료된 데이트 {completed.length}건
+					</span>
+					<span className="text-secondary-700 text-base font-bold tabular-nums">
+						정산 예정 {formatKrw(totalEarningsKrw)}
+					</span>
+				</div>
+			)}
 			{received.map(function (booking) {
 				return (
 					<article
@@ -67,9 +91,18 @@ export function ReceivedBookingList(): JSX.Element {
 							</span>
 							<span>{booking.place}</span>
 						</div>
-						<span className="text-[15px] font-bold tabular-nums">
-							{formatKrw(booking.total_amount_krw)}
-						</span>
+						<div className="flex items-center justify-between">
+							<span className="text-[15px] font-bold tabular-nums">
+								{formatKrw(booking.total_amount_krw)}
+							</span>
+							{booking.status !== "canceled" && booking.status !== "rejected" && (
+								<Link
+									href={`/chats/${booking.id}`}
+									className="text-trust text-[13px] font-medium underline">
+									채팅
+								</Link>
+							)}
+						</div>
 						{booking.status === "requested" && (
 							<div className="flex gap-2">
 								<Button
