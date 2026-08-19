@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { PartnerDetailActionBar } from "@/features/partners/components/PartnerDetail/PartnerDetailActionBar";
+import { PartnerDetailAvailability } from "@/features/partners/components/PartnerDetail/PartnerDetailAvailability";
 import { PartnerDetailMenu } from "@/features/partners/components/PartnerDetail/PartnerDetailMenu";
 import { PartnerDetailPricing } from "@/features/partners/components/PartnerDetail/PartnerDetailPricing";
 import { usePartnerDetailQuery } from "@/features/partners/queries";
@@ -174,6 +175,8 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 				</section>
 
 				<PartnerDetailPricing hourlyRateKrw={partner.hourly_rate_krw} />
+
+				<PartnerDetailAvailability availableWeekdays={partner.available_weekdays} />
 
 				<section className="flex flex-col gap-3">
 					<div className="flex items-center gap-2">

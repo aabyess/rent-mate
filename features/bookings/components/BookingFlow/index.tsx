@@ -203,6 +203,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 				{step === 1 && (
 					<BookingFlowStepSchedule
 						baseDate={BASE_DATE}
+						availableWeekdays={partner.available_weekdays}
 						schedule={schedule}
 						viewYear={viewYear}
 						viewMonth={viewMonth}
