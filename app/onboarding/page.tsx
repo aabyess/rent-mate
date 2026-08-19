@@ -40,7 +40,7 @@ export default function OnboardingPage(): JSX.Element {
 			{ name, birthDate, gender },
 			{
 				onSuccess: function (): void {
-					router.replace("/");
+					router.replace("/intro");
 					router.refresh();
 				},
 			},
