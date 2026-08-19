@@ -79,6 +79,9 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 						partner.region.toLowerCase().includes(normalizedQuery) ||
 						partner.interests.some(function (interest) {
 							return interest.toLowerCase().includes(normalizedQuery);
+						}) ||
+						partner.purpose_tags.some(function (tag) {
+							return tag.toLowerCase().includes(normalizedQuery);
 						})
 					);
 				});

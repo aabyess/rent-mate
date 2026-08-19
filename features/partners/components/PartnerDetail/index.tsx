@@ -172,6 +172,19 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 						{partner.region}
 					</span>
 					<p className="text-[15px] leading-relaxed">{partner.bio}</p>
+					{partner.purpose_tags.length > 0 && (
+						<div className="flex flex-wrap gap-2">
+							{partner.purpose_tags.map(function (tag) {
+								return (
+									<span
+										key={tag}
+										className="bg-brand-subtle text-primary-700 rounded-full px-3 py-1.5 text-[13px] font-medium">
+										{tag}
+									</span>
+								);
+							})}
+						</div>
+					)}
 					{partner.interests.length > 0 && (
 						<div className="flex flex-wrap gap-2">
 							{partner.interests.map(function (interest) {

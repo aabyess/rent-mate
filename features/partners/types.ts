@@ -20,6 +20,7 @@ export type CreatePartnerProfileInput = {
 	availableWeekdays: number[];
 	photos: File[];
 	region: string;
+	purposeTags: string[];
 };
 
 export type PartnerListItem = {
@@ -32,5 +33,6 @@ export type PartnerListItem = {
 	interests: string[];
 	available_weekdays: number[];
 	region: string;
+	purpose_tags: string[];
 	created_at: string;
 };
