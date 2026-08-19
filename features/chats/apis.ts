@@ -6,7 +6,7 @@ export async function getChatMessages(bookingId: string): Promise<ChatMessage[]>
 	const supabase = createClient();
 	const { data, error } = await supabase
 		.from("chat_messages")
-		.select("id, booking_id, sender_id, content, created_at")
+		.select("id, booking_id, sender_id, content, flagged, created_at")
 		.eq("booking_id", bookingId)
 		.order("created_at", { ascending: true });
 	if (error) {
