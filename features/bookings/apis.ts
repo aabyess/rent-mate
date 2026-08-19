@@ -30,6 +30,36 @@ export async function postCreateBooking({
 	}
 }
 
+export async function getBookingDetail(bookingId: string): Promise<MyBookingItem | null> {
+	const supabase = createClient();
+	const { data, error } = await supabase
+		.from("bookings")
+		.select("id, partner_id, starts_at, ends_at, place, status, total_amount_krw, created_at")
+		.eq("id", bookingId)
+		.maybeSingle();
+	if (error) {
+		throw error;
+	}
+	if (!data) {
+		return null;
+	}
+	const booking = data as BookingRow;
+
+	const { data: partner, error: partnerError } = await supabase
+		.from("partner_profiles")
+		.select("nickname")
+		.eq("profile_id", booking.partner_id)
+		.maybeSingle();
+	if (partnerError) {
+		throw partnerError;
+	}
+
+	return {
+		...booking,
+		partnerNickname: (partner as { nickname: string } | null)?.nickname ?? "알 수 없음",
+	};
+}
+
 export async function getMyBookings(): Promise<MyBookingItem[]> {
 	const supabase = createClient();
 	const {
