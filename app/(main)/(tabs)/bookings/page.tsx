@@ -1,11 +1,12 @@
-// app/(main)/bookings/page.tsx
+// app/(main)/(tabs)/bookings/page.tsx
 import type { JSX } from "react";
+import { MyBookingList } from "@/features/bookings/components/MyBookingList";
 
 export default function BookingsPage(): JSX.Element {
 	return (
 		<main className="flex flex-col gap-4 px-5 py-4">
-			<h1 className="text-xl font-semibold">예약</h1>
-			<p className="text-sub py-16 text-center text-sm">예약 기능 준비 중입니다.</p>
+			<h1 className="text-[28px] font-bold">예약</h1>
+			<MyBookingList />
 		</main>
 	);
 }

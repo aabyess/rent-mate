@@ -1,13 +1,16 @@
 // features/partners/components/PartnerDetail/PartnerDetailActionBar.tsx
+import Link from "next/link";
 import type { JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { formatKrw } from "@/features/partners/utils";
 
 type PartnerDetailActionBarProps = {
+	profileId: string;
 	hourlyRateKrw: number;
 };
 
 export function PartnerDetailActionBar({
+	profileId,
 	hourlyRateKrw,
 }: PartnerDetailActionBarProps): JSX.Element {
 	return (
@@ -20,9 +23,11 @@ export function PartnerDetailActionBar({
 				<Button variant="outline" size="lg" disabled className="text-trust">
 					채팅 문의
 				</Button>
-				<Button size="lg" disabled className="px-8">
-					예약하기
-				</Button>
+				<Link href={`/partners/${profileId}/book`}>
+					<Button size="lg" className="px-8">
+						예약하기
+					</Button>
+				</Link>
 			</div>
 		</div>
 	);

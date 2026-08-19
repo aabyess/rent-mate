@@ -198,7 +198,10 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 				</section>
 			</div>
 
-			<PartnerDetailActionBar hourlyRateKrw={partner.hourly_rate_krw} />
+			<PartnerDetailActionBar
+				profileId={partner.profile_id}
+				hourlyRateKrw={partner.hourly_rate_krw}
+			/>
 		</div>
 	);
 }
