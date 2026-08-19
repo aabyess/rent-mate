@@ -1,4 +1,4 @@
-// features/partners/components/PartnerRegisterForm/index.tsx
+// features/partners/components/PartnerEditForm/PartnerEditFormFields.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -7,41 +7,35 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PURPOSE_TAGS } from "@/constants/purposeTags";
 import { REGIONS } from "@/constants/regions";
+import { PartnerPhotoManager } from "@/features/partners/components/PartnerPhotoManager";
 import {
+	MAX_PARTNER_PHOTOS,
 	MIN_PARTNER_PHOTOS,
-	PartnerPhotoUploader,
 } from "@/features/partners/components/PartnerPhotoUploader";
-import { useCreatePartnerProfileMutation } from "@/features/partners/mutations";
+import { usePatchPartnerProfileMutation } from "@/features/partners/mutations";
+import type { MyPartnerProfile } from "@/features/partners/types";
 import { INTEREST_OPTIONS, MIN_HOURLY_RATE_KRW, WEEKDAY_OPTIONS } from "@/features/partners/utils";
 import { cn } from "@/utils/cn";
 
-export function PartnerRegisterForm(): JSX.Element {
+type PartnerEditFormFieldsProps = {
+	profile: MyPartnerProfile;
+};
+
+// 부모(PartnerEditForm)가 profile.profile_id를 key로 마운트하므로,
+// 여기서는 로드된 profile 값을 useState 초기값으로 그대로 써도 안전하다 (effect로 동기화할 필요 없음)
+export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): JSX.Element {
 	const router = useRouter();
-	const createPartnerProfileMutation = useCreatePartnerProfileMutation();
+	const patchPartnerProfileMutation = usePatchPartnerProfileMutation();
 
-	const [nickname, setNickname] = useState("");
-	const [birthYear, setBirthYear] = useState("");
-	const [bio, setBio] = useState("");
-	const [hourlyRate, setHourlyRate] = useState("30000");
-	const [interests, setInterests] = useState<string[]>([]);
-	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
-	const [photos, setPhotos] = useState<File[]>([]);
-	const [region, setRegion] = useState<string | null>(null);
-	const [purposeTags, setPurposeTags] = useState<string[]>([]);
-
-	function handlePurposeTagToggle(tag: string): void {
-		setPurposeTags(function (current) {
-			if (current.includes(tag)) {
-				return current.filter(function (item) {
-					return item !== tag;
-				});
-			}
-			if (current.length >= 2) {
-				return current;
-			}
-			return [...current, tag];
-		});
-	}
+	const [nickname, setNickname] = useState(profile.nickname);
+	const [bio, setBio] = useState(profile.bio);
+	const [hourlyRate, setHourlyRate] = useState(String(profile.hourly_rate_krw));
+	const [interests, setInterests] = useState<string[]>(profile.interests);
+	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>(profile.available_weekdays);
+	const [region, setRegion] = useState<string | null>(profile.region);
+	const [purposeTags, setPurposeTags] = useState<string[]>(profile.purpose_tags);
+	const [existingPhotoUrls, setExistingPhotoUrls] = useState<string[]>(profile.photo_urls);
+	const [newPhotos, setNewPhotos] = useState<File[]>([]);
 
 	function handleWeekdayToggle(weekday: number): void {
 		setAvailableWeekdays(function (current) {
@@ -68,19 +62,33 @@ export function PartnerRegisterForm(): JSX.Element {
 		});
 	}
 
+	function handlePurposeTagToggle(tag: string): void {
+		setPurposeTags(function (current) {
+			if (current.includes(tag)) {
+				return current.filter(function (item) {
+					return item !== tag;
+				});
+			}
+			if (current.length >= 2) {
+				return current;
+			}
+			return [...current, tag];
+		});
+	}
+
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
-		createPartnerProfileMutation.mutate(
+		patchPartnerProfileMutation.mutate(
 			{
 				nickname: nickname.trim(),
 				bio: bio.trim(),
 				hourlyRateKrw: Number(hourlyRate),
-				birthYear: Number(birthYear),
 				interests,
 				availableWeekdays,
-				photos,
 				region: region ?? "",
 				purposeTags,
+				existingPhotoUrls,
+				newPhotos,
 			},
 			{
 				onSuccess: function (): void {
@@ -91,16 +99,17 @@ export function PartnerRegisterForm(): JSX.Element {
 		);
 	}
 
+	const totalPhotoCount = existingPhotoUrls.length + newPhotos.length;
+
 	const isValid =
 		nickname.trim().length >= 2 &&
 		bio.trim().length >= 10 &&
-		Number(birthYear) >= 1950 &&
-		Number(birthYear) <= 2007 &&
 		Number(hourlyRate) >= MIN_HOURLY_RATE_KRW &&
 		interests.length > 0 &&
 		availableWeekdays.length > 0 &&
 		region !== null &&
-		photos.length >= MIN_PARTNER_PHOTOS;
+		totalPhotoCount >= MIN_PARTNER_PHOTOS &&
+		totalPhotoCount <= MAX_PARTNER_PHOTOS;
 
 	return (
 		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -114,7 +123,6 @@ export function PartnerRegisterForm(): JSX.Element {
 					onChange={function (event) {
 						setNickname(event.target.value);
 					}}
-					placeholder="프로필에 표시될 닉네임 (2자 이상)"
 					required
 					minLength={2}
 					maxLength={12}
@@ -122,23 +130,9 @@ export function PartnerRegisterForm(): JSX.Element {
 			</section>
 
 			<section className="flex flex-col gap-2">
-				<label htmlFor="birthYear" className="text-sm font-medium">
-					출생 연도
-				</label>
-				<Input
-					id="birthYear"
-					type="number"
-					value={birthYear}
-					onChange={function (event) {
-						setBirthYear(event.target.value);
-					}}
-					placeholder="예: 1999"
-					required
-					min={1950}
-					max={2007}
-				/>
-				<p className="text-sub text-xs">
-					프로필에는 나이로 표시돼요. 만 19세 이상만 활동할 수 있어요.
+				<span className="text-sm font-medium">출생 연도</span>
+				<p className="bg-surface-alt text-sub rounded-xl px-4 py-3 text-sm">
+					{profile.birth_year}년생 (수정 불가)
 				</p>
 			</section>
 
@@ -152,7 +146,6 @@ export function PartnerRegisterForm(): JSX.Element {
 					onChange={function (event) {
 						setBio(event.target.value);
 					}}
-					placeholder="어떤 데이트를 좋아하는지 알려주세요 (10자 이상)"
 					required
 					minLength={10}
 					maxLength={300}
@@ -162,11 +155,14 @@ export function PartnerRegisterForm(): JSX.Element {
 			</section>
 
 			<section className="flex flex-col gap-2">
-				<span className="text-sm font-medium">프로필 사진 (3~9장 필수)</span>
-				<PartnerPhotoUploader photos={photos} onPhotosChange={setPhotos} />
-				<p className="text-sub text-xs">
-					최소 3장을 올려야 등록할 수 있어요. 첫 번째 사진이 대표 사진이에요.
-				</p>
+				<span className="text-sm font-medium">프로필 사진 (3~9장)</span>
+				<PartnerPhotoManager
+					existingUrls={existingPhotoUrls}
+					onExistingUrlsChange={setExistingPhotoUrls}
+					newPhotos={newPhotos}
+					onNewPhotosChange={setNewPhotos}
+				/>
+				<p className="text-sub text-xs">최소 3장을 유지해야 저장할 수 있어요.</p>
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -215,9 +211,6 @@ export function PartnerRegisterForm(): JSX.Element {
 						);
 					})}
 				</div>
-				<p className="text-sub text-xs">
-					어떤 목적의 만남에 어울리는지 알려주면 매칭에 도움이 돼요.
-				</p>
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -266,7 +259,6 @@ export function PartnerRegisterForm(): JSX.Element {
 						);
 					})}
 				</div>
-				<p className="text-sub text-xs">선택한 요일에만 예약을 받을 수 있어요.</p>
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -287,20 +279,21 @@ export function PartnerRegisterForm(): JSX.Element {
 			</section>
 
 			<div className="flex flex-col gap-2.5">
-				<p className="bg-warning-100 text-warning-700 rounded-xl px-4 py-3 text-xs leading-relaxed">
-					파트너 활동은 공개 장소 데이트 동행만 포함해요. 신체 접촉·성적 서비스 제안은 금지되며,
-					위반 시 계정이 영구 제한되고 관련 법에 따라 신고될 수 있어요. 등록 후 관리자 승인을 거쳐
-					프로필이 공개돼요.
-				</p>
-				{createPartnerProfileMutation.isError && (
-					<p className="text-error-500 text-sm">{createPartnerProfileMutation.error.message}</p>
+				{profile.is_approved && (
+					<p className="bg-warning-100 text-warning-700 rounded-xl px-4 py-3 text-xs leading-relaxed">
+						수정 사항은 저장 즉시 반영돼요. 부적절한 내용으로 변경하면 관리자 검토 후 활동이 제한될
+						수 있어요.
+					</p>
+				)}
+				{patchPartnerProfileMutation.isError && (
+					<p className="text-error-500 text-sm">{patchPartnerProfileMutation.error.message}</p>
 				)}
 				<Button
 					type="submit"
 					size="lg"
 					fullWidth
-					disabled={!isValid || createPartnerProfileMutation.isPending}>
-					{createPartnerProfileMutation.isPending ? "등록 중..." : "파트너 프로필 등록"}
+					disabled={!isValid || patchPartnerProfileMutation.isPending}>
+					{patchPartnerProfileMutation.isPending ? "저장 중..." : "변경사항 저장"}
 				</Button>
 			</div>
 		</form>

@@ -75,11 +75,11 @@ export function MyPageContent(): JSX.Element {
 	let partnerBannerDescription = "프로필 등록 후 관리자 승인을 거쳐요";
 	if (myPartnerProfile && !myPartnerProfile.is_approved) {
 		partnerBannerTitle = `승인 대기 중 · ${myPartnerProfile.nickname}`;
-		partnerBannerDescription = "관리자 승인 후 프로필이 공개돼요";
+		partnerBannerDescription = "승인 대기 중에도 프로필·요금·사진을 수정할 수 있어요";
 	}
 	if (myPartnerProfile && myPartnerProfile.is_approved) {
 		partnerBannerTitle = `파트너 활동 중 · ${myPartnerProfile.nickname}`;
-		partnerBannerDescription = "받은 예약 요청은 예약 탭에서 확인해요";
+		partnerBannerDescription = "프로필·요금·사진은 여기서 수정해요";
 	}
 
 	return (
@@ -172,7 +172,7 @@ export function MyPageContent(): JSX.Element {
 			/>
 
 			<Link
-				href={myPartnerProfile ? "/bookings" : "/partner/register"}
+				href={myPartnerProfile ? "/partner/edit" : "/partner/register"}
 				className="bg-secondary-50 flex items-center gap-3 rounded-2xl px-4.5 py-4">
 				<svg
 					width="22"

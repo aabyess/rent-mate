@@ -23,6 +23,18 @@ export type CreatePartnerProfileInput = {
 	purposeTags: string[];
 };
 
+export type PatchPartnerProfileInput = {
+	nickname: string;
+	bio: string;
+	hourlyRateKrw: number;
+	interests: string[];
+	availableWeekdays: number[];
+	region: string;
+	purposeTags: string[];
+	existingPhotoUrls: string[];
+	newPhotos: File[];
+};
+
 export type PartnerListItem = {
 	profile_id: string;
 	nickname: string;
