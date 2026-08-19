@@ -1,4 +1,5 @@
 // features/partners/components/PartnerList/PartnerListCard.tsx
+import Image from "next/image";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import type { PartnerCardItem } from "@/features/partners/types";
@@ -28,6 +29,15 @@ export function PartnerListCard({ partner, index }: PartnerListCardProps): JSX.E
 					<circle cx="12" cy="8.5" r="3.6" />
 					<path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7z" />
 				</svg>
+				{partner.photo_urls.length > 0 && (
+					<Image
+						src={partner.photo_urls[0]}
+						alt={`${partner.nickname} 프로필 사진`}
+						fill
+						sizes="(max-width: 448px) 50vw, 224px"
+						className="object-cover"
+					/>
+				)}
 				{partner.isNew && (
 					<Badge variant="accent" className="absolute top-2.5 left-2.5 font-bold">
 						NEW
