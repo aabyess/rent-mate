@@ -54,7 +54,7 @@ export function ChatRoomList(): JSX.Element {
 							</svg>
 						</div>
 						<div className="flex min-w-0 flex-col gap-0.5">
-							<span className="text-[15px] font-semibold">{booking.partnerNickname}</span>
+							<span className="text-[15px] font-semibold">{booking.counterpartName}</span>
 							<span className="text-sub truncate text-xs tabular-nums">
 								{formatBookingPeriod(booking.starts_at, booking.ends_at)}
 							</span>

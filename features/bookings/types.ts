@@ -12,6 +12,7 @@ export type CreateBookingInput = {
 
 export type BookingRow = {
 	id: string;
+	customer_id: string;
 	partner_id: string;
 	starts_at: string;
 	ends_at: string;
@@ -22,7 +23,9 @@ export type BookingRow = {
 };
 
 export type MyBookingItem = BookingRow & {
-	partnerNickname: string;
+	isReceived: boolean;
+	counterpartId: string;
+	counterpartName: string;
 };
 
 export type BookingSchedule = {

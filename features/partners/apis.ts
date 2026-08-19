@@ -1,6 +1,63 @@
 // features/partners/apis.ts
-import type { PartnerDetailItem, PartnerListItem } from "@/features/partners/types";
+import type {
+	CreatePartnerProfileInput,
+	MyPartnerProfile,
+	PartnerDetailItem,
+	PartnerListItem,
+} from "@/features/partners/types";
 import { createClient } from "@/libs/supabase/client";
+
+export async function getMyPartnerProfile(): Promise<MyPartnerProfile | null> {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		return null;
+	}
+
+	const { data, error } = await supabase
+		.from("partner_profiles")
+		.select(
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, created_at, is_approved, is_active",
+		)
+		.eq("profile_id", user.id)
+		.maybeSingle();
+	if (error) {
+		throw error;
+	}
+	return (data ?? null) as MyPartnerProfile | null;
+}
+
+export async function postCreatePartnerProfile({
+	nickname,
+	bio,
+	hourlyRateKrw,
+	birthYear,
+	interests,
+}: CreatePartnerProfileInput): Promise<void> {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		throw new Error("로그인이 필요합니다.");
+	}
+
+	// TODO: admin 승인 화면이 생기면 is_approved를 false로 되돌리고 승인제로 전환한다 (개발 단계 자동 승인)
+	const { error } = await supabase.from("partner_profiles").insert({
+		profile_id: user.id,
+		nickname,
+		bio,
+		hourly_rate_krw: hourlyRateKrw,
+		birth_year: birthYear,
+		interests,
+		is_approved: true,
+	});
+	if (error) {
+		throw error;
+	}
+}
 
 export async function getPartnerList(): Promise<PartnerListItem[]> {
 	const supabase = createClient();

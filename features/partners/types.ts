@@ -6,6 +6,19 @@ export type PartnerCardItem = PartnerListItem & {
 
 export type PartnerDetailItem = PartnerListItem;
 
+export type MyPartnerProfile = PartnerListItem & {
+	is_approved: boolean;
+	is_active: boolean;
+};
+
+export type CreatePartnerProfileInput = {
+	nickname: string;
+	bio: string;
+	hourlyRateKrw: number;
+	birthYear: number;
+	interests: string[];
+};
+
 export type PartnerListItem = {
 	profile_id: string;
 	nickname: string;
