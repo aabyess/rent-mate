@@ -103,6 +103,13 @@
 	--color-trust: var(--trust);
 }
 
+@utility scrollbar-none {
+	scrollbar-width: none;
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
 body {
 	background: var(--bg);
 	color: var(--text-token);
