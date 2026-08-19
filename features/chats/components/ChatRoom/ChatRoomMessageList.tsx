@@ -15,11 +15,13 @@ function formatMessageTime(createdAt: string): string {
 type ChatRoomMessageListProps = {
 	messages: ChatMessage[];
 	myProfileId: string;
+	onReportClick: () => void;
 };
 
 export function ChatRoomMessageList({
 	messages,
 	myProfileId,
+	onReportClick,
 }: ChatRoomMessageListProps): JSX.Element {
 	const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -45,18 +47,33 @@ export function ChatRoomMessageList({
 				return (
 					<div
 						key={message.id}
-						className={cn("flex items-end gap-1.5", isMine && "flex-row-reverse")}>
-						<p
-							className={cn(
-								"max-w-[75%] rounded-2xl px-3.5 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap",
-								isMine && "bg-brand text-white",
-								!isMine && "bg-surface-alt text-body",
-							)}>
-							{message.content}
-						</p>
-						<span className="text-[11px] text-neutral-400 tabular-nums">
-							{formatMessageTime(message.created_at)}
-						</span>
+						className={cn("flex flex-col gap-1", isMine ? "items-end" : "items-start")}>
+						<div className={cn("flex items-end gap-1.5", isMine && "flex-row-reverse")}>
+							<p
+								className={cn(
+									"max-w-[75%] rounded-2xl px-3.5 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap",
+									isMine && "bg-brand text-white",
+									!isMine && "bg-surface-alt text-body",
+								)}>
+								{message.content}
+							</p>
+							<span className="text-[11px] text-neutral-400 tabular-nums">
+								{formatMessageTime(message.created_at)}
+							</span>
+						</div>
+						{message.flagged && (
+							<span className="text-warning-700 flex items-center gap-1.5 text-[11px]">
+								금지 행위가 의심되는 메시지예요
+								{!isMine && (
+									<button
+										type="button"
+										onClick={onReportClick}
+										className="text-error-500 font-medium underline">
+										신고하기
+									</button>
+								)}
+							</span>
+						)}
 					</div>
 				);
 			})}
