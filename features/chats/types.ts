@@ -13,3 +13,14 @@ export type SendChatMessageInput = {
 	bookingId: string;
 	content: string;
 };
+
+export type ChatLastMessage = {
+	content: string;
+	sender_id: string;
+	created_at: string;
+};
+
+export type ChatRoomSummary = {
+	lastMessage: ChatLastMessage | null;
+	unreadCount: number;
+};

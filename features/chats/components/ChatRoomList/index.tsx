@@ -6,11 +6,31 @@ import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
 import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
+import { useChatRoomSummariesQuery } from "@/features/chats/queries";
+import { formatChatListTime } from "@/features/chats/utils";
 import { useMyBlocksQuery } from "@/features/safety/queries";
 
 export function ChatRoomList(): JSX.Element {
 	const { data: bookings, isPending, isError } = useMyBookingsQuery();
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
+
+	const blockedIds = new Set(
+		(blocks ?? []).map(function (block) {
+			return block.blocked_id;
+		}),
+	);
+	const rooms = (bookings ?? []).filter(function (booking) {
+		return (
+			booking.status !== "canceled" &&
+			booking.status !== "rejected" &&
+			!blockedIds.has(booking.counterpartId)
+		);
+	});
+	const summariesQuery = useChatRoomSummariesQuery(
+		rooms.map(function (room) {
+			return room.id;
+		}),
+	);
 
 	if (isPending || isBlocksPending) {
 		return (
@@ -26,17 +46,11 @@ export function ChatRoomList(): JSX.Element {
 		return <p className="text-sub py-16 text-center text-sm">채팅 목록을 불러오지 못했어요.</p>;
 	}
 
-	const blockedIds = new Set(
-		(blocks ?? []).map(function (block) {
-			return block.blocked_id;
-		}),
-	);
-	const rooms = bookings.filter(function (booking) {
-		return (
-			booking.status !== "canceled" &&
-			booking.status !== "rejected" &&
-			!blockedIds.has(booking.counterpartId)
-		);
+	const summaries = summariesQuery.data ?? {};
+	const sortedRooms = [...rooms].sort(function (a, b) {
+		const aTime = summaries[a.id]?.lastMessage?.created_at ?? a.created_at;
+		const bTime = summaries[b.id]?.lastMessage?.created_at ?? b.created_at;
+		return new Date(bTime).getTime() - new Date(aTime).getTime();
 	});
 
 	if (rooms.length === 0) {
@@ -52,7 +66,7 @@ export function ChatRoomList(): JSX.Element {
 
 	return (
 		<div className="flex flex-col gap-2.5">
-			{rooms.map(function (booking) {
+			{sortedRooms.map(function (booking) {
 				return (
 					<Link
 						key={booking.id}
@@ -64,17 +78,32 @@ export function ChatRoomList(): JSX.Element {
 								<path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7z" />
 							</svg>
 						</div>
-						<div className="flex min-w-0 flex-col gap-0.5">
-							<span className="text-[15px] font-semibold">{booking.counterpartName}</span>
-							<span className="text-sub truncate text-xs tabular-nums">
-								{formatBookingPeriod(booking.starts_at, booking.ends_at)}
+						<div className="flex min-w-0 grow flex-col gap-0.5">
+							<div className="flex items-center gap-2">
+								<span className="text-[15px] font-semibold">{booking.counterpartName}</span>
+								<Badge
+									variant={booking.status === "accepted" ? "trust" : "neutral"}
+									className="shrink-0">
+									{BOOKING_STATUS_LABELS[booking.status]}
+								</Badge>
+							</div>
+							<span className="text-sub truncate text-[13px]">
+								{summaries[booking.id]?.lastMessage?.content ??
+									formatBookingPeriod(booking.starts_at, booking.ends_at)}
 							</span>
 						</div>
-						<Badge
-							variant={booking.status === "accepted" ? "trust" : "neutral"}
-							className="ml-auto shrink-0">
-							{BOOKING_STATUS_LABELS[booking.status]}
-						</Badge>
+						<div className="ml-auto flex shrink-0 flex-col items-end gap-1">
+							{summaries[booking.id]?.lastMessage && (
+								<span className="text-xs text-neutral-400 tabular-nums">
+									{formatChatListTime(summaries[booking.id].lastMessage!.created_at)}
+								</span>
+							)}
+							{(summaries[booking.id]?.unreadCount ?? 0) > 0 && (
+								<span className="bg-brand flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold text-white tabular-nums">
+									{summaries[booking.id].unreadCount}
+								</span>
+							)}
+						</div>
 					</Link>
 				);
 			})}

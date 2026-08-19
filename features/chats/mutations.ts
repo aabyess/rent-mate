@@ -2,7 +2,7 @@
 "use client";
 
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
-import { postChatMessage } from "@/features/chats/apis";
+import { postChatMessage, postMarkChatRead } from "@/features/chats/apis";
 import { CHATS_QUERY_KEYS } from "@/features/chats/queries";
 import type { SendChatMessageInput } from "@/features/chats/types";
 
@@ -15,6 +15,16 @@ export function useSendChatMessageMutation(
 		async onSuccess(): Promise<void> {
 			// Realtime 구독이 놓친 경우를 대비한 동기화
 			await queryClient.invalidateQueries({ queryKey: CHATS_QUERY_KEYS.messages(bookingId) });
+		},
+	});
+}
+
+export function useMarkChatReadMutation(): UseMutationResult<void, Error, string> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: postMarkChatRead,
+		async onSuccess(): Promise<void> {
+			await queryClient.invalidateQueries({ queryKey: CHATS_QUERY_KEYS.roomSummariesRoot });
 		},
 	});
 }
