@@ -4,7 +4,7 @@ import type { JSX } from "react";
 
 export default function NotFoundPage(): JSX.Element {
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-center gap-5 px-6 text-center">
+		<main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-5 px-6 text-center">
 			<span className="text-brand text-[44px] font-bold tracking-tight tabular-nums">404</span>
 			<div className="flex flex-col gap-1.5">
 				<h1 className="text-xl font-bold">페이지를 찾을 수 없어요</h1>

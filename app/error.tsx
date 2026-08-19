@@ -3,7 +3,8 @@
 
 import Link from "next/link";
 import { useEffect, type JSX } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonVariants } from "@/components/ui/Button";
+import { cn } from "@/utils/cn";
 
 type ErrorPageProps = {
 	error: Error & { digest?: string };
@@ -19,7 +20,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps): JSX.Element
 	);
 
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-center gap-5 px-6 text-center">
+		<main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-5 px-6 text-center">
 			<svg
 				width="44"
 				height="44"
@@ -43,9 +44,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps): JSX.Element
 			</div>
 			<div className="flex gap-2.5">
 				<Button onClick={reset}>다시 시도</Button>
-				<Link
-					href="/"
-					className="border-line bg-surface text-body hover:bg-surface-alt flex h-12 items-center justify-center rounded-xl border px-5 font-medium transition-colors">
+				<Link href="/" className={cn(buttonVariants({ variant: "outline", size: "md" }))}>
 					홈으로
 				</Link>
 			</div>
