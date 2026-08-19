@@ -13,12 +13,12 @@ export type MyProfile = {
 };
 
 export type SignUpInput = {
-	email: string;
+	username: string;
 	password: string;
 };
 
 export type SignInInput = {
-	email: string;
+	username: string;
 	password: string;
 };
 

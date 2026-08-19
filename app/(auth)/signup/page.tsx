@@ -2,32 +2,35 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useSignUpMutation } from "@/features/auth/mutations";
+import { isValidUsername } from "@/features/auth/utils";
 
 export default function SignupPage(): JSX.Element {
+	const router = useRouter();
 	const signUpMutation = useSignUpMutation();
-	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [isUsernameInvalid, setIsUsernameInvalid] = useState(false);
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
-		signUpMutation.mutate({ email, password });
-	}
-
-	if (signUpMutation.isSuccess) {
-		return (
-			<div className="flex flex-col gap-4">
-				<h1 className="text-2xl font-bold">이메일을 확인해주세요</h1>
-				<p className="text-sub">
-					{email} 주소로 인증 메일을 보냈습니다. 메일의 링크를 눌러 가입을 완료한 뒤 로그인해주세요.
-				</p>
-				<Link href="/login" className="text-brand font-medium underline">
-					로그인으로 이동
-				</Link>
-			</div>
+		if (!isValidUsername(username)) {
+			setIsUsernameInvalid(true);
+			return;
+		}
+		setIsUsernameInvalid(false);
+		signUpMutation.mutate(
+			{ username, password },
+			{
+				onSuccess: function (): void {
+					router.replace("/");
+					router.refresh();
+				},
+			},
 		);
 	}
 
@@ -42,13 +45,16 @@ export default function SignupPage(): JSX.Element {
 			</p>
 			<form onSubmit={handleSubmit} className="flex flex-col gap-3">
 				<Input
-					type="email"
-					value={email}
+					type="text"
+					value={username}
 					onChange={function (event) {
-						setEmail(event.target.value);
+						setUsername(event.target.value.toLowerCase());
 					}}
-					placeholder="이메일"
+					placeholder="아이디 (영문 소문자·숫자 4~20자)"
+					autoComplete="username"
 					required
+					minLength={4}
+					maxLength={20}
 				/>
 				<Input
 					type="password"
@@ -57,11 +63,19 @@ export default function SignupPage(): JSX.Element {
 						setPassword(event.target.value);
 					}}
 					placeholder="비밀번호 (6자 이상)"
+					autoComplete="new-password"
 					required
 					minLength={6}
 				/>
+				{isUsernameInvalid && (
+					<p className="text-error-500 text-sm">
+						아이디는 영문 소문자·숫자 조합 4~20자로 입력해주세요.
+					</p>
+				)}
 				{signUpMutation.isError && (
-					<p className="text-error-500 text-sm">{signUpMutation.error.message}</p>
+					<p className="text-error-500 text-sm">
+						가입에 실패했어요. 이미 사용 중인 아이디일 수 있어요.
+					</p>
 				)}
 				<Button type="submit" fullWidth disabled={signUpMutation.isPending}>
 					{signUpMutation.isPending ? "가입 중..." : "회원가입"}
