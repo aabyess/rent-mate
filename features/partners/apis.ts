@@ -44,7 +44,6 @@ export async function postCreatePartnerProfile({
 		throw new Error("로그인이 필요합니다.");
 	}
 
-	// TODO: admin 승인 화면이 생기면 is_approved를 false로 되돌리고 승인제로 전환한다 (개발 단계 자동 승인)
 	const { error } = await supabase.from("partner_profiles").insert({
 		profile_id: user.id,
 		nickname,
@@ -52,7 +51,6 @@ export async function postCreatePartnerProfile({
 		hourly_rate_krw: hourlyRateKrw,
 		birth_year: birthYear,
 		interests,
-		is_approved: true,
 	});
 	if (error) {
 		throw error;

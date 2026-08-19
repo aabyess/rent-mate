@@ -71,6 +71,17 @@ export function MyPageContent(): JSX.Element {
 		? Math.ceil((new Date(upcomingBooking.starts_at).getTime() - NOW_MS) / DAY_MS)
 		: 0;
 
+	let partnerBannerTitle = "파트너로 활동하기";
+	let partnerBannerDescription = "프로필 등록 후 관리자 승인을 거쳐요";
+	if (myPartnerProfile && !myPartnerProfile.is_approved) {
+		partnerBannerTitle = `승인 대기 중 · ${myPartnerProfile.nickname}`;
+		partnerBannerDescription = "관리자 승인 후 프로필이 공개돼요";
+	}
+	if (myPartnerProfile && myPartnerProfile.is_approved) {
+		partnerBannerTitle = `파트너 활동 중 · ${myPartnerProfile.nickname}`;
+		partnerBannerDescription = "받은 예약 요청은 예약 탭에서 확인해요";
+	}
+
 	return (
 		<div className="flex flex-col gap-3.5">
 			<div className="bg-surface flex flex-col gap-3.5 rounded-2xl p-4.5">
@@ -167,16 +178,8 @@ export function MyPageContent(): JSX.Element {
 					<path d="M5 21c0-3.9 3.1-6.5 7-6.5s7 2.6 7 6.5" />
 				</svg>
 				<div className="flex flex-col gap-0.5">
-					<span className="text-secondary-700 text-sm font-semibold">
-						{myPartnerProfile
-							? `파트너 활동 중 · ${myPartnerProfile.nickname}`
-							: "파트너로 활동하기"}
-					</span>
-					<span className="text-sub text-xs">
-						{myPartnerProfile
-							? "받은 예약 요청은 예약 탭에서 확인해요"
-							: "프로필 등록 후 바로 활동할 수 있어요"}
-					</span>
+					<span className="text-secondary-700 text-sm font-semibold">{partnerBannerTitle}</span>
+					<span className="text-sub text-xs">{partnerBannerDescription}</span>
 				</div>
 				<svg
 					className="text-secondary-600 ml-auto shrink-0"
@@ -193,6 +196,26 @@ export function MyPageContent(): JSX.Element {
 			</Link>
 
 			<MyPageContentMenuGroup items={[{ label: "고객센터" }, { label: "약관 및 정책" }]} />
+
+			{profile.role === "admin" && (
+				<Link
+					href="/admin"
+					className="bg-surface flex items-center justify-between rounded-2xl px-4.5 py-4">
+					<span className="text-[15px] font-semibold">관리자 대시보드</span>
+					<svg
+						className="text-neutral-300"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round">
+						<path d="M9 5l7 7-7 7" />
+					</svg>
+				</Link>
+			)}
 
 			<div className="flex items-center justify-center gap-4 py-1.5 text-[13px] text-neutral-400">
 				<button type="button" onClick={handleSignOut} disabled={signOutMutation.isPending}>
