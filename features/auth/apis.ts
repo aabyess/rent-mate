@@ -55,8 +55,8 @@ export async function getMyProfile(): Promise<MyProfile | null> {
 	return (data ?? null) as MyProfile | null;
 }
 
-// 성인인증 게이트: 온보딩에서 연 나이 검증을 통과한 경우에만 호출된다
-export async function postCreateProfile({ name }: Pick<CreateProfileInput, "name">): Promise<void> {
+// 성인인증 게이트: 연 나이 검증과 adult_verified_at 세팅은 DB 트리거가 강제한다
+export async function postCreateProfile({ name, birthDate }: CreateProfileInput): Promise<void> {
 	const supabase = createClient();
 	const {
 		data: { user },
@@ -68,7 +68,7 @@ export async function postCreateProfile({ name }: Pick<CreateProfileInput, "name
 	const { error } = await supabase.from("profiles").insert({
 		id: user.id,
 		name,
-		adult_verified_at: new Date().toISOString(),
+		birth_date: birthDate,
 	});
 	if (error) {
 		throw error;
