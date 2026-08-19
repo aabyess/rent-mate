@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PURPOSE_TAGS } from "@/constants/purposeTags";
 import { REGIONS } from "@/constants/regions";
 import {
 	MIN_PARTNER_PHOTOS,
@@ -50,6 +51,21 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
 	const [photos, setPhotos] = useState<File[]>([]);
 	const [region, setRegion] = useState<string | null>(null);
+	const [purposeTags, setPurposeTags] = useState<string[]>([]);
+
+	function handlePurposeTagToggle(tag: string): void {
+		setPurposeTags(function (current) {
+			if (current.includes(tag)) {
+				return current.filter(function (item) {
+					return item !== tag;
+				});
+			}
+			if (current.length >= 2) {
+				return current;
+			}
+			return [...current, tag];
+		});
+	}
 
 	function handleWeekdayToggle(weekday: number): void {
 		setAvailableWeekdays(function (current) {
@@ -88,6 +104,7 @@ export function PartnerRegisterForm(): JSX.Element {
 				availableWeekdays,
 				photos,
 				region: region ?? "",
+				purposeTags,
 			},
 			{
 				onSuccess: function (): void {
@@ -198,6 +215,33 @@ export function PartnerRegisterForm(): JSX.Element {
 						);
 					})}
 				</div>
+			</section>
+
+			<section className="flex flex-col gap-2">
+				<span className="text-sm font-medium">용도 태그 (선택, 최대 2개)</span>
+				<div className="flex flex-wrap gap-2">
+					{PURPOSE_TAGS.map(function (tag) {
+						const selected = purposeTags.includes(tag);
+						return (
+							<button
+								key={tag}
+								type="button"
+								onClick={function () {
+									handlePurposeTagToggle(tag);
+								}}
+								className={cn(
+									"h-10 rounded-full px-4 text-sm",
+									selected && "bg-neutral-900 font-semibold text-white",
+									!selected && "bg-surface-alt text-body",
+								)}>
+								{tag}
+							</button>
+						);
+					})}
+				</div>
+				<p className="text-sub text-xs">
+					어떤 목적의 만남에 어울리는지 알려주면 매칭에 도움이 돼요.
+				</p>
 			</section>
 
 			<section className="flex flex-col gap-2">

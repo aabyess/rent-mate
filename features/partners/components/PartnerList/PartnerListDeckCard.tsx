@@ -74,6 +74,9 @@ export function PartnerListDeckCard({
 					</svg>
 				</div>
 				<p className="text-sm text-white/85">
+					{partner.purpose_tags.length > 0 && (
+						<span className="text-brand font-semibold">{partner.purpose_tags[0]} · </span>
+					)}
 					{[partner.region, ...partner.interests].join(" · ")}
 				</p>
 				<div className="flex items-center justify-between pt-1">
