@@ -22,13 +22,13 @@ export default async function PaymentFailPage({
 
 	return (
 		<main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-5 px-5">
-			<span className="bg-error-100 flex size-16 items-center justify-center rounded-full">
+			<span className="bg-error-500/15 text-error-500 flex size-16 items-center justify-center rounded-full">
 				<svg
 					width="30"
 					height="30"
 					viewBox="0 0 24 24"
 					fill="none"
-					stroke="#e0433d"
+					stroke="currentColor"
 					strokeWidth="2.4"
 					strokeLinecap="round">
 					<path d="M6 6l12 12M18 6L6 18" />

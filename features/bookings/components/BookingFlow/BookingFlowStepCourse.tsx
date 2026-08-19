@@ -36,7 +36,7 @@ export function BookingFlowStepCourse({
 								}}
 								className={cn(
 									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-neutral-900 font-semibold text-white",
+									selected && "bg-inverse text-inverse-fg font-semibold",
 									!selected && "bg-surface-alt text-body",
 								)}>
 								{item}

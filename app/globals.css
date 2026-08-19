@@ -74,6 +74,9 @@
 	--brand: var(--color-primary-500);
 	--brand-subtle: var(--color-primary-50);
 	--trust: var(--color-secondary-500);
+	/* 다크에서 반전되는 "선택됨" 상태용 (필터 칩 등 raw #18181b 대체) */
+	--inverse: var(--color-neutral-900);
+	--inverse-fg: var(--color-neutral-0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -87,6 +90,8 @@
 		--brand: var(--color-primary-400);
 		--brand-subtle: #3a2620;
 		--trust: var(--color-secondary-400);
+		--inverse: var(--color-neutral-100);
+		--inverse-fg: var(--color-neutral-900);
 	}
 }
 
@@ -101,6 +106,8 @@
 	--color-brand: var(--brand);
 	--color-brand-subtle: var(--brand-subtle);
 	--color-trust: var(--trust);
+	--color-inverse: var(--inverse);
+	--color-inverse-fg: var(--inverse-fg);
 }
 
 @utility scrollbar-none {

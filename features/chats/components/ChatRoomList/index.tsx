@@ -94,7 +94,7 @@ export function ChatRoomList(): JSX.Element {
 						</div>
 						<div className="ml-auto flex shrink-0 flex-col items-end gap-1">
 							{summaries[booking.id]?.lastMessage && (
-								<span className="text-xs text-neutral-400 tabular-nums">
+								<span className="text-sub text-xs tabular-nums">
 									{formatChatListTime(summaries[booking.id].lastMessage!.created_at)}
 								</span>
 							)}

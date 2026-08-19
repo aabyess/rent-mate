@@ -96,7 +96,7 @@ export function BottomTabBar(): JSX.Element {
 						href={item.href}
 						className={cn(
 							"flex h-12 grow flex-col items-center justify-center gap-0.5",
-							isActive ? "text-brand font-semibold" : "text-neutral-400",
+							isActive ? "text-brand font-semibold" : "text-sub",
 						)}>
 						{item.icon}
 						<span className="text-[11px]">{item.label}</span>

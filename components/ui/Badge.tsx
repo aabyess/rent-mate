@@ -11,8 +11,8 @@ const badgeVariants = cva(
 				trust: "bg-secondary-50 text-secondary-700",
 				accent: "bg-accent-500 text-white",
 				neutral: "bg-surface-alt text-sub",
-				warning: "bg-warning-100 text-warning-700",
-				error: "bg-error-100 text-error-700",
+				warning: "bg-warning-500/15 text-warning-500",
+				error: "bg-error-500/15 text-error-500",
 			},
 		},
 		defaultVariants: {

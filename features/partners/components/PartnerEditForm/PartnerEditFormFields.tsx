@@ -179,7 +179,7 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 								}}
 								className={cn(
 									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-neutral-900 font-semibold text-white",
+									selected && "bg-inverse text-inverse-fg font-semibold",
 									!selected && "bg-surface-alt text-body",
 								)}>
 								{regionOption}
@@ -203,7 +203,7 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 								}}
 								className={cn(
 									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-neutral-900 font-semibold text-white",
+									selected && "bg-inverse text-inverse-fg font-semibold",
 									!selected && "bg-surface-alt text-body",
 								)}>
 								{tag}
@@ -227,7 +227,7 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 								}}
 								className={cn(
 									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-neutral-900 font-semibold text-white",
+									selected && "bg-inverse text-inverse-fg font-semibold",
 									!selected && "bg-surface-alt text-body",
 								)}>
 								{interest}
@@ -280,7 +280,7 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 
 			<div className="flex flex-col gap-2.5">
 				{profile.is_approved && (
-					<p className="bg-warning-100 text-warning-700 rounded-xl px-4 py-3 text-xs leading-relaxed">
+					<p className="bg-warning-500/15 text-warning-500 rounded-xl px-4 py-3 text-xs leading-relaxed">
 						수정 사항은 저장 즉시 반영돼요. 부적절한 내용으로 변경하면 관리자 검토 후 활동이 제한될
 						수 있어요.
 					</p>

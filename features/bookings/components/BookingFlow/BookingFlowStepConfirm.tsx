@@ -66,10 +66,10 @@ export function BookingFlowStepConfirm({
 
 			<section className="flex flex-col gap-3">
 				<h2 className="text-[17px] font-semibold">안전 수칙</h2>
-				<ul className="bg-warning-100 flex flex-col gap-2 rounded-2xl px-4 py-4">
+				<ul className="bg-warning-500/15 flex flex-col gap-2 rounded-2xl px-4 py-4">
 					{SAFETY_RULES.map(function (rule) {
 						return (
-							<li key={rule} className="text-warning-700 flex gap-2 text-[13px] leading-relaxed">
+							<li key={rule} className="text-warning-500 flex gap-2 text-[13px] leading-relaxed">
 								<span aria-hidden="true">·</span>
 								{rule}
 							</li>

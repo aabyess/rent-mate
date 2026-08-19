@@ -179,7 +179,7 @@ export function BookingFlowStepSchedule({
 								}}
 								className={cn(
 									"flex h-11 items-center justify-center rounded-xl text-sm tabular-nums",
-									!selectable && "text-neutral-300",
+									!selectable && "text-line",
 									selectable && !selected && "bg-brand-subtle text-primary-600 font-semibold",
 									selected && "bg-brand font-bold text-white",
 								)}>
@@ -216,7 +216,7 @@ export function BookingFlowStepSchedule({
 								className={cn(
 									"flex h-11 items-center justify-center rounded-xl text-sm tabular-nums",
 									selected && "bg-brand font-bold text-white",
-									!selected && "bg-surface-alt text-body disabled:text-neutral-300",
+									!selected && "bg-surface-alt text-body disabled:text-line",
 								)}>
 								{String(hour).padStart(2, "0")}:00
 							</button>

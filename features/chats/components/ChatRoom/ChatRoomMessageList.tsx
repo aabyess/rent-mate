@@ -57,7 +57,7 @@ export function ChatRoomMessageList({
 								)}>
 								{message.content}
 							</p>
-							<span className="text-[11px] text-neutral-400 tabular-nums">
+							<span className="text-sub text-[11px] tabular-nums">
 								{formatMessageTime(message.created_at)}
 							</span>
 						</div>

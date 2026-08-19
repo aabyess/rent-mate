@@ -54,7 +54,7 @@ export default function SafetyPolicyPage(): JSX.Element {
 					{SANCTIONS.map(function (sanction) {
 						return (
 							<li key={sanction.level} className="flex items-center gap-3 text-sm">
-								<span className="bg-error-100 text-error-700 shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold">
+								<span className="bg-error-500/15 text-error-500 shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold">
 									{sanction.level}
 								</span>
 								<span className="text-body">{sanction.action}</span>

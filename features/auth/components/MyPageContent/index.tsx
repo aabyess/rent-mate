@@ -116,11 +116,12 @@ export function MyPageContent(): JSX.Element {
 					href="/bookings"
 					className="bg-brand-subtle flex items-center gap-3 rounded-2xl px-4.5 py-4">
 					<svg
+						className="text-brand"
 						width="22"
 						height="22"
 						viewBox="0 0 24 24"
 						fill="none"
-						stroke="#dd5230"
+						stroke="currentColor"
 						strokeWidth="1.8"
 						strokeLinecap="round">
 						<rect x="3" y="5" width="18" height="16" rx="3" />
@@ -175,11 +176,12 @@ export function MyPageContent(): JSX.Element {
 				href={myPartnerProfile ? "/partner/edit" : "/partner/register"}
 				className="bg-secondary-50 flex items-center gap-3 rounded-2xl px-4.5 py-4">
 				<svg
+					className="text-trust"
 					width="22"
 					height="22"
 					viewBox="0 0 24 24"
 					fill="none"
-					stroke="#237c79"
+					stroke="currentColor"
 					strokeWidth="1.8"
 					strokeLinecap="round">
 					<circle cx="12" cy="8" r="4" />
@@ -216,7 +218,7 @@ export function MyPageContent(): JSX.Element {
 					className="bg-surface flex items-center justify-between rounded-2xl px-4.5 py-4">
 					<span className="text-[15px] font-semibold">관리자 대시보드</span>
 					<svg
-						className="text-neutral-300"
+						className="text-line"
 						width="16"
 						height="16"
 						viewBox="0 0 24 24"
@@ -230,11 +232,11 @@ export function MyPageContent(): JSX.Element {
 				</Link>
 			)}
 
-			<div className="flex items-center justify-center gap-4 py-1.5 text-[13px] text-neutral-400">
+			<div className="text-sub flex items-center justify-center gap-4 py-1.5 text-[13px]">
 				<button type="button" onClick={handleSignOut} disabled={signOutMutation.isPending}>
 					{signOutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
 				</button>
-				<span className="text-neutral-300">|</span>
+				<span className="text-line">|</span>
 				<span>회원 탈퇴</span>
 			</div>
 		</div>
