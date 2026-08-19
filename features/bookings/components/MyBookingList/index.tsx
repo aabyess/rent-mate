@@ -2,12 +2,15 @@
 "use client";
 
 import Link from "next/link";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
+import { MyBookingListCancelDialog } from "@/features/bookings/components/MyBookingList/MyBookingListCancelDialog";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
-import type { BookingStatus } from "@/features/bookings/types";
+import type { BookingStatus, MyBookingItem } from "@/features/bookings/types";
 import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
+
+const NOW_MS = Date.now();
 
 const STATUS_BADGE_VARIANTS: Record<BookingStatus, "warning" | "trust" | "neutral" | "error"> = {
 	requested: "warning",
@@ -17,8 +20,16 @@ const STATUS_BADGE_VARIANTS: Record<BookingStatus, "warning" | "trust" | "neutra
 	completed: "neutral",
 };
 
+function isCancelable(booking: MyBookingItem): boolean {
+	return (
+		(booking.status === "requested" || booking.status === "accepted") &&
+		new Date(booking.starts_at).getTime() > NOW_MS
+	);
+}
+
 export function MyBookingList(): JSX.Element {
 	const { data: bookings, isPending, isError } = useMyBookingsQuery();
+	const [cancelTarget, setCancelTarget] = useState<MyBookingItem | null>(null);
 
 	if (isPending) {
 		return (
@@ -68,12 +79,32 @@ export function MyBookingList(): JSX.Element {
 							</span>
 							<span>{booking.place}</span>
 						</div>
-						<span className="text-[15px] font-bold tabular-nums">
-							{formatKrw(booking.total_amount_krw)}
-						</span>
+						<div className="flex items-center justify-between">
+							<span className="text-[15px] font-bold tabular-nums">
+								{formatKrw(booking.total_amount_krw)}
+							</span>
+							{isCancelable(booking) && (
+								<button
+									type="button"
+									onClick={function () {
+										setCancelTarget(booking);
+									}}
+									className="text-sub text-[13px] underline">
+									예약 취소
+								</button>
+							)}
+						</div>
 					</article>
 				);
 			})}
+			{cancelTarget && (
+				<MyBookingListCancelDialog
+					booking={cancelTarget}
+					onClose={function () {
+						setCancelTarget(null);
+					}}
+				/>
+			)}
 		</div>
 	);
 }
