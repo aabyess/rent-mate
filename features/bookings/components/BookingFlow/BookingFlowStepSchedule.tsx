@@ -17,6 +17,7 @@ const WEEKDAY_HEADERS = ["일", "월", "화", "수", "목", "금", "토"];
 
 type BookingFlowStepScheduleProps = {
 	baseDate: { year: number; month: number; day: number };
+	availableWeekdays: number[];
 	schedule: BookingSchedule | null;
 	viewYear: number;
 	viewMonth: number;
@@ -26,6 +27,7 @@ type BookingFlowStepScheduleProps = {
 
 export function BookingFlowStepSchedule({
 	baseDate,
+	availableWeekdays,
 	schedule,
 	viewYear,
 	viewMonth,
@@ -54,6 +56,10 @@ export function BookingFlowStepSchedule({
 	}
 
 	function isSelectableDay(day: number): boolean {
+		const weekday = new Date(viewYear, viewMonth - 1, day).getDay();
+		if (!availableWeekdays.includes(weekday)) {
+			return false;
+		}
 		if (viewYear !== baseDate.year || viewMonth !== baseDate.month) {
 			return true;
 		}

@@ -23,6 +23,16 @@ const INTEREST_OPTIONS = [
 
 const MIN_HOURLY_RATE_KRW = 10000;
 
+const WEEKDAY_OPTIONS = [
+	{ value: 0, label: "일" },
+	{ value: 1, label: "월" },
+	{ value: 2, label: "화" },
+	{ value: 3, label: "수" },
+	{ value: 4, label: "목" },
+	{ value: 5, label: "금" },
+	{ value: 6, label: "토" },
+];
+
 export function PartnerRegisterForm(): JSX.Element {
 	const router = useRouter();
 	const createPartnerProfileMutation = useCreatePartnerProfileMutation();
@@ -32,6 +42,18 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [bio, setBio] = useState("");
 	const [hourlyRate, setHourlyRate] = useState("30000");
 	const [interests, setInterests] = useState<string[]>([]);
+	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+
+	function handleWeekdayToggle(weekday: number): void {
+		setAvailableWeekdays(function (current) {
+			if (current.includes(weekday)) {
+				return current.filter(function (item) {
+					return item !== weekday;
+				});
+			}
+			return [...current, weekday].sort();
+		});
+	}
 
 	function handleInterestToggle(interest: string): void {
 		setInterests(function (current) {
@@ -56,6 +78,7 @@ export function PartnerRegisterForm(): JSX.Element {
 				hourlyRateKrw: Number(hourlyRate),
 				birthYear: Number(birthYear),
 				interests,
+				availableWeekdays,
 			},
 			{
 				onSuccess: function (): void {
@@ -72,7 +95,8 @@ export function PartnerRegisterForm(): JSX.Element {
 		Number(birthYear) >= 1950 &&
 		Number(birthYear) <= 2007 &&
 		Number(hourlyRate) >= MIN_HOURLY_RATE_KRW &&
-		interests.length > 0;
+		interests.length > 0 &&
+		availableWeekdays.length > 0;
 
 	return (
 		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -155,6 +179,31 @@ export function PartnerRegisterForm(): JSX.Element {
 						);
 					})}
 				</div>
+			</section>
+
+			<section className="flex flex-col gap-2">
+				<span className="text-sm font-medium">가능 요일</span>
+				<div className="grid grid-cols-7 gap-1.5">
+					{WEEKDAY_OPTIONS.map(function (weekday) {
+						const selected = availableWeekdays.includes(weekday.value);
+						return (
+							<button
+								key={weekday.value}
+								type="button"
+								onClick={function () {
+									handleWeekdayToggle(weekday.value);
+								}}
+								className={cn(
+									"flex h-11 items-center justify-center rounded-xl text-sm",
+									selected && "bg-brand-subtle text-primary-600 font-semibold",
+									!selected && "bg-surface-alt text-sub",
+								)}>
+								{weekday.label}
+							</button>
+						);
+					})}
+				</div>
+				<p className="text-sub text-xs">선택한 요일에만 예약을 받을 수 있어요.</p>
 			</section>
 
 			<section className="flex flex-col gap-2">
