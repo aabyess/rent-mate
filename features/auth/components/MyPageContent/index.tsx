@@ -84,7 +84,7 @@ export function MyPageContent(): JSX.Element {
 
 	return (
 		<div className="flex flex-col gap-3.5">
-			<div className="bg-surface flex flex-col gap-3.5 rounded-2xl p-4.5">
+			<Link href="/account" className="bg-surface flex flex-col gap-3.5 rounded-2xl p-4.5">
 				<div className="flex items-center gap-3.5">
 					<div className="from-secondary-100 to-secondary-200 flex size-14 items-center justify-center rounded-full bg-gradient-to-br">
 						<svg width="28" height="28" viewBox="0 0 24 24" fill="#2e9995" opacity="0.5">
@@ -99,6 +99,18 @@ export function MyPageContent(): JSX.Element {
 							{joinedAt.getMonth() + 1}
 						</span>
 					</div>
+					<svg
+						className="text-sub ml-auto shrink-0"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round">
+						<path d="M9 5l7 7-7 7" />
+					</svg>
 				</div>
 				<div className="flex flex-wrap gap-2">
 					{profile.adult_verified_at !== null && <Badge variant="trust">성인인증</Badge>}
@@ -109,7 +121,7 @@ export function MyPageContent(): JSX.Element {
 						<Badge variant="trust">휴대전화 인증</Badge>
 					)}
 				</div>
-			</div>
+			</Link>
 
 			{upcomingBooking && (
 				<Link
