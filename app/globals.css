@@ -1,26 +1,111 @@
+/* app/globals.css */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css");
 @import "tailwindcss";
 
-:root {
-	--background: #ffffff;
-	--foreground: #171717;
+@theme {
+	/* Primary — Warm Coral */
+	--color-primary-50: #fff5f2;
+	--color-primary-100: #ffe8e1;
+	--color-primary-200: #ffd0c2;
+	--color-primary-300: #ffab93;
+	--color-primary-400: #fb8666;
+	--color-primary-500: #f26b4a;
+	--color-primary-600: #dd5230;
+	--color-primary-700: #b83f23;
+	--color-primary-800: #963621;
+	--color-primary-900: #7a3020;
+
+	/* Secondary — Trust Teal */
+	--color-secondary-50: #f0faf9;
+	--color-secondary-100: #d5f1ef;
+	--color-secondary-200: #aee3e0;
+	--color-secondary-300: #7ecfcb;
+	--color-secondary-400: #4bb3b0;
+	--color-secondary-500: #2e9995;
+	--color-secondary-600: #237c79;
+	--color-secondary-700: #1f6462;
+	--color-secondary-800: #1d504f;
+	--color-secondary-900: #1b4342;
+
+	/* Accent — Apricot Amber */
+	--color-accent-100: #fef1dc;
+	--color-accent-300: #ffd08a;
+	--color-accent-400: #ffb65c;
+	--color-accent-500: #f79e3d;
+	--color-accent-600: #dd7f1f;
+
+	/* Status */
+	--color-success-100: #e6f6ee;
+	--color-success-500: #1fa060;
+	--color-success-700: #157347;
+	--color-warning-100: #fdf3e1;
+	--color-warning-500: #e8930c;
+	--color-warning-700: #b26e05;
+	--color-error-100: #fdecec;
+	--color-error-500: #e0433d;
+	--color-error-700: #b32a25;
+
+	/* Neutral — Cool Gray (zinc) */
+	--color-neutral-0: #ffffff;
+	--color-neutral-50: #fafafa;
+	--color-neutral-100: #f4f4f5;
+	--color-neutral-200: #e4e4e7;
+	--color-neutral-300: #d4d4d8;
+	--color-neutral-400: #a1a1aa;
+	--color-neutral-500: #71717a;
+	--color-neutral-600: #52525b;
+	--color-neutral-700: #3f3f46;
+	--color-neutral-800: #27272a;
+	--color-neutral-900: #18181b;
+
+	--font-sans:
+		"Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR",
+		sans-serif;
 }
 
-@theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
+/* 시맨틱 토큰 — 라이트 기본, 다크는 prefers-color-scheme 스왑 */
+:root {
+	--bg: var(--color-neutral-50);
+	--surface: var(--color-neutral-0);
+	--surface-alt: var(--color-neutral-100);
+	--border-token: var(--color-neutral-200);
+	--text-token: var(--color-neutral-900);
+	--text-sub: var(--color-neutral-500);
+	--brand: var(--color-primary-500);
+	--brand-subtle: var(--color-primary-50);
+	--trust: var(--color-secondary-500);
 }
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
+		--bg: var(--color-neutral-900);
+		--surface: var(--color-neutral-800);
+		--surface-alt: #313136;
+		--border-token: var(--color-neutral-700);
+		--text-token: var(--color-neutral-100);
+		--text-sub: var(--color-neutral-400);
+		--brand: var(--color-primary-400);
+		--brand-subtle: #3a2620;
+		--trust: var(--color-secondary-400);
 	}
 }
 
+/* 시맨틱 토큰을 Tailwind 유틸리티로 노출: bg-bg, bg-surface, border-line, text-body, text-sub, bg-brand ... */
+@theme inline {
+	--color-bg: var(--bg);
+	--color-surface: var(--surface);
+	--color-surface-alt: var(--surface-alt);
+	--color-line: var(--border-token);
+	--color-body: var(--text-token);
+	--color-sub: var(--text-sub);
+	--color-brand: var(--brand);
+	--color-brand-subtle: var(--brand-subtle);
+	--color-trust: var(--trust);
+}
+
 body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+	background: var(--bg);
+	color: var(--text-token);
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
 }
