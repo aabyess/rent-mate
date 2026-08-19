@@ -2,8 +2,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type JSX } from "react";
-import { PartnerListCard } from "@/features/partners/components/PartnerList/PartnerListCard";
+import { useRef, useState, type JSX, type UIEvent } from "react";
+import { PartnerListDeckCard } from "@/features/partners/components/PartnerList/PartnerListDeckCard";
 import { usePartnerListQuery } from "@/features/partners/queries";
 import { usePartnerRatingsQuery } from "@/features/reviews/queries";
 import { useMyBlocksQuery } from "@/features/safety/queries";
@@ -24,19 +24,26 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		}),
 	);
 	const [activeFilter, setActiveFilter] = useState("전체");
+	const [deckIndex, setDeckIndex] = useState(0);
+	const deckRef = useRef<HTMLDivElement>(null);
+
+	function handleDeckScroll(event: UIEvent<HTMLDivElement>): void {
+		const deck = event.currentTarget;
+		setDeckIndex(Math.round(deck.scrollLeft / deck.clientWidth));
+	}
+
+	function handleDeckStep(direction: -1 | 1): void {
+		const deck = deckRef.current;
+		if (deck) {
+			deck.scrollBy({ left: direction * deck.clientWidth, behavior: "smooth" });
+		}
+	}
 
 	if (isPending || isBlocksPending) {
 		return (
-			<div className="grid grid-cols-2 gap-3.5">
-				{Array.from({ length: 4 }, function (_, index) {
-					return (
-						<div key={index} className="flex flex-col gap-2">
-							<div className="bg-surface-alt h-56 animate-pulse rounded-2xl" />
-							<div className="bg-surface-alt h-4 w-2/3 animate-pulse rounded" />
-							<div className="bg-surface-alt h-3 w-1/2 animate-pulse rounded" />
-						</div>
-					);
-				})}
+			<div className="flex flex-col gap-3">
+				<div className="bg-surface-alt aspect-[3/4] w-full animate-pulse rounded-3xl" />
+				<div className="bg-surface-alt mx-auto h-4 w-1/3 animate-pulse rounded" />
 			</div>
 		);
 	}
@@ -86,6 +93,8 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		return "아직 등록된 파트너가 없어요.";
 	}
 
+	const clampedIndex = Math.min(deckIndex, Math.max(filteredPartners.length - 1, 0));
+
 	return (
 		<div className="flex flex-col gap-3.5">
 			<div className="-mx-5 flex scrollbar-none gap-2 overflow-x-auto px-5">
@@ -111,18 +120,72 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 			{filteredPartners.length === 0 ? (
 				<p className="text-sub py-16 text-center text-sm">{getEmptyMessage()}</p>
 			) : (
-				<div className="grid grid-cols-2 gap-3.5">
-					{filteredPartners.map(function (partner, index) {
-						return (
-							<Link key={partner.profile_id} href={`/partners/${partner.profile_id}`}>
-								<PartnerListCard
-									partner={partner}
-									index={index}
-									rating={ratings?.[partner.profile_id]}
-								/>
-							</Link>
-						);
-					})}
+				<div className="flex flex-col gap-3">
+					<div
+						ref={deckRef}
+						onScroll={handleDeckScroll}
+						className="-mx-5 flex snap-x snap-mandatory scrollbar-none gap-3 overflow-x-auto px-5">
+						{filteredPartners.map(function (partner, index) {
+							return (
+								<Link
+									key={partner.profile_id}
+									href={`/partners/${partner.profile_id}`}
+									aria-label={`${partner.nickname} 프로필 보기`}
+									className="w-full shrink-0 snap-center">
+									<PartnerListDeckCard
+										partner={partner}
+										index={index}
+										rating={ratings?.[partner.profile_id]}
+									/>
+								</Link>
+							);
+						})}
+					</div>
+					<div className="flex items-center justify-between px-1">
+						<button
+							type="button"
+							onClick={function () {
+								handleDeckStep(-1);
+							}}
+							disabled={clampedIndex === 0}
+							aria-label="이전 파트너"
+							className="bg-surface-alt text-body flex size-11 items-center justify-center rounded-full disabled:opacity-40">
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round">
+								<path d="M15 5l-7 7 7 7" />
+							</svg>
+						</button>
+						<span className="text-sub text-sm tabular-nums">
+							{clampedIndex + 1} / {filteredPartners.length}
+						</span>
+						<button
+							type="button"
+							onClick={function () {
+								handleDeckStep(1);
+							}}
+							disabled={clampedIndex >= filteredPartners.length - 1}
+							aria-label="다음 파트너"
+							className="bg-surface-alt text-body flex size-11 items-center justify-center rounded-full disabled:opacity-40">
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round">
+								<path d="M9 5l7 7-7 7" />
+							</svg>
+						</button>
+					</div>
 				</div>
 			)}
 		</div>
