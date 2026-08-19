@@ -1,9 +1,10 @@
 // next.config.ts
 import type { NextConfig } from "next";
 
-// 파트너 사진(Supabase Storage public 버킷) 렌더용 — 프로젝트 호스트는 env에서 파생
+// 파트너 사진(Supabase Storage public 버킷) 렌더용 — 프로젝트 호스트는 env에서 파생.
+// env가 비어 있어도 빌드가 죽지 않도록 빈 문자열까지 폴백 처리한다 (?? 는 ''를 통과시킴)
 const supabaseHostname = new URL(
-	process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://xvnuvdsidzibpwrldink.supabase.co",
+	process.env.NEXT_PUBLIC_SUPABASE_URL || "https://xvnuvdsidzibpwrldink.supabase.co",
 ).hostname;
 
 const nextConfig: NextConfig = {
