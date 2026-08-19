@@ -62,6 +62,14 @@ export function formatBookingPeriod(startsAt: string, endsAt: string): string {
 	return `${start.getMonth() + 1}월 ${start.getDate()}일 (${weekday}) ${pad(start.getHours())}:${pad(start.getMinutes())} – ${pad(end.getHours())}:${pad(end.getMinutes())}`;
 }
 
+export function sumBookingAmountsKrw(amounts: number[]): number {
+	return amounts
+		.reduce(function (total, amount) {
+			return total.plus(amount);
+		}, new Decimal(0))
+		.toNumber();
+}
+
 export const BOOKING_STATUS_LABELS: Record<BookingStatus, string> = {
 	requested: "승인 대기",
 	accepted: "예약 확정",

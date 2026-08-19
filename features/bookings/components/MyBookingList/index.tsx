@@ -29,6 +29,10 @@ function isCancelable(booking: MyBookingItem): boolean {
 	);
 }
 
+function hasChatRoom(booking: MyBookingItem): boolean {
+	return booking.status !== "canceled" && booking.status !== "rejected";
+}
+
 export function MyBookingList(): JSX.Element {
 	const { data: bookings, isPending, isError } = useMyBookingsQuery();
 	const { data: reviewedBookingIds } = useMyReviewedBookingIdsQuery();
@@ -87,27 +91,36 @@ export function MyBookingList(): JSX.Element {
 							<span className="text-[15px] font-bold tabular-nums">
 								{formatKrw(booking.total_amount_krw)}
 							</span>
-							{isCancelable(booking) && (
-								<button
-									type="button"
-									onClick={function () {
-										setCancelTarget(booking);
-									}}
-									className="text-sub text-[13px] underline">
-									예약 취소
-								</button>
-							)}
-							{booking.status === "completed" &&
-								!(reviewedBookingIds ?? []).includes(booking.id) && (
+							<div className="flex items-center gap-3.5">
+								{hasChatRoom(booking) && (
+									<Link
+										href={`/chats/${booking.id}`}
+										className="text-trust text-[13px] font-medium underline">
+										채팅
+									</Link>
+								)}
+								{isCancelable(booking) && (
 									<button
 										type="button"
 										onClick={function () {
-											setReviewTarget(booking);
+											setCancelTarget(booking);
 										}}
-										className="text-brand text-[13px] font-medium underline">
-										후기 작성
+										className="text-sub text-[13px] underline">
+										예약 취소
 									</button>
 								)}
+								{booking.status === "completed" &&
+									!(reviewedBookingIds ?? []).includes(booking.id) && (
+										<button
+											type="button"
+											onClick={function () {
+												setReviewTarget(booking);
+											}}
+											className="text-brand text-[13px] font-medium underline">
+											후기 작성
+										</button>
+									)}
+							</div>
 						</div>
 					</article>
 				);
