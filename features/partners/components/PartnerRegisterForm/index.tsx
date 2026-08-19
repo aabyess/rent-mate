@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PartnerPhotoUploader } from "@/features/partners/components/PartnerPhotoUploader";
 import { useCreatePartnerProfileMutation } from "@/features/partners/mutations";
 import { cn } from "@/utils/cn";
 
@@ -43,6 +44,7 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [hourlyRate, setHourlyRate] = useState("30000");
 	const [interests, setInterests] = useState<string[]>([]);
 	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+	const [photos, setPhotos] = useState<File[]>([]);
 
 	function handleWeekdayToggle(weekday: number): void {
 		setAvailableWeekdays(function (current) {
@@ -79,6 +81,7 @@ export function PartnerRegisterForm(): JSX.Element {
 				birthYear: Number(birthYear),
 				interests,
 				availableWeekdays,
+				photos,
 			},
 			{
 				onSuccess: function (): void {
@@ -155,6 +158,14 @@ export function PartnerRegisterForm(): JSX.Element {
 					rows={4}
 					className="bg-surface-alt text-body placeholder:text-sub w-full resize-none rounded-xl p-4 text-base focus:outline-none"
 				/>
+			</section>
+
+			<section className="flex flex-col gap-2">
+				<span className="text-sm font-medium">프로필 사진 (선택, 최대 3장)</span>
+				<PartnerPhotoUploader photos={photos} onPhotosChange={setPhotos} />
+				<p className="text-sub text-xs">
+					첫 번째 사진이 대표 사진으로 표시돼요. 밝은 곳에서 찍은 사진일수록 좋아요.
+				</p>
 			</section>
 
 			<section className="flex flex-col gap-2">

@@ -29,6 +29,23 @@ export async function getMyPartnerProfile(): Promise<MyPartnerProfile | null> {
 	return (data ?? null) as MyPartnerProfile | null;
 }
 
+// 본인 폴더({uid}/...)에만 업로드 가능 — storage RLS로 강제된다
+async function uploadPartnerPhotos(userId: string, photos: File[]): Promise<string[]> {
+	const supabase = createClient();
+	const urls: string[] = [];
+	for (const photo of photos) {
+		const extension = photo.name.split(".").pop() ?? "jpg";
+		const path = `${userId}/${crypto.randomUUID()}.${extension}`;
+		const { error } = await supabase.storage.from("partner-photos").upload(path, photo);
+		if (error) {
+			throw error;
+		}
+		const { data } = supabase.storage.from("partner-photos").getPublicUrl(path);
+		urls.push(data.publicUrl);
+	}
+	return urls;
+}
+
 export async function postCreatePartnerProfile({
 	nickname,
 	bio,
@@ -36,6 +53,7 @@ export async function postCreatePartnerProfile({
 	birthYear,
 	interests,
 	availableWeekdays,
+	photos,
 }: CreatePartnerProfileInput): Promise<void> {
 	const supabase = createClient();
 	const {
@@ -45,6 +63,8 @@ export async function postCreatePartnerProfile({
 		throw new Error("로그인이 필요합니다.");
 	}
 
+	const photoUrls = photos.length > 0 ? await uploadPartnerPhotos(user.id, photos) : [];
+
 	const { error } = await supabase.from("partner_profiles").insert({
 		profile_id: user.id,
 		nickname,
@@ -53,6 +73,7 @@ export async function postCreatePartnerProfile({
 		birth_year: birthYear,
 		interests,
 		available_weekdays: availableWeekdays,
+		photo_urls: photoUrls,
 	});
 	if (error) {
 		throw error;
