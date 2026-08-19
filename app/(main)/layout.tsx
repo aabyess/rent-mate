@@ -1,6 +1,8 @@
 // app/(main)/layout.tsx
 import { redirect } from "next/navigation";
 import type { JSX, ReactNode } from "react";
+import { ToastViewport } from "@/components/commons/ToastViewport";
+import { BookingRealtimeListener } from "@/features/bookings/components/BookingRealtimeListener";
 import { createClient } from "@/libs/supabase/server";
 
 type MainLayoutProps = {
@@ -28,5 +30,11 @@ export default async function MainLayout({ children }: MainLayoutProps): Promise
 		redirect("/onboarding");
 	}
 
-	return <div className="mx-auto flex min-h-screen w-full max-w-md flex-col">{children}</div>;
+	return (
+		<div className="mx-auto flex min-h-screen w-full max-w-md flex-col">
+			{children}
+			<BookingRealtimeListener />
+			<ToastViewport />
+		</div>
+	);
 }
