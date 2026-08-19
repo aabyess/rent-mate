@@ -6,7 +6,7 @@ import { patchBookingStatus, postCreateBooking } from "@/features/bookings/apis"
 import { BOOKINGS_QUERY_KEYS } from "@/features/bookings/queries";
 import type { BookingStatus, CreateBookingInput } from "@/features/bookings/types";
 
-export function useCreateBookingMutation(): UseMutationResult<void, Error, CreateBookingInput> {
+export function useCreateBookingMutation(): UseMutationResult<string, Error, CreateBookingInput> {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: postCreateBooking,

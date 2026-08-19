@@ -18,6 +18,8 @@ import {
 } from "@/features/bookings/utils";
 import { usePartnerDetailQuery } from "@/features/partners/queries";
 import { formatKrw } from "@/features/partners/utils";
+import { useMyProfileQuery } from "@/features/auth/queries";
+import { getTossClientKey, startTossCheckout } from "@/features/payments/apis";
 import { cn } from "@/utils/cn";
 
 const NOW = new Date();
@@ -30,12 +32,17 @@ type BookingFlowProps = {
 	partnerId: string;
 };
 
+const IS_TOSS_ENABLED = getTossClientKey() !== null;
+
 export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 	const router = useRouter();
 	const { data: partner, isPending: isPartnerPending } = usePartnerDetailQuery(partnerId);
+	const { data: myProfile } = useMyProfileQuery();
 	const createBookingMutation = useCreateBookingMutation();
 
 	const [step, setStep] = useState(1);
+	const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
+	const [paymentErrorMessage, setPaymentErrorMessage] = useState<string | null>(null);
 	const [viewYear, setViewYear] = useState(BASE_DATE.year);
 	const [viewMonth, setViewMonth] = useState(BASE_DATE.month);
 	const [schedule, setSchedule] = useState<BookingSchedule | null>(null);
@@ -68,7 +75,16 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 		: 0;
 	const place = category ? `${category} · ${placeDetail.trim()}` : placeDetail.trim();
 
-	if (createBookingMutation.isSuccess) {
+	if (isRedirectingToPayment) {
+		return (
+			<div className="flex flex-col items-center gap-4 px-5 py-32">
+				<div className="bg-surface-alt size-10 animate-pulse rounded-full" />
+				<p className="text-sub text-sm">결제창으로 이동하고 있어요...</p>
+			</div>
+		);
+	}
+
+	if (createBookingMutation.isSuccess && !IS_TOSS_ENABLED) {
 		return (
 			<div className="flex flex-col items-center gap-5 px-5 py-24">
 				<span className="bg-secondary-50 flex size-16 items-center justify-center rounded-full">
@@ -136,13 +152,35 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 			return;
 		}
 		const { startsAt, endsAt } = toBookingRange(schedule);
-		createBookingMutation.mutate({
-			partnerId,
-			startsAt,
-			endsAt,
-			place,
-			totalAmountKrw: totalPriceKrw,
-		});
+		setPaymentErrorMessage(null);
+		createBookingMutation.mutate(
+			{
+				partnerId,
+				startsAt,
+				endsAt,
+				place,
+				totalAmountKrw: totalPriceKrw,
+			},
+			{
+				onSuccess: function (bookingId): void {
+					if (!IS_TOSS_ENABLED || !partner) {
+						return;
+					}
+					setIsRedirectingToPayment(true);
+					startTossCheckout({
+						bookingId,
+						customerKey: myProfile?.id ?? bookingId,
+						amountKrw: totalPriceKrw,
+						orderName: `RentMate 데이트 · ${partner.nickname}`,
+					}).catch(function (checkoutError: Error) {
+						setIsRedirectingToPayment(false);
+						setPaymentErrorMessage(
+							checkoutError.message || "결제창을 열지 못했어요. 예약 탭에서 다시 시도해주세요.",
+						);
+					});
+				},
+			},
+		);
 	}
 
 	function handleMonthChange(year: number, month: number): void {
@@ -229,7 +267,9 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 						onAgreedChange={setIsAgreed}
 					/>
 				)}
-				{step === 4 && <BookingFlowStepPayment totalPriceKrw={totalPriceKrw} />}
+				{step === 4 && (
+					<BookingFlowStepPayment totalPriceKrw={totalPriceKrw} isTossEnabled={IS_TOSS_ENABLED} />
+				)}
 			</div>
 
 			<footer className="border-line bg-surface/80 fixed bottom-0 left-1/2 z-10 flex w-full max-w-md -translate-x-1/2 flex-col gap-2.5 border-t px-5 pt-3.5 pb-6 backdrop-blur-xl">
@@ -242,6 +282,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 				{createBookingMutation.isError && (
 					<p className="text-error-500 text-sm">{createBookingMutation.error.message}</p>
 				)}
+				{paymentErrorMessage && <p className="text-error-500 text-sm">{paymentErrorMessage}</p>}
 				<Button
 					size="lg"
 					fullWidth

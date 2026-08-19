@@ -20,6 +20,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.101.4
         version: 5.101.4(react@19.2.8)
+      '@tosspayments/tosspayments-sdk':
+        specifier: ^2.8.0
+        version: 2.8.0
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -668,6 +671,9 @@ packages:
 
   '@tanstack/virtual-core@3.17.8':
     resolution: {integrity: sha512-BfEvehNpOT75r5Ksc5xW6NZuXujTfb7nlSEyVu4XHG3gdxNg1KqXruWbDewXOUaUYIo4oRbSfkjIajz4MAT8tA==}
+
+  '@tosspayments/tosspayments-sdk@2.8.0':
+    resolution: {integrity: sha512-DWFlEqrX6m0hHcjuSf3pHIdeNbyN8SQ3VanO0Ru3qQwYf8NHfAKn1wr90VJrCgPio4aYvHOtbtMld3BfRTxexQ==}
 
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
@@ -2827,6 +2833,8 @@ snapshots:
       react-dom: 19.2.8(react@19.2.8)
 
   '@tanstack/virtual-core@3.17.8': {}
+
+  '@tosspayments/tosspayments-sdk@2.8.0': {}
 
   '@tybys/wasm-util@0.10.3':
     dependencies:

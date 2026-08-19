@@ -2,14 +2,32 @@
 "use client";
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { getFlaggedMessages, getPendingPartners, getReports } from "@/features/admin/apis";
-import type { FlaggedMessageItem, PendingPartnerItem, ReportItem } from "@/features/admin/types";
+import {
+	getFlaggedMessages,
+	getPaymentsOverview,
+	getPendingPartners,
+	getReports,
+} from "@/features/admin/apis";
+import type {
+	AdminPaymentItem,
+	FlaggedMessageItem,
+	PendingPartnerItem,
+	ReportItem,
+} from "@/features/admin/types";
 
 export const ADMIN_QUERY_KEYS = {
 	pendingPartners: ["admin", "pendingPartners"] as const,
 	reports: ["admin", "reports"] as const,
 	flaggedMessages: ["admin", "flaggedMessages"] as const,
+	payments: ["admin", "payments"] as const,
 };
+
+export function usePaymentsOverviewQuery(): UseQueryResult<AdminPaymentItem[]> {
+	return useQuery({
+		queryKey: ADMIN_QUERY_KEYS.payments,
+		queryFn: getPaymentsOverview,
+	});
+}
 
 export function useFlaggedMessagesQuery(): UseQueryResult<FlaggedMessageItem[]> {
 	return useQuery({

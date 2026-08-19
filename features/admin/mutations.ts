@@ -5,6 +5,7 @@ import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/r
 import {
 	deletePartnerProfile,
 	patchPartnerApproval,
+	patchPaymentStatus,
 	patchReportStatus,
 } from "@/features/admin/apis";
 import { ADMIN_QUERY_KEYS } from "@/features/admin/queries";
@@ -30,6 +31,27 @@ export function useRejectPartnerMutation(): UseMutationResult<void, Error, strin
 		mutationFn: deletePartnerProfile,
 		async onSuccess(): Promise<void> {
 			await queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.pendingPartners });
+		},
+	});
+}
+
+type UpdatePaymentStatusInput = {
+	paymentId: string;
+	status: "released" | "refunded";
+};
+
+export function useUpdatePaymentStatusMutation(): UseMutationResult<
+	void,
+	Error,
+	UpdatePaymentStatusInput
+> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: function ({ paymentId, status }: UpdatePaymentStatusInput) {
+			return patchPaymentStatus(paymentId, status);
+		},
+		async onSuccess(): Promise<void> {
+			await queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.payments });
 		},
 	});
 }
