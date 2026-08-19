@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type JSX, type UIEvent } from "react";
+import { REGIONS } from "@/constants/regions";
 import { PartnerListDeckCard } from "@/features/partners/components/PartnerList/PartnerListDeckCard";
 import { usePartnerListQuery } from "@/features/partners/queries";
 import { usePartnerRatingsQuery } from "@/features/reviews/queries";
@@ -10,6 +11,7 @@ import { useMyBlocksQuery } from "@/features/safety/queries";
 import { cn } from "@/utils/cn";
 
 const INTEREST_FILTERS = ["전체", "카페", "전시", "산책", "맛집", "영화"];
+const REGION_FILTERS = ["전체", ...REGIONS];
 
 type PartnerListProps = {
 	searchQuery?: string;
@@ -24,6 +26,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		}),
 	);
 	const [activeFilter, setActiveFilter] = useState("전체");
+	const [activeRegion, setActiveRegion] = useState("전체");
 	const [deckIndex, setDeckIndex] = useState(0);
 	const [isDeckPaused, setIsDeckPaused] = useState(false);
 	const deckRef = useRef<HTMLDivElement>(null);
@@ -36,10 +39,16 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const visiblePartners = (partners ?? []).filter(function (partner) {
 		return !blockedIds.has(partner.profile_id);
 	});
-	const chipFilteredPartners =
-		activeFilter === "전체"
+	const regionFilteredPartners =
+		activeRegion === "전체"
 			? visiblePartners
 			: visiblePartners.filter(function (partner) {
+					return partner.region === activeRegion;
+				});
+	const chipFilteredPartners =
+		activeFilter === "전체"
+			? regionFilteredPartners
+			: regionFilteredPartners.filter(function (partner) {
 					return partner.interests.some(function (interest) {
 						return interest.includes(activeFilter);
 					});
@@ -113,6 +122,12 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		if (normalizedQuery !== "") {
 			return `'${searchQuery.trim()}' 검색 결과가 없어요.`;
 		}
+		if (activeRegion !== "전체" && activeFilter !== "전체") {
+			return `'${activeRegion}' 지역의 '${activeFilter}' 관심사를 가진 파트너가 아직 없어요.`;
+		}
+		if (activeRegion !== "전체") {
+			return `'${activeRegion}' 지역 파트너가 아직 없어요.`;
+		}
 		if (activeFilter !== "전체") {
 			return `'${activeFilter}' 관심사를 가진 파트너가 아직 없어요.`;
 		}
@@ -139,6 +154,26 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 								!isActive && "border-line bg-surface text-body border",
 							)}>
 							{filter}
+						</button>
+					);
+				})}
+			</div>
+			<div className="-mx-5 flex scrollbar-none gap-2 overflow-x-auto px-5">
+				{REGION_FILTERS.map(function (region) {
+					const isActive = activeRegion === region;
+					return (
+						<button
+							key={region}
+							type="button"
+							onClick={function () {
+								setActiveRegion(region);
+							}}
+							className={cn(
+								"h-9 shrink-0 rounded-full px-3.5 text-[13px]",
+								isActive && "bg-inverse text-inverse-fg font-semibold",
+								!isActive && "border-line bg-surface text-body border",
+							)}>
+							{region}
 						</button>
 					);
 				})}
