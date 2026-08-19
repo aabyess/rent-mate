@@ -13,32 +13,31 @@
     a { color: #dd5230; text-decoration: none; } a:hover { color: #b83f23; }
   </style>
 </helmet>
-<div style="width: 390px; height: 920px; background: #fafafa; display: flex; flex-direction: column; overflow: hidden;">
+<div style="position: relative; width: 390px; height: 980px; background: #fafafa; overflow: hidden;">
 
-  <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 20px 12px 20px; background: #ffffff; border-bottom: 1px solid #e4e4e7;">
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 20px 12px 20px; background: #ffffff; box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <div style="font-size: 22px; font-weight: 700; color: #f26b4a; letter-spacing: -0.5px;">RentMate</div>
-      <div style="display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: #f0faf9;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e9995" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
-        <span style="font-size: 12px; font-weight: 500; color: #1f6462;">안전 정책</span>
+      <div style="display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px; background: #d5f1ef;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1f6462" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+        <span style="font-size: 12px; font-weight: 600; color: #1f6462;">안전 정책</span>
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 16px; border-radius: 14px; background: #f4f4f5;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M16.5 16.5L21 21"></path></svg>
       <span style="font-size: 15px; color: #71717a;">지역 · 날짜로 파트너 찾기</span>
     </div>
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <div style="display: flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; background: #f26b4a; font-size: 13px; font-weight: 500; color: #ffffff;">전체</div>
-      <div style="display: flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; background: #ffffff; border: 1px solid #e4e4e7; font-size: 13px; color: #52525b;">서울</div>
-      <div style="display: flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; background: #ffffff; border: 1px solid #e4e4e7; font-size: 13px; color: #52525b;">주말 가능</div>
-      <div style="display: flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; background: #ffffff; border: 1px solid #e4e4e7; font-size: 13px; color: #52525b;">카페 · 전시</div>
-    </div>
   </div>
 
-  <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 14px; padding: 18px 20px 12px 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: baseline;">
-      <div style="font-size: 18px; font-weight: 600;">지금 만날 수 있는 파트너</div>
-      <div style="font-size: 13px; color: #71717a;">128명</div>
+  <div style="display: flex; flex-direction: column; gap: 14px; padding: 16px 20px 110px 20px;">
+    <div style="font-size: 18px; font-weight: 600;">지금 만날 수 있는 파트너</div>
+
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <div style="display: flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 999px; background: #18181b; font-size: 13px; font-weight: 600; color: #ffffff;">전체</div>
+      <div style="display: flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 999px; background: #ffffff; border: 1px solid #e4e4e7; font-size: 13px; color: #3f3f46;">카페</div>
+      <div style="display: flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 999px; background: #ffffff; border: 1px solid #e4e4e7; font-size: 13px; color: #3f3f46;">전시</div>
+      <div style="display: flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 999px; background: #ffffff; border: 1px solid #e4e4e7; font-size: 13px; color: #3f3f46;">산책</div>
+      <div style="display: flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 999px; background: #ffffff; border: 1px solid #e4e4e7; font-size: 13px; color: #3f3f46;">맛집</div>
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
@@ -55,7 +54,7 @@
         <div style="font-size: 12px; color: #71717a;">전시 관람 · 카페 투어</div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums;">₩30,000<span style="font-size: 12px; font-weight: 400; color: #71717a;"> /시간</span></span>
-          <span style="display: flex; align-items: center; gap: 3px; font-size: 12px; color: #52525b;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f79e3d"><path d="M12 17.3l-5.5 3 1.1-6.2-4.5-4.4 6.2-.9L12 3l2.7 5.8 6.2.9-4.5 4.4 1.1 6.2z"></path></svg>4.9 (128)</span>
+          <span style="display: flex; align-items: center; gap: 3px; font-size: 12px; color: #3f3f46; font-variant-numeric: tabular-nums;"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f79e3d"><path d="M12 17.3l-5.5 3 1.1-6.2-4.5-4.4 6.2-.9L12 3l2.7 5.8 6.2.9-4.5 4.4 1.1 6.2z"></path></svg>4.9 (12)</span>
         </div>
       </div>
 
@@ -70,7 +69,7 @@
         <div style="font-size: 12px; color: #71717a;">맛집 탐방 · 산책</div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums;">₩28,000<span style="font-size: 12px; font-weight: 400; color: #71717a;"> /시간</span></span>
-          <span style="display: flex; align-items: center; gap: 3px; font-size: 12px; color: #52525b;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f79e3d"><path d="M12 17.3l-5.5 3 1.1-6.2-4.5-4.4 6.2-.9L12 3l2.7 5.8 6.2.9-4.5 4.4 1.1 6.2z"></path></svg>4.8 (96)</span>
+          <span style="display: flex; align-items: center; gap: 3px; font-size: 12px; color: #3f3f46; font-variant-numeric: tabular-nums;"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f79e3d"><path d="M12 17.3l-5.5 3 1.1-6.2-4.5-4.4 6.2-.9L12 3l2.7 5.8 6.2.9-4.5 4.4 1.1 6.2z"></path></svg>4.8 (7)</span>
         </div>
       </div>
 
@@ -85,7 +84,7 @@
         <div style="font-size: 12px; color: #71717a;">보드게임 · 브런치</div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums;">₩32,000<span style="font-size: 12px; font-weight: 400; color: #71717a;"> /시간</span></span>
-          <span style="display: flex; align-items: center; gap: 3px; font-size: 12px; color: #52525b;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f79e3d"><path d="M12 17.3l-5.5 3 1.1-6.2-4.5-4.4 6.2-.9L12 3l2.7 5.8 6.2.9-4.5 4.4 1.1 6.2z"></path></svg>5.0 (54)</span>
+          <span style="font-size: 12px; color: #a1a1aa;">후기 없음</span>
         </div>
       </div>
 
@@ -100,14 +99,14 @@
         <div style="font-size: 12px; color: #71717a;">영화 · 서점 데이트</div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums;">₩30,000<span style="font-size: 12px; font-weight: 400; color: #71717a;"> /시간</span></span>
-          <span style="display: flex; align-items: center; gap: 3px; font-size: 12px; color: #52525b;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f79e3d"><path d="M12 17.3l-5.5 3 1.1-6.2-4.5-4.4 6.2-.9L12 3l2.7 5.8 6.2.9-4.5 4.4 1.1 6.2z"></path></svg>4.7 (73)</span>
+          <span style="display: flex; align-items: center; gap: 3px; font-size: 12px; color: #3f3f46; font-variant-numeric: tabular-nums;"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f79e3d"><path d="M12 17.3l-5.5 3 1.1-6.2-4.5-4.4 6.2-.9L12 3l2.7 5.8 6.2.9-4.5 4.4 1.1 6.2z"></path></svg>4.7 (3)</span>
         </div>
       </div>
 
     </div>
   </div>
 
-  <div style="display: flex; align-items: center; background: #ffffff; border-top: 1px solid #e4e4e7; padding: 8px 12px 20px 12px;">
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; padding: 8px 12px 20px 12px; background: rgba(255,255,255,0.8); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 -0.5px 0 rgba(0,0,0,0.12);">
     <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 48px; justify-content: center;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f26b4a" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M16.5 16.5L21 21"></path></svg>
       <span style="font-size: 11px; font-weight: 600; color: #f26b4a;">탐색</span>
@@ -128,7 +127,7 @@
 
 </div>
 </x-dc>
-<script data-dc-script data-props='{"$preview": {"width": 390, "height": 920}}'>
+<script data-dc-script data-props='{"$preview": {"width": 390, "height": 980}}'>
 class Component extends DCLogic {
   renderVals() { return {}; }
 }

@@ -1,30 +1,172 @@
 {
   "pages": [
-    { "id": "page-1", "name": "시안 · 애플화 비교" },
-    { "id": "page-2", "name": "컬러 탐색 (미채택)" }
+    {
+      "id": "page-1",
+      "name": "시안 · 애플화 비교"
+    },
+    {
+      "id": "page-2",
+      "name": "컬러 탐색 (미채택)"
+    }
   ],
   "artboards": [
-    { "file": "Main.dc.html", "title": "홈 (현재)", "x": 0, "y": 0, "w": 390, "h": 920 },
-    { "file": "PartnerDetail.dc.html", "title": "파트너 상세 (현재)", "x": 460, "y": 0, "w": 390, "h": 1360 },
-    { "file": "Booking.dc.html", "title": "예약 (현재)", "x": 920, "y": 0, "w": 390, "h": 1120 },
-    { "file": "Chat.dc.html", "title": "채팅 (현재)", "x": 1380, "y": 0, "w": 390, "h": 844 },
-    { "file": "MyPage.dc.html", "title": "마이페이지 (현재)", "x": 1840, "y": 0, "w": 390, "h": 1040 },
-    { "file": "AppleHome.dc.html", "title": "홈 (애플화)", "x": 0, "y": 1620, "w": 390, "h": 1200 },
-    { "file": "AppleDetail.dc.html", "title": "파트너 상세 (애플화)", "x": 460, "y": 1620, "w": 390, "h": 1560 },
-    { "file": "AppleBooking.dc.html", "title": "예약 — 시트 (애플화)", "x": 920, "y": 1620, "w": 390, "h": 1000 },
-    { "file": "AppleChat.dc.html", "title": "채팅 (애플화)", "x": 1380, "y": 1620, "w": 390, "h": 844 },
-    { "file": "AppleMyPage.dc.html", "title": "마이페이지 (애플화)", "x": 1840, "y": 1620, "w": 390, "h": 1040 },
-    { "file": "HomeBlue.dc.html", "title": "B안 · 트러스트 블루", "x": 0, "y": 0, "w": 390, "h": 920, "page": "page-2" },
-    { "file": "HomeTeal.dc.html", "title": "C안 · 틸 그린", "x": 460, "y": 0, "w": 390, "h": 920, "page": "page-2" },
-    { "file": "HomeRose.dc.html", "title": "D안 · 소프트 로즈", "x": 920, "y": 0, "w": 390, "h": 920, "page": "page-2" }
+    {
+      "file": "Main.dc.html",
+      "title": "홈 (구현 v3)",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 980
+    },
+    {
+      "file": "PartnerDetail.dc.html",
+      "title": "파트너 상세 (구현 v3)",
+      "x": 460,
+      "y": 0,
+      "w": 390,
+      "h": 1560
+    },
+    {
+      "file": "Booking.dc.html",
+      "title": "예약 (구현 v3)",
+      "x": 920,
+      "y": 0,
+      "w": 390,
+      "h": 1160
+    },
+    {
+      "file": "Chat.dc.html",
+      "title": "채팅 (구현 v3)",
+      "x": 1380,
+      "y": 0,
+      "w": 390,
+      "h": 960
+    },
+    {
+      "file": "MyPage.dc.html",
+      "title": "마이페이지 (구현 v3)",
+      "x": 1840,
+      "y": 0,
+      "w": 390,
+      "h": 1240
+    },
+    {
+      "file": "AppleHome.dc.html",
+      "title": "홈 (애플화)",
+      "x": 0,
+      "y": 1620,
+      "w": 390,
+      "h": 1200
+    },
+    {
+      "file": "AppleDetail.dc.html",
+      "title": "파트너 상세 (애플화)",
+      "x": 460,
+      "y": 1620,
+      "w": 390,
+      "h": 1560
+    },
+    {
+      "file": "AppleBooking.dc.html",
+      "title": "예약 — 시트 (애플화)",
+      "x": 920,
+      "y": 1620,
+      "w": 390,
+      "h": 1000
+    },
+    {
+      "file": "AppleChat.dc.html",
+      "title": "채팅 (애플화)",
+      "x": 1380,
+      "y": 1620,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "AppleMyPage.dc.html",
+      "title": "마이페이지 (애플화)",
+      "x": 1840,
+      "y": 1620,
+      "w": 390,
+      "h": 1040
+    },
+    {
+      "file": "HomeBlue.dc.html",
+      "title": "B안 · 트러스트 블루",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "page": "page-2"
+    },
+    {
+      "file": "HomeTeal.dc.html",
+      "title": "C안 · 틸 그린",
+      "x": 460,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "page": "page-2"
+    },
+    {
+      "file": "HomeRose.dc.html",
+      "title": "D안 · 소프트 로즈",
+      "x": 920,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "page": "page-2"
+    }
   ],
   "annotations": [
-    { "id": "palette-note", "x": 0, "y": -190, "w": 420, "text": "✅ 확정 팔레트 — 웜 코랄 #f26b4a + 쿨 그레이(zinc)\nTrust Teal #2e9995 · Accent 앰버 #f79e3d · 크림/아이보리 배경 금지\n윗줄 = 현재 시안 · 아랫줄 = 애플화 버전 (같은 팔레트, 다른 문법)\n신고·안전 UI 1뎁스 노출은 두 버전 모두 유지 (법적 요건)" },
-    { "id": "apple-note", "x": 0, "y": 1400, "w": 460, "text": "↓ 애플화 버전 — HIG 3원칙(Clarity·Deference·Depth) 적용\n① 보더 전부 제거 → 배경 대비·헤어라인으로 구획 (iOS inset grouped)\n② 라지 타이틀 32px 점프 + 자간 조임 (본문 17 ↔ 타이틀 34 관성)\n③ 코랄 예산제: 화면당 2곳 (주 CTA + 활성 상태), 별점·칩은 무채색화\n④ 탭바·헤더·하단바 = rgba(255,255,255,0.78) + saturate(180%) blur(20px) 유리 처리\n⑤ 예약은 페이지 → 바텀 시트 (그래버 + 상단 radius 24)\n⑥ 캘린더 가능일 배경칠 제거 → 선택일만 코랄 원 (iOS 캘린더 문법)" },
-    { "id": "research-note", "x": 2300, "y": 1400, "w": 400, "text": "리서치 근거 (2026-08-19)\n· Apple HIG: 본문 17pt ↔ Large Title 34pt, 8pt 그리드, 44pt 탭 타깃, 색은 시맨틱 역할제\n· iOS 26 Liquid Glass: 유리는 떠 있는 내비 레이어에만, 콘텐츠(리스트·사진)엔 금지\n· 유리 재현 공식: 반투명 흰 배경 + backdrop-filter saturate(180%) blur(20px) + 0.5px 헤어라인\n· inset grouped list(iOS 13+): 좌우 마진 + 라운드 섹션, 마이페이지에 적용\n· 토스 UX: 1 thing / 1 page — 시트 하나 = 결정 하나로 번역\n상세 분석: docs/design-guide.md ⑥장" },
-    { "id": "option-b-note", "x": 0, "y": -170, "w": 390, "page": "page-2", "text": "B안 · 트러스트 블루 #4577e6\n토스식 핀테크 신뢰감 극대화. 성인 서비스 연상 원천 차단.\n트레이드오프: 따뜻함·설렘이 약해져 데이팅 감성이 덜함." },
-    { "id": "option-c-note", "x": 460, "y": -170, "w": 390, "page": "page-2", "text": "C안 · 틸 그린 #2e9995\n안전·검증 최우선 무드. 차분하고 청결.\n트레이드오프: 헬스케어 앱처럼 보일 수 있고 설렘 부족." },
-    { "id": "option-d-note", "x": 920, "y": -170, "w": 390, "page": "page-2", "text": "D안 · 소프트 로즈 #e8607d\n렌탈카노조 원형 감성, 설렘 최대.\n트레이드오프: 국내에서 성인 서비스 오독 리스크 — 미채택." }
+    {
+      "id": "palette-note",
+      "x": 0,
+      "y": -190,
+      "w": 420,
+      "text": "✅ 구현 반영 v3 (2026-08-19) — develop 머지된 실제 화면 기준\n팔레트: 코랄 #f26b4a · Teal #2e9995 · zinc 뉴트럴 (크림 금지)\n윗줄 = 실제 구현 미러 (가능 요일·사진·평점·차단·금칙어 감지 반영)\n아랫줄 = 애플화 제안 — 검정 칩·인셋 그룹·블러 바는 실제 앱에 이미 채택됨"
+    },
+    {
+      "id": "apple-note",
+      "x": 0,
+      "y": 1400,
+      "w": 460,
+      "text": "↓ 애플화 제안 (참고 보존) — 6원칙 중 상당수가 구현에 채택됨:\n채택 ✅ 검정 활성 칩 · 보더 없는 인셋 그룹 · 블러 하단바/헤더 · 시맨틱 토큰\n미채택 → 라지 타이틀 점프 · 시트형 예약 플로우 · 코랄 예산제(현재는 혼용)\n남은 제안을 도입할지는 추후 결정"
+    },
+    {
+      "id": "research-note",
+      "x": 2300,
+      "y": 1400,
+      "w": 400,
+      "text": "리서치 근거 (2026-08-19)\n· Apple HIG: 본문 17pt ↔ Large Title 34pt, 8pt 그리드, 44pt 탭 타깃, 색은 시맨틱 역할제\n· iOS 26 Liquid Glass: 유리는 떠 있는 내비 레이어에만, 콘텐츠(리스트·사진)엔 금지\n· 유리 재현 공식: 반투명 흰 배경 + backdrop-filter saturate(180%) blur(20px) + 0.5px 헤어라인\n· inset grouped list(iOS 13+): 좌우 마진 + 라운드 섹션, 마이페이지에 적용\n· 토스 UX: 1 thing / 1 page — 시트 하나 = 결정 하나로 번역\n상세 분석: docs/design-guide.md ⑥장"
+    },
+    {
+      "id": "option-b-note",
+      "x": 0,
+      "y": -170,
+      "w": 390,
+      "page": "page-2",
+      "text": "B안 · 트러스트 블루 #4577e6\n토스식 핀테크 신뢰감 극대화. 성인 서비스 연상 원천 차단.\n트레이드오프: 따뜻함·설렘이 약해져 데이팅 감성이 덜함."
+    },
+    {
+      "id": "option-c-note",
+      "x": 460,
+      "y": -170,
+      "w": 390,
+      "page": "page-2",
+      "text": "C안 · 틸 그린 #2e9995\n안전·검증 최우선 무드. 차분하고 청결.\n트레이드오프: 헬스케어 앱처럼 보일 수 있고 설렘 부족."
+    },
+    {
+      "id": "option-d-note",
+      "x": 920,
+      "y": -170,
+      "w": 390,
+      "page": "page-2",
+      "text": "D안 · 소프트 로즈 #e8607d\n렌탈카노조 원형 감성, 설렘 최대.\n트레이드오프: 국내에서 성인 서비스 오독 리스크 — 미채택."
+    }
   ],
-  "launch": { "view": "canvas", "page": "page-1" }
+  "launch": {
+    "view": "canvas",
+    "page": "page-1"
+  }
 }
