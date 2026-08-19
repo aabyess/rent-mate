@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { JSX, ReactNode } from "react";
+import { useUnreadChatTotal } from "@/features/chats/hooks";
 import { cn } from "@/utils/cn";
 
 type TabItem = {
@@ -85,6 +86,7 @@ const TAB_ITEMS: TabItem[] = [
 
 export function BottomTabBar(): JSX.Element {
 	const pathname = usePathname();
+	const unreadChatTotal = useUnreadChatTotal();
 
 	return (
 		<nav className="border-line bg-surface/80 fixed bottom-0 left-1/2 z-10 flex w-full max-w-md -translate-x-1/2 items-center border-t px-3 pt-2 pb-5 backdrop-blur-xl">
@@ -95,10 +97,15 @@ export function BottomTabBar(): JSX.Element {
 						key={item.href}
 						href={item.href}
 						className={cn(
-							"flex h-12 grow flex-col items-center justify-center gap-0.5",
+							"relative flex h-12 grow flex-col items-center justify-center gap-0.5",
 							isActive ? "text-brand font-semibold" : "text-sub",
 						)}>
 						{item.icon}
+						{item.href === "/chats" && unreadChatTotal > 0 && (
+							<span className="bg-brand absolute top-1 left-1/2 flex h-4 min-w-4 translate-x-2 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white tabular-nums">
+								{unreadChatTotal > 9 ? "9+" : unreadChatTotal}
+							</span>
+						)}
 						<span className="text-[11px]">{item.label}</span>
 					</Link>
 				);

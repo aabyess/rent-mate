@@ -3,9 +3,11 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { CHATS_QUERY_KEYS } from "@/features/chats/queries";
+import { useMyBookingsQuery } from "@/features/bookings/queries";
+import { CHATS_QUERY_KEYS, useChatRoomSummariesQuery } from "@/features/chats/queries";
 import type { ChatMessage } from "@/features/chats/types";
 import { createClient } from "@/libs/supabase/client";
+import { useMyBlocksQuery } from "@/features/safety/queries";
 
 // booking 채팅방의 신규 메시지를 Realtime으로 받아 쿼리 캐시에 반영한다
 export function useChatRoomRealtime(bookingId: string): void {
@@ -52,4 +54,33 @@ export function useChatRoomRealtime(bookingId: string): void {
 		},
 		[bookingId, queryClient],
 	);
+}
+
+// ChatRoomList의 rooms 필터(취소·거절 제외, 차단 상대 제외)와 동일 기준으로 안읽음 총합을 낸다
+export function useUnreadChatTotal(): number {
+	const { data: bookings } = useMyBookingsQuery();
+	const { data: blocks } = useMyBlocksQuery();
+
+	const blockedIds = new Set(
+		(blocks ?? []).map(function (block) {
+			return block.blocked_id;
+		}),
+	);
+	const roomIds = (bookings ?? [])
+		.filter(function (booking) {
+			return (
+				booking.status !== "canceled" &&
+				booking.status !== "rejected" &&
+				!blockedIds.has(booking.counterpartId)
+			);
+		})
+		.map(function (booking) {
+			return booking.id;
+		});
+
+	const { data: summaries } = useChatRoomSummariesQuery(roomIds);
+
+	return Object.values(summaries ?? {}).reduce(function (total, summary) {
+		return total + summary.unreadCount;
+	}, 0);
 }
