@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { REGIONS } from "@/constants/regions";
 import { PartnerPhotoUploader } from "@/features/partners/components/PartnerPhotoUploader";
 import { useCreatePartnerProfileMutation } from "@/features/partners/mutations";
 import { cn } from "@/utils/cn";
@@ -45,6 +46,7 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [interests, setInterests] = useState<string[]>([]);
 	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
 	const [photos, setPhotos] = useState<File[]>([]);
+	const [region, setRegion] = useState<string | null>(null);
 
 	function handleWeekdayToggle(weekday: number): void {
 		setAvailableWeekdays(function (current) {
@@ -82,6 +84,7 @@ export function PartnerRegisterForm(): JSX.Element {
 				interests,
 				availableWeekdays,
 				photos,
+				region: region ?? "",
 			},
 			{
 				onSuccess: function (): void {
@@ -99,7 +102,8 @@ export function PartnerRegisterForm(): JSX.Element {
 		Number(birthYear) <= 2007 &&
 		Number(hourlyRate) >= MIN_HOURLY_RATE_KRW &&
 		interests.length > 0 &&
-		availableWeekdays.length > 0;
+		availableWeekdays.length > 0 &&
+		region !== null;
 
 	return (
 		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -166,6 +170,30 @@ export function PartnerRegisterForm(): JSX.Element {
 				<p className="text-sub text-xs">
 					첫 번째 사진이 대표 사진으로 표시돼요. 밝은 곳에서 찍은 사진일수록 좋아요.
 				</p>
+			</section>
+
+			<section className="flex flex-col gap-2">
+				<span className="text-sm font-medium">활동 지역</span>
+				<div className="flex flex-wrap gap-2">
+					{REGIONS.map(function (regionOption) {
+						const selected = region === regionOption;
+						return (
+							<button
+								key={regionOption}
+								type="button"
+								onClick={function () {
+									setRegion(regionOption);
+								}}
+								className={cn(
+									"h-10 rounded-full px-4 text-sm",
+									selected && "bg-neutral-900 font-semibold text-white",
+									!selected && "bg-surface-alt text-body",
+								)}>
+								{regionOption}
+							</button>
+						);
+					})}
+				</div>
 			</section>
 
 			<section className="flex flex-col gap-2">

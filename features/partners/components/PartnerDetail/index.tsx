@@ -169,6 +169,21 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 						<Badge variant="trust">성인인증</Badge>
 						<Badge variant="trust">실명인증</Badge>
 					</div>
+					<span className="text-sub flex items-center gap-1.5 text-[13px]">
+						<svg
+							width="15"
+							height="15"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.8"
+							strokeLinecap="round"
+							strokeLinejoin="round">
+							<path d="M12 21s-6.5-5.4-6.5-10A6.5 6.5 0 0 1 12 4.5 6.5 6.5 0 0 1 18.5 11c0 4.6-6.5 10-6.5 10z" />
+							<circle cx="12" cy="11" r="2.3" />
+						</svg>
+						{partner.region}
+					</span>
 					<p className="text-[15px] leading-relaxed">{partner.bio}</p>
 					{partner.interests.length > 0 && (
 						<div className="flex flex-wrap gap-2">

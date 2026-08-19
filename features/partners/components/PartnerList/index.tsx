@@ -69,6 +69,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 			: chipFilteredPartners.filter(function (partner) {
 					return (
 						partner.nickname.toLowerCase().includes(normalizedQuery) ||
+						partner.region.toLowerCase().includes(normalizedQuery) ||
 						partner.interests.some(function (interest) {
 							return interest.toLowerCase().includes(normalizedQuery);
 						})
