@@ -11,13 +11,13 @@ import { useSignInMutation } from "@/features/auth/mutations";
 export default function LoginPage(): JSX.Element {
 	const router = useRouter();
 	const signInMutation = useSignInMutation();
-	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
 		signInMutation.mutate(
-			{ email, password },
+			{ username, password },
 			{
 				onSuccess: function (): void {
 					router.replace("/");
@@ -35,12 +35,13 @@ export default function LoginPage(): JSX.Element {
 			</div>
 			<form onSubmit={handleSubmit} className="flex flex-col gap-3">
 				<Input
-					type="email"
-					value={email}
+					type="text"
+					value={username}
 					onChange={function (event) {
-						setEmail(event.target.value);
+						setUsername(event.target.value);
 					}}
-					placeholder="이메일"
+					placeholder="아이디"
+					autoComplete="username"
 					required
 				/>
 				<Input
@@ -50,10 +51,11 @@ export default function LoginPage(): JSX.Element {
 						setPassword(event.target.value);
 					}}
 					placeholder="비밀번호"
+					autoComplete="current-password"
 					required
 				/>
 				{signInMutation.isError && (
-					<p className="text-error-500 text-sm">이메일 또는 비밀번호를 확인해주세요.</p>
+					<p className="text-error-500 text-sm">아이디 또는 비밀번호를 확인해주세요.</p>
 				)}
 				<Button type="submit" fullWidth disabled={signInMutation.isPending}>
 					{signInMutation.isPending ? "로그인 중..." : "로그인"}

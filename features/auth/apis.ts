@@ -5,19 +5,23 @@ import type {
 	SignInInput,
 	SignUpInput,
 } from "@/features/auth/types";
+import { toAuthEmail } from "@/features/auth/utils";
 import { createClient } from "@/libs/supabase/client";
 
-export async function postSignUp({ email, password }: SignUpInput): Promise<void> {
+export async function postSignUp({ username, password }: SignUpInput): Promise<void> {
 	const supabase = createClient();
-	const { error } = await supabase.auth.signUp({ email, password });
+	const { error } = await supabase.auth.signUp({ email: toAuthEmail(username), password });
 	if (error) {
 		throw error;
 	}
 }
 
-export async function postSignIn({ email, password }: SignInInput): Promise<void> {
+export async function postSignIn({ username, password }: SignInInput): Promise<void> {
 	const supabase = createClient();
-	const { error } = await supabase.auth.signInWithPassword({ email, password });
+	const { error } = await supabase.auth.signInWithPassword({
+		email: toAuthEmail(username),
+		password,
+	});
 	if (error) {
 		throw error;
 	}
