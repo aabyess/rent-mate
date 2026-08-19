@@ -1,11 +1,12 @@
-// app/(main)/me/page.tsx
+// app/(main)/(tabs)/me/page.tsx
 import type { JSX } from "react";
+import { MyPageContent } from "@/features/auth/components/MyPageContent";
 
 export default function MyPage(): JSX.Element {
 	return (
 		<main className="flex flex-col gap-4 px-5 py-4">
-			<h1 className="text-xl font-semibold">마이페이지</h1>
-			<p className="text-sub py-16 text-center text-sm">마이페이지 기능 준비 중입니다.</p>
+			<h1 className="text-[28px] font-bold">마이페이지</h1>
+			<MyPageContent />
 		</main>
 	);
 }
