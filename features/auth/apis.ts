@@ -56,7 +56,11 @@ export async function getMyProfile(): Promise<MyProfile | null> {
 }
 
 // 성인인증 게이트: 연 나이 검증과 adult_verified_at 세팅은 DB 트리거가 강제한다
-export async function postCreateProfile({ name, birthDate }: CreateProfileInput): Promise<void> {
+export async function postCreateProfile({
+	name,
+	birthDate,
+	gender,
+}: CreateProfileInput): Promise<void> {
 	const supabase = createClient();
 	const {
 		data: { user },
@@ -69,6 +73,7 @@ export async function postCreateProfile({ name, birthDate }: CreateProfileInput)
 		id: user.id,
 		name,
 		birth_date: birthDate,
+		gender,
 	});
 	if (error) {
 		throw error;

@@ -46,5 +46,6 @@ export type PartnerListItem = {
 	available_weekdays: number[];
 	region: string;
 	purpose_tags: string[];
+	gender: "male" | "female";
 	created_at: string;
 };
