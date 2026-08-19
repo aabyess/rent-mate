@@ -4,13 +4,13 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type JSX } from "react";
+import { useEffect, useState, type FormEvent, type JSX } from "react";
 import { useMyProfileQuery } from "@/features/auth/queries";
 import { useBookingDetailQuery } from "@/features/bookings/queries";
 import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
 import { ChatRoomMessageList } from "@/features/chats/components/ChatRoom/ChatRoomMessageList";
 import { useChatRoomRealtime } from "@/features/chats/hooks";
-import { useSendChatMessageMutation } from "@/features/chats/mutations";
+import { useMarkChatReadMutation, useSendChatMessageMutation } from "@/features/chats/mutations";
 import { useChatMessagesQuery } from "@/features/chats/queries";
 import { findBannedPhrase } from "@/features/chats/utils";
 import { BlockConfirmDialog } from "@/features/safety/components/BlockConfirmDialog";
@@ -26,7 +26,20 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 	const { data: booking, isPending: isBookingPending } = useBookingDetailQuery(bookingId);
 	const { data: messages, isPending: isMessagesPending } = useChatMessagesQuery(bookingId);
 	const sendMessageMutation = useSendChatMessageMutation(bookingId);
+	const markChatReadMutation = useMarkChatReadMutation();
 	useChatRoomRealtime(bookingId);
+
+	// 방에 머무는 동안 도착한 메시지까지 읽음 처리한다
+	const messageCount = messages?.length ?? 0;
+	const markChatRead = markChatReadMutation.mutate;
+	useEffect(
+		function () {
+			if (messageCount > 0) {
+				markChatRead(bookingId);
+			}
+		},
+		[bookingId, messageCount, markChatRead],
+	);
 
 	const [content, setContent] = useState("");
 	const [isReportOpen, setIsReportOpen] = useState(false);
