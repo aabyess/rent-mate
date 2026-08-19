@@ -37,6 +37,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 		return failRedirect(request, "amount_mismatch");
 	}
 
+	// 멱등 처리: successUrl 재방문(새로고침·뒤로가기)이면 이미 승인된 결제라 confirm을 다시 부르지 않는다.
+	// 실제로 재confirm하면 토스가 이미 승인된 paymentKey라 실패시켜 우리 쪽엔 정상 결제가 fail로 보이게 된다.
+	const { data: existingPayment } = await supabase
+		.from("payments")
+		.select("status")
+		.eq("booking_id", orderId)
+		.maybeSingle();
+	if (existingPayment && existingPayment.status !== "pending") {
+		return NextResponse.redirect(new URL("/bookings?payment=success", request.nextUrl));
+	}
+
 	const secretKey = process.env.TOSS_SECRET_KEY;
 	if (!secretKey) {
 		return failRedirect(request, "config");
