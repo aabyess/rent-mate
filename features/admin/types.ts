@@ -1,6 +1,15 @@
 // features/admin/types.ts
+import type { BookingStatus } from "@/features/bookings/types";
+import type { PaymentRow } from "@/features/payments/types";
 
 export type ReportStatus = "open" | "resolved" | "dismissed";
+
+export type AdminPaymentItem = PaymentRow & {
+	bookingStatus: BookingStatus;
+	customerName: string;
+	needsRefund: boolean;
+	canRelease: boolean;
+};
 
 export type PendingPartnerItem = {
 	profile_id: string;

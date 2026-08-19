@@ -14,7 +14,7 @@ export async function postCreateBooking({
 	endsAt,
 	place,
 	totalAmountKrw,
-}: CreateBookingInput): Promise<void> {
+}: CreateBookingInput): Promise<string> {
 	const supabase = createClient();
 	const {
 		data: { user },
@@ -23,17 +23,22 @@ export async function postCreateBooking({
 		throw new Error("로그인이 필요합니다.");
 	}
 
-	const { error } = await supabase.from("bookings").insert({
-		customer_id: user.id,
-		partner_id: partnerId,
-		starts_at: startsAt,
-		ends_at: endsAt,
-		place,
-		total_amount_krw: totalAmountKrw,
-	});
+	const { data, error } = await supabase
+		.from("bookings")
+		.insert({
+			customer_id: user.id,
+			partner_id: partnerId,
+			starts_at: startsAt,
+			ends_at: endsAt,
+			place,
+			total_amount_krw: totalAmountKrw,
+		})
+		.select("id")
+		.single();
 	if (error) {
 		throw error;
 	}
+	return (data as { id: string }).id;
 }
 
 export async function patchBookingStatus(bookingId: string, status: BookingStatus): Promise<void> {

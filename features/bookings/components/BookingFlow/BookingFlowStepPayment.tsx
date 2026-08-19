@@ -6,23 +6,29 @@ import { formatKrw } from "@/features/partners/utils";
 
 type BookingFlowStepPaymentProps = {
 	totalPriceKrw: number;
+	isTossEnabled: boolean;
 };
 
 export function BookingFlowStepPayment({
 	totalPriceKrw,
+	isTossEnabled,
 }: BookingFlowStepPaymentProps): JSX.Element {
 	return (
 		<div className="flex flex-col gap-6">
 			<section className="flex flex-col gap-3">
 				<h2 className="text-[17px] font-semibold">결제 수단</h2>
 				<div className="bg-surface-alt flex items-center justify-between rounded-2xl px-4 py-4">
-					<span className="text-[15px] font-medium">모의 결제 (개발용)</span>
+					<span className="text-[15px] font-medium">
+						{isTossEnabled ? "토스페이먼츠 카드 결제 (테스트 모드)" : "모의 결제 (개발용)"}
+					</span>
 					<span className="bg-brand-subtle text-primary-600 rounded-full px-2.5 py-1 text-xs font-semibold">
 						선택됨
 					</span>
 				</div>
 				<p className="text-sub text-xs">
-					아직 실제 결제(PG)는 연결돼 있지 않아요. 결제하기를 누르면 예약 요청이 바로 접수됩니다.
+					{isTossEnabled
+						? "테스트 모드라 실제로 돈이 빠져나가지 않아요. 결제하기를 누르면 토스 결제창이 열려요."
+						: "결제 설정이 없어 모의 결제로 진행돼요. 결제하기를 누르면 예약 요청이 바로 접수됩니다."}
 				</p>
 			</section>
 
