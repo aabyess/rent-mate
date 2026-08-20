@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, type JSX } from "react";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
 import { formatBookingPeriod, sumBookingAmountsKrw } from "@/features/bookings/utils";
+import { usePartnerLikeCountQuery } from "@/features/favorites/queries";
 import { formatKrw } from "@/features/partners/utils";
 import type { MyPartnerProfile } from "@/features/partners/types";
 
@@ -15,6 +16,7 @@ type PartnerHomeProps = {
 // 파트너의 홈 — 탐색 덱 대신 영업 현황(요청·일정·정산)과 일기 작성이 뜬다
 export function PartnerHome({ partnerProfile }: PartnerHomeProps): JSX.Element {
 	const { data: bookings, isPending } = useMyBookingsQuery();
+	const { data: likeCount } = usePartnerLikeCountQuery(partnerProfile.profile_id);
 	// 렌더 중 Date.now() 직접 호출 금지(purity 규칙) — 마운트 시점 스냅샷으로 충분
 	const [nowMs] = useState(function () {
 		return Date.now();
@@ -98,6 +100,24 @@ export function PartnerHome({ partnerProfile }: PartnerHomeProps): JSX.Element {
 					})
 				)}
 			</section>
+
+			<div className="bg-brand-subtle flex items-center justify-between rounded-2xl px-4.5 py-4">
+				<span className="text-primary-700 text-sm font-semibold">받은 좋아요</span>
+				<span className="text-primary-700 flex items-center gap-1.5 text-base font-bold tabular-nums">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						stroke="currentColor"
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round">
+						<path d="M19.5 12.6L12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z" />
+					</svg>
+					{likeCount ?? 0}
+				</span>
+			</div>
 
 			<Link
 				href="/partner/earnings"
