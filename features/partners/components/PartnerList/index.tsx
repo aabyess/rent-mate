@@ -38,6 +38,19 @@ function buildDeckItems(partners: PartnerCardItem[]): DeckItem[] {
 	return items;
 }
 
+// 접속할 때마다 덱 순서가 달라지도록 시드 기반으로 섞는다 — 시드를 상태로 고정해
+// 리렌더·데이터 refetch에도 세션 내 순서는 유지된다
+function shuffleWithSeed<T>(items: T[], seed: number): T[] {
+	const result = [...items];
+	let state = seed;
+	for (let i = result.length - 1; i > 0; i -= 1) {
+		state = (state * 1664525 + 1013904223) % 4294967296;
+		const j = state % (i + 1);
+		[result[i], result[j]] = [result[j], result[i]];
+	}
+	return result;
+}
+
 type PartnerListProps = {
 	searchQuery?: string;
 };
@@ -60,6 +73,9 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const [isDeckPaused, setIsDeckPaused] = useState(false);
 	const resumeTimerRef = useRef<number | null>(null);
 	const lastTouchAtRef = useRef(0);
+	const [shuffleSeed] = useState(function () {
+		return Math.floor(Math.random() * 2147483647) + 1;
+	});
 
 	const blockedIds = new Set(
 		(blocks ?? []).map(function (block) {
@@ -100,7 +116,8 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 						})
 					);
 				});
-	const deckItems = buildDeckItems(filteredPartners);
+	const shuffledPartners = shuffleWithSeed(filteredPartners, shuffleSeed);
+	const deckItems = buildDeckItems(shuffledPartners);
 	const deckCount = deckItems.length;
 
 	// 필터·검색이 바뀌면 스택을 처음부터 다시 쌓는다 (렌더 중 상태 조정 패턴)
@@ -352,7 +369,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 						</button>
 						<span className="text-sub text-sm tabular-nums">
 							{topItem?.kind === "partner"
-								? `${topItem.partnerIndex + 1} / ${filteredPartners.length}`
+								? `${topItem.partnerIndex + 1} / ${shuffledPartners.length}`
 								: "광고"}
 						</span>
 						<button
