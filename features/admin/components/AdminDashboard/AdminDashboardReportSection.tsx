@@ -16,7 +16,7 @@ export function AdminDashboardReportSection(): JSX.Element {
 	const deactivatePartnerMutation = useDeactivatePartnerMutation();
 
 	return (
-		<section className="flex flex-col gap-3">
+		<section id="admin-metrics-reports" className="flex flex-col gap-3">
 			<h2 className="text-[17px] font-semibold">신고 내역</h2>
 			{isPending && <div className="bg-surface-alt h-28 animate-pulse rounded-2xl" />}
 			{isError && <p className="text-sub py-6 text-center text-sm">목록을 불러오지 못했어요.</p>}

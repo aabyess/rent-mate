@@ -4,6 +4,15 @@ import type { PaymentRow } from "@/features/payments/types";
 
 export type ReportStatus = "open" | "resolved" | "dismissed";
 
+export type AdminMetrics = {
+	pendingPartnerCount: number;
+	openReportCount: number;
+	flaggedMessageCount: number;
+	activePartnerCount: number;
+	todaySignupCount: number;
+	todayBookingCount: number;
+};
+
 export type AdminPaymentItem = PaymentRow & {
 	bookingStatus: BookingStatus;
 	customerName: string;

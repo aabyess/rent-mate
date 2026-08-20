@@ -1,5 +1,6 @@
 // features/admin/apis.ts
 import type {
+	AdminMetrics,
 	AdminPaymentItem,
 	FlaggedMessageItem,
 	PendingPartnerItem,
@@ -294,4 +295,67 @@ export async function patchReportStatus(
 	if (error) {
 		throw error;
 	}
+}
+
+// "오늘"은 KST 기준 자정이어야 하지만, 관리자는 항상 한국에서 접속한다는 전제로
+// v1은 브라우저 로컬 자정으로 계산한다 (클라이언트 로컬 = KST 자정).
+function getStartOfTodayIso(): string {
+	const now = new Date();
+	return new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+}
+
+export async function getAdminMetrics(): Promise<AdminMetrics> {
+	const supabase = createClient();
+	const startOfTodayIso = getStartOfTodayIso();
+
+	const [
+		pendingPartners,
+		openReports,
+		flaggedMessages,
+		activePartners,
+		todaySignups,
+		todayBookings,
+	] = await Promise.all([
+		supabase
+			.from("partner_profiles")
+			.select("profile_id", { count: "exact", head: true })
+			.eq("is_approved", false),
+		supabase.from("reports").select("id", { count: "exact", head: true }).eq("status", "open"),
+		supabase.from("chat_messages").select("id", { count: "exact", head: true }).eq("flagged", true),
+		supabase
+			.from("partner_profiles")
+			.select("profile_id", { count: "exact", head: true })
+			.eq("is_approved", true)
+			.eq("is_active", true),
+		supabase
+			.from("profiles")
+			.select("id", { count: "exact", head: true })
+			.gte("created_at", startOfTodayIso),
+		supabase
+			.from("bookings")
+			.select("id", { count: "exact", head: true })
+			.gte("created_at", startOfTodayIso),
+	]);
+
+	for (const result of [
+		pendingPartners,
+		openReports,
+		flaggedMessages,
+		activePartners,
+		todaySignups,
+		todayBookings,
+	]) {
+		if (result.error) {
+			throw result.error;
+		}
+	}
+
+	return {
+		pendingPartnerCount: pendingPartners.count ?? 0,
+		openReportCount: openReports.count ?? 0,
+		flaggedMessageCount: flaggedMessages.count ?? 0,
+		activePartnerCount: activePartners.count ?? 0,
+		todaySignupCount: todaySignups.count ?? 0,
+		todayBookingCount: todayBookings.count ?? 0,
+	};
 }

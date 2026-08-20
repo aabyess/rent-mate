@@ -14,7 +14,7 @@ export function AdminDashboardPartnerSection(): JSX.Element {
 	const isMutating = approveMutation.isPending || rejectMutation.isPending;
 
 	return (
-		<section className="flex flex-col gap-3">
+		<section id="admin-metrics-partners" className="flex flex-col gap-3">
 			<div className="flex items-center gap-2">
 				<h2 className="text-[17px] font-semibold">파트너 승인 대기</h2>
 				{partners && partners.length > 0 && (

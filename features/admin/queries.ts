@@ -3,6 +3,7 @@
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import {
+	getAdminMetrics,
 	getFlaggedMessages,
 	getPaymentsOverview,
 	getPendingPartners,
@@ -10,6 +11,7 @@ import {
 	getReports,
 } from "@/features/admin/apis";
 import type {
+	AdminMetrics,
 	AdminPaymentItem,
 	FlaggedMessageItem,
 	PendingPartnerItem,
@@ -26,7 +28,15 @@ export const ADMIN_QUERY_KEYS = {
 	},
 	flaggedMessages: ["admin", "flaggedMessages"] as const,
 	payments: ["admin", "payments"] as const,
+	metrics: ["admin", "metrics"] as const,
 };
+
+export function useAdminMetricsQuery(): UseQueryResult<AdminMetrics> {
+	return useQuery({
+		queryKey: ADMIN_QUERY_KEYS.metrics,
+		queryFn: getAdminMetrics,
+	});
+}
 
 export function usePaymentsOverviewQuery(): UseQueryResult<AdminPaymentItem[]> {
 	return useQuery({
