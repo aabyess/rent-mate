@@ -3,7 +3,12 @@
 
 import type { JSX } from "react";
 import type { BookingSchedule } from "@/features/bookings/types";
-import { formatDurationLabel, formatScheduleLabel } from "@/features/bookings/utils";
+import {
+	FREE_CANCELLATION_WINDOW_HOURS,
+	LATE_CANCELLATION_FEE_RATIO,
+	formatDurationLabel,
+	formatScheduleLabel,
+} from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
 import { cn } from "@/utils/cn";
 
@@ -62,6 +67,15 @@ export function BookingFlowStepConfirm({
 						</dd>
 					</div>
 				</dl>
+			</section>
+
+			<section className="flex flex-col gap-3">
+				<h2 className="text-[17px] font-semibold">취소·환불 정책</h2>
+				<p className="bg-surface-alt text-sub rounded-2xl px-4 py-3.5 text-[13px] leading-relaxed">
+					데이트 시작 {FREE_CANCELLATION_WINDOW_HOURS}시간 전까지는 수수료 없이 전액 환불돼요. 그
+					이후에 취소하면 결제 금액의 {LATE_CANCELLATION_FEE_RATIO * 100}%가 수수료로 남아요. 데이트
+					시작 이후에는 취소할 수 없어요.
+				</p>
 			</section>
 
 			<section className="flex flex-col gap-3">

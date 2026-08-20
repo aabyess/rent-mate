@@ -3,6 +3,7 @@ import type {
 	BookingRow,
 	BookingStatus,
 	BookingTimeRange,
+	CancellationResult,
 	CreateBookingInput,
 	MyBookingItem,
 } from "@/features/bookings/types";
@@ -48,6 +49,22 @@ export async function patchBookingStatus(bookingId: string, status: BookingStatu
 	if (error) {
 		throw error;
 	}
+}
+
+// 취소·환불 처리 — 결제 게이트웨이 취소(있다면)까지 서버 라우트가 순서대로 처리한다
+export async function postCancelBookingWithRefund(bookingId: string): Promise<CancellationResult> {
+	const response = await fetch(`/api/bookings/${bookingId}/cancel`, { method: "POST" });
+	const body = (await response.json().catch(function () {
+		return null;
+	})) as { feeKrw?: number; refundKrw?: number; hadPayment?: boolean; error?: string } | null;
+	if (!response.ok) {
+		throw new Error(body?.error ?? "취소 처리에 실패했어요.");
+	}
+	return {
+		feeKrw: body?.feeKrw ?? 0,
+		refundKrw: body?.refundKrw ?? 0,
+		hadPayment: body?.hadPayment ?? false,
+	};
 }
 
 // 예약 스케줄 화면에서 슬롯을 비활성화하기 위한, 해당 파트너의 확정된 시간대만 조회
