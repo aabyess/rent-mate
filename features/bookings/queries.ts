@@ -2,13 +2,16 @@
 "use client";
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { getBookingDetail, getMyBookings } from "@/features/bookings/apis";
-import type { MyBookingItem } from "@/features/bookings/types";
+import { getBookingDetail, getMyBookings, getPartnerAcceptedSlots } from "@/features/bookings/apis";
+import type { BookingTimeRange, MyBookingItem } from "@/features/bookings/types";
 
 export const BOOKINGS_QUERY_KEYS = {
 	myList: ["bookings", "myList"] as const,
 	detail: function (bookingId: string) {
 		return ["bookings", "detail", bookingId] as const;
+	},
+	partnerAcceptedSlots: function (partnerId: string) {
+		return ["bookings", "partnerAcceptedSlots", partnerId] as const;
 	},
 };
 
@@ -25,5 +28,16 @@ export function useMyBookingsQuery(): UseQueryResult<MyBookingItem[]> {
 	return useQuery({
 		queryKey: BOOKINGS_QUERY_KEYS.myList,
 		queryFn: getMyBookings,
+	});
+}
+
+export function usePartnerAcceptedSlotsQuery(
+	partnerId: string,
+): UseQueryResult<BookingTimeRange[]> {
+	return useQuery({
+		queryKey: BOOKINGS_QUERY_KEYS.partnerAcceptedSlots(partnerId),
+		queryFn: function () {
+			return getPartnerAcceptedSlots(partnerId);
+		},
 	});
 }

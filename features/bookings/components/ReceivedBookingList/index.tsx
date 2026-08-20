@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useUpdateBookingStatusMutation } from "@/features/bookings/mutations";
@@ -12,6 +12,7 @@ import {
 	BOOKING_STATUS_LABELS,
 	canCompleteBookingNow,
 	formatBookingPeriod,
+	getBookingAcceptErrorMessage,
 	sumBookingAmountsKrw,
 } from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
@@ -34,6 +35,9 @@ export function ReceivedBookingList(): JSX.Element {
 		}),
 	);
 	const updateStatusMutation = useUpdateBookingStatusMutation();
+	const [acceptError, setAcceptError] = useState<{ bookingId: string; message: string } | null>(
+		null,
+	);
 
 	if (isPending) {
 		return (
@@ -67,7 +71,18 @@ export function ReceivedBookingList(): JSX.Element {
 	);
 
 	function handleStatusUpdate(bookingId: string, status: BookingStatus): void {
-		updateStatusMutation.mutate({ bookingId, status });
+		setAcceptError(null);
+		updateStatusMutation.mutate(
+			{ bookingId, status },
+			{
+				onError: function (error): void {
+					if (status !== "accepted") {
+						return;
+					}
+					setAcceptError({ bookingId, message: getBookingAcceptErrorMessage(error) });
+				},
+			},
+		);
 	}
 
 	return (
@@ -121,27 +136,32 @@ export function ReceivedBookingList(): JSX.Element {
 							</Link>
 						)}
 						{booking.status === "requested" && (
-							<div className="flex gap-2">
-								<Button
-									variant="outline"
-									size="sm"
-									fullWidth
-									disabled={updateStatusMutation.isPending}
-									onClick={function () {
-										handleStatusUpdate(booking.id, "rejected");
-									}}>
-									거절
-								</Button>
-								<Button
-									variant="secondary"
-									size="sm"
-									fullWidth
-									disabled={updateStatusMutation.isPending}
-									onClick={function () {
-										handleStatusUpdate(booking.id, "accepted");
-									}}>
-									수락
-								</Button>
+							<div className="flex flex-col gap-1.5">
+								<div className="flex gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										fullWidth
+										disabled={updateStatusMutation.isPending}
+										onClick={function () {
+											handleStatusUpdate(booking.id, "rejected");
+										}}>
+										거절
+									</Button>
+									<Button
+										variant="secondary"
+										size="sm"
+										fullWidth
+										disabled={updateStatusMutation.isPending}
+										onClick={function () {
+											handleStatusUpdate(booking.id, "accepted");
+										}}>
+										수락
+									</Button>
+								</div>
+								{acceptError?.bookingId === booking.id && (
+									<p className="text-error-500 text-center text-xs">{acceptError.message}</p>
+								)}
 							</div>
 						)}
 						{booking.status === "accepted" && (

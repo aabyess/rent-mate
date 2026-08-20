@@ -15,6 +15,7 @@ import {
 	canCompleteBookingNow,
 	formatBookingPeriod,
 	formatDurationLabel,
+	getBookingAcceptErrorMessage,
 } from "@/features/bookings/utils";
 import { usePartnerDetailQuery } from "@/features/partners/queries";
 import { usePaymentByBookingIdQuery } from "@/features/payments/queries";
@@ -200,7 +201,9 @@ export function BookingDetail({ bookingId }: BookingDetailProps): JSX.Element {
 					</button>
 				)}
 				{updateStatusMutation.isError && (
-					<p className="text-error-500 text-center text-sm">{updateStatusMutation.error.message}</p>
+					<p className="text-error-500 text-center text-sm">
+						{getBookingAcceptErrorMessage(updateStatusMutation.error)}
+					</p>
 				)}
 			</div>
 

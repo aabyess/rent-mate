@@ -2,6 +2,7 @@
 import type {
 	BookingRow,
 	BookingStatus,
+	BookingTimeRange,
 	CreateBookingInput,
 	MyBookingItem,
 } from "@/features/bookings/types";
@@ -47,6 +48,18 @@ export async function patchBookingStatus(bookingId: string, status: BookingStatu
 	if (error) {
 		throw error;
 	}
+}
+
+// 예약 스케줄 화면에서 슬롯을 비활성화하기 위한, 해당 파트너의 확정된 시간대만 조회
+export async function getPartnerAcceptedSlots(partnerId: string): Promise<BookingTimeRange[]> {
+	const supabase = createClient();
+	const { data, error } = await supabase.rpc("get_partner_accepted_slots", {
+		p_partner_id: partnerId,
+	});
+	if (error) {
+		throw error;
+	}
+	return (data ?? []) as BookingTimeRange[];
 }
 
 // 상대방 표시명: 내가 고객이면 파트너 닉네임, 내가 파트너면 고객 이름

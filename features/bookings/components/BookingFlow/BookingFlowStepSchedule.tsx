@@ -3,7 +3,7 @@
 
 import type { JSX } from "react";
 import { cn } from "@/utils/cn";
-import type { BookingSchedule } from "@/features/bookings/types";
+import type { BookingSchedule, BookingTimeRange } from "@/features/bookings/types";
 import {
 	DURATION_STEP_MINUTES,
 	MAX_DURATION_MINUTES,
@@ -11,6 +11,7 @@ import {
 	START_HOURS,
 	formatDurationLabel,
 	getMonthGrid,
+	isStartHourBooked,
 } from "@/features/bookings/utils";
 
 const WEEKDAY_HEADERS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -18,6 +19,7 @@ const WEEKDAY_HEADERS = ["일", "월", "화", "수", "목", "금", "토"];
 type BookingFlowStepScheduleProps = {
 	baseDate: { year: number; month: number; day: number };
 	availableWeekdays: number[];
+	acceptedSlots: BookingTimeRange[];
 	schedule: BookingSchedule | null;
 	viewYear: number;
 	viewMonth: number;
@@ -28,6 +30,7 @@ type BookingFlowStepScheduleProps = {
 export function BookingFlowStepSchedule({
 	baseDate,
 	availableWeekdays,
+	acceptedSlots,
 	schedule,
 	viewYear,
 	viewMonth,
@@ -205,11 +208,21 @@ export function BookingFlowStepSchedule({
 				<div className="grid grid-cols-4 gap-2">
 					{START_HOURS.map(function (hour) {
 						const selected = schedule?.startHour === hour;
+						const isBooked =
+							schedule !== null &&
+							isStartHourBooked(
+								schedule.year,
+								schedule.month,
+								schedule.day,
+								hour,
+								durationMinutes,
+								acceptedSlots,
+							);
 						return (
 							<button
 								key={hour}
 								type="button"
-								disabled={!schedule}
+								disabled={!schedule || isBooked}
 								onClick={function () {
 									handleStartHourSelect(hour);
 								}}
@@ -223,6 +236,7 @@ export function BookingFlowStepSchedule({
 						);
 					})}
 				</div>
+				{schedule !== null && <p className="text-sub text-xs">마감된 시간대는 선택할 수 없어요.</p>}
 			</section>
 
 			<section className="flex flex-col gap-3">
