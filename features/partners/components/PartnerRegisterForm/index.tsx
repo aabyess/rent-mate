@@ -1,6 +1,7 @@
 // features/partners/components/PartnerRegisterForm/index.tsx
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +13,7 @@ import {
 	PartnerPhotoUploader,
 } from "@/features/partners/components/PartnerPhotoUploader";
 import { useCreatePartnerProfileMutation } from "@/features/partners/mutations";
+import { useMyPartnerProfileQuery } from "@/features/partners/queries";
 import {
 	findFirstInvalidField,
 	formatKrw,
@@ -26,6 +28,7 @@ import { cn } from "@/utils/cn";
 export function PartnerRegisterForm(): JSX.Element {
 	const router = useRouter();
 	const createPartnerProfileMutation = useCreatePartnerProfileMutation();
+	const { data: myPartnerProfile, isPending: isMyProfilePending } = useMyPartnerProfileQuery();
 
 	const [nickname, setNickname] = useState("");
 	const [birthYear, setBirthYear] = useState("");
@@ -166,6 +169,31 @@ export function PartnerRegisterForm(): JSX.Element {
 					router.refresh();
 				},
 			},
+		);
+	}
+
+	if (isMyProfilePending) {
+		return (
+			<div className="flex flex-col gap-3">
+				<div className="bg-surface-alt h-11 animate-pulse rounded-xl" />
+				<div className="bg-surface-alt h-40 animate-pulse rounded-2xl" />
+			</div>
+		);
+	}
+
+	// 계정당 파트너 프로필 1개 — 이미 등록된 계정은 폼 대신 수정으로 안내 (중복 insert 방지)
+	if (myPartnerProfile) {
+		return (
+			<div className="flex flex-col items-center gap-4 py-20 text-center">
+				<p className="text-body text-sm leading-relaxed">
+					이미 파트너 프로필이 있어요.
+					<br />
+					프로필은 계정당 하나만 만들 수 있어요.
+				</p>
+				<Link href="/partner/edit" className="text-brand font-medium underline">
+					내 파트너 프로필 수정하기
+				</Link>
+			</div>
 		);
 	}
 
