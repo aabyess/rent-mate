@@ -24,7 +24,9 @@ const EXPECTED_BOOKING_STATUS: Partial<Record<NotificationType, string>> = {
 };
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-	const body: unknown = await request.json().catch(() => null);
+	const body: unknown = await request.json().catch(function () {
+		return null;
+	});
 	if (
 		!body ||
 		typeof body !== "object" ||
