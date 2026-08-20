@@ -2,6 +2,7 @@
 "use client";
 
 import { AnimatePresence } from "motion/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { REGIONS } from "@/constants/regions";
@@ -303,7 +304,39 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 				})}
 			</div>
 			{deckCount === 0 ? (
-				<p className="text-sub py-16 text-center text-sm">{getEmptyMessage()}</p>
+				visiblePartners.length === 0 ? (
+					<div className="bg-surface flex flex-col items-center gap-4 rounded-3xl px-6 py-16 text-center">
+						<div className="bg-brand-subtle flex size-14 items-center justify-center rounded-2xl">
+							<svg
+								width="26"
+								height="26"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="1.8"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="text-brand">
+								<path d="M19.5 12.6L12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z" />
+							</svg>
+						</div>
+						<div className="flex flex-col gap-1.5">
+							<p className="text-[17px] font-bold">아직 만날 수 있는 파트너가 없어요</p>
+							<p className="text-sub text-sm leading-relaxed">
+								곧 새로운 파트너들이 찾아올 거예요.
+								<br />
+								먼저 파트너로 활동을 시작해보는 건 어때요?
+							</p>
+						</div>
+						<Link
+							href="/partner/register"
+							className="bg-brand hover:bg-primary-600 flex h-11 items-center justify-center rounded-xl px-5 text-sm font-medium text-white transition-colors">
+							파트너로 활동하기
+						</Link>
+					</div>
+				) : (
+					<p className="text-sub py-16 text-center text-sm">{getEmptyMessage()}</p>
+				)
 			) : (
 				<div className="flex flex-col gap-3">
 					<div
