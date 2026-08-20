@@ -72,7 +72,8 @@ export function AccountSettingsPasswordForm(): JSX.Element {
 				type="submit"
 				variant="outline"
 				fullWidth
-				disabled={!isValid || changePasswordMutation.isPending}>
+				disabled={!isValid}
+				isLoading={changePasswordMutation.isPending}>
 				{changePasswordMutation.isPending ? "변경 중..." : "비밀번호 변경"}
 			</Button>
 		</form>

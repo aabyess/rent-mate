@@ -306,7 +306,8 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 				<Button
 					size="lg"
 					fullWidth
-					disabled={!isStepValid || createBookingMutation.isPending}
+					disabled={!isStepValid}
+					isLoading={createBookingMutation.isPending}
 					onClick={handleNext}>
 					{step < 4 && STEP_CTA_LABELS[step - 1]}
 					{step === 4 &&

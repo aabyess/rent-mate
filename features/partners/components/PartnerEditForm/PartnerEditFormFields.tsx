@@ -14,7 +14,14 @@ import {
 } from "@/features/partners/components/PartnerPhotoUploader";
 import { usePatchPartnerProfileMutation } from "@/features/partners/mutations";
 import type { MyPartnerProfile } from "@/features/partners/types";
-import { INTEREST_OPTIONS, MIN_HOURLY_RATE_KRW, WEEKDAY_OPTIONS } from "@/features/partners/utils";
+import {
+	findFirstInvalidField,
+	formatKrw,
+	INTEREST_OPTIONS,
+	MIN_HOURLY_RATE_KRW,
+	scrollToFieldError,
+	WEEKDAY_OPTIONS,
+} from "@/features/partners/utils";
 import { cn } from "@/utils/cn";
 import { findBannedPhrase } from "@/utils/bannedPhrases";
 
@@ -43,7 +50,7 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 	const [purposeTags, setPurposeTags] = useState<string[]>(profile.purpose_tags);
 	const [existingPhotoUrls, setExistingPhotoUrls] = useState<string[]>(profile.photo_urls);
 	const [newPhotos, setNewPhotos] = useState<File[]>([]);
-	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
+	const [fieldError, setFieldError] = useState<{ id: string; message: string } | null>(null);
 
 	function handleWeekdayToggle(weekday: number): void {
 		setAvailableWeekdays(function (current) {
@@ -87,12 +94,70 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
 		// 성매매 연상 표현은 프로필에 저장 자체를 막는다 (법적 제약 3번, DB 트리거와 이중 방어)
-		const banned = findBannedPhrase(`${nickname} ${bio}`);
-		if (banned !== null) {
-			setBannedPhrase(banned);
+		const nicknameBanned = findBannedPhrase(nickname);
+		const bioBanned = findBannedPhrase(bio);
+		const photoCount = existingPhotoUrls.length + newPhotos.length;
+		let photoMessage = "사진은 최소 3장 유지해야 해요";
+		if (photoCount > MAX_PARTNER_PHOTOS) {
+			photoMessage = "사진은 최대 9장까지 올릴 수 있어요";
+		}
+		const firstInvalid = findFirstInvalidField([
+			{
+				id: "nickname",
+				message: nicknameBanned
+					? `'${nicknameBanned}' 표현은 닉네임에 사용할 수 없어요.`
+					: "닉네임은 2자 이상이에요",
+				isValid: nickname.trim().length >= 2 && !nicknameBanned,
+			},
+			{
+				id: "heightCm",
+				message: "키는 130~220cm 사이로 입력해주세요",
+				isValid: heightCm.trim() === "" || (Number(heightCm) >= 130 && Number(heightCm) <= 220),
+			},
+			{
+				id: "weightKg",
+				message: "몸무게는 30~150kg 사이로 입력해주세요",
+				isValid: weightKg.trim() === "" || (Number(weightKg) >= 30 && Number(weightKg) <= 150),
+			},
+			{
+				id: "bio",
+				message: bioBanned
+					? `'${bioBanned}' 표현은 소개에 사용할 수 없어요.`
+					: "소개는 10자 이상 적어주세요",
+				isValid: bio.trim().length >= 10 && !bioBanned,
+			},
+			{
+				id: "partner-edit-photos",
+				message: photoMessage,
+				isValid: photoCount >= MIN_PARTNER_PHOTOS && photoCount <= MAX_PARTNER_PHOTOS,
+			},
+			{
+				id: "partner-edit-region",
+				message: "활동 지역을 선택해주세요",
+				isValid: region !== null,
+			},
+			{
+				id: "partner-edit-interests",
+				message: "관심사를 1개 이상 골라주세요",
+				isValid: interests.length > 0,
+			},
+			{
+				id: "partner-edit-weekdays",
+				message: "가능 요일을 선택해주세요",
+				isValid: availableWeekdays.length > 0,
+			},
+			{
+				id: "hourlyRate",
+				message: `시간당 요금은 ${formatKrw(MIN_HOURLY_RATE_KRW)} 이상이어야 해요`,
+				isValid: Number(hourlyRate) >= MIN_HOURLY_RATE_KRW,
+			},
+		]);
+		if (firstInvalid) {
+			setFieldError(firstInvalid);
+			scrollToFieldError(firstInvalid.id);
 			return;
 		}
-		setBannedPhrase(null);
+		setFieldError(null);
 		patchPartnerProfileMutation.mutate(
 			{
 				nickname: nickname.trim(),
@@ -116,20 +181,8 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 		);
 	}
 
-	const totalPhotoCount = existingPhotoUrls.length + newPhotos.length;
-
-	const isValid =
-		nickname.trim().length >= 2 &&
-		bio.trim().length >= 10 &&
-		Number(hourlyRate) >= MIN_HOURLY_RATE_KRW &&
-		interests.length > 0 &&
-		availableWeekdays.length > 0 &&
-		region !== null &&
-		totalPhotoCount >= MIN_PARTNER_PHOTOS &&
-		totalPhotoCount <= MAX_PARTNER_PHOTOS;
-
 	return (
-		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
+		<form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
 			<section className="flex flex-col gap-2">
 				<label htmlFor="nickname" className="text-sm font-medium">
 					활동 닉네임
@@ -140,10 +193,11 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 					onChange={function (event) {
 						setNickname(event.target.value);
 					}}
-					required
-					minLength={2}
 					maxLength={12}
 				/>
+				{fieldError?.id === "nickname" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -159,31 +213,35 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 				</span>
 				<div className="flex gap-2">
 					<Input
+						id="heightCm"
 						type="number"
 						value={heightCm}
 						onChange={function (event) {
 							setHeightCm(event.target.value);
 						}}
 						placeholder="키 (cm)"
-						min={130}
-						max={220}
 						aria-label="키 (cm)"
 					/>
 					<Input
+						id="weightKg"
 						type="number"
 						value={weightKg}
 						onChange={function (event) {
 							setWeightKg(event.target.value);
 						}}
 						placeholder="몸무게 (kg)"
-						min={30}
-						max={150}
 						aria-label="몸무게 (kg)"
 					/>
 				</div>
 				<p className="text-sub text-xs">
 					입력하면 프로필 상세에 표시돼요. 비워두면 표시되지 않아요.
 				</p>
+				{fieldError?.id === "heightCm" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
+				{fieldError?.id === "weightKg" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -196,15 +254,14 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 					onChange={function (event) {
 						setBio(event.target.value);
 					}}
-					required
-					minLength={10}
 					maxLength={300}
 					rows={4}
 					className="bg-surface-alt text-body placeholder:text-sub w-full resize-none rounded-xl p-4 text-base focus:outline-none"
 				/>
+				{fieldError?.id === "bio" && <p className="text-error-500 text-xs">{fieldError.message}</p>}
 			</section>
 
-			<section className="flex flex-col gap-2">
+			<section id="partner-edit-photos" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">프로필 사진 (3~9장)</span>
 				<PartnerPhotoManager
 					existingUrls={existingPhotoUrls}
@@ -213,9 +270,12 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 					onNewPhotosChange={setNewPhotos}
 				/>
 				<p className="text-sub text-xs">최소 3장을 유지해야 저장할 수 있어요.</p>
+				{fieldError?.id === "partner-edit-photos" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
-			<section className="flex flex-col gap-2">
+			<section id="partner-edit-region" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">활동 지역</span>
 				<div className="flex flex-wrap gap-2">
 					{REGIONS.map(function (regionOption) {
@@ -237,6 +297,9 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 						);
 					})}
 				</div>
+				{fieldError?.id === "partner-edit-region" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -263,7 +326,7 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 				</div>
 			</section>
 
-			<section className="flex flex-col gap-2">
+			<section id="partner-edit-interests" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">관심사 (최대 3개)</span>
 				<div className="flex flex-wrap gap-2">
 					{INTEREST_OPTIONS.map(function (interest) {
@@ -285,9 +348,12 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 						);
 					})}
 				</div>
+				{fieldError?.id === "partner-edit-interests" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
-			<section className="flex flex-col gap-2">
+			<section id="partner-edit-weekdays" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">가능 요일</span>
 				<div className="grid grid-cols-7 gap-1.5">
 					{WEEKDAY_OPTIONS.map(function (weekday) {
@@ -309,6 +375,9 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 						);
 					})}
 				</div>
+				{fieldError?.id === "partner-edit-weekdays" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -322,10 +391,11 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 					onChange={function (event) {
 						setHourlyRate(event.target.value);
 					}}
-					required
-					min={MIN_HOURLY_RATE_KRW}
 					step={1000}
 				/>
+				{fieldError?.id === "hourlyRate" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<div className="flex flex-col gap-2.5">
@@ -335,21 +405,15 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 						수 있어요.
 					</p>
 				)}
-				{bannedPhrase !== null && (
-					<p className="text-error-500 text-sm">
-						&lsquo;{bannedPhrase}&rsquo; 표현은 프로필에 사용할 수 없어요. 성적 서비스를 연상시키는
-						표현은 제재 대상입니다.
-					</p>
-				)}
 				{patchPartnerProfileMutation.isError && (
 					<p className="text-error-500 text-sm">{patchPartnerProfileMutation.error.message}</p>
 				)}
-				<Button
-					type="submit"
-					size="lg"
-					fullWidth
-					disabled={!isValid || patchPartnerProfileMutation.isPending}>
-					{patchPartnerProfileMutation.isPending ? "저장 중..." : "변경사항 저장"}
+				<Button type="submit" size="lg" fullWidth isLoading={patchPartnerProfileMutation.isPending}>
+					{patchPartnerProfileMutation.isPending
+						? newPhotos.length > 0
+							? "사진 업로드 중..."
+							: "저장 중..."
+						: "변경사항 저장"}
 				</Button>
 			</div>
 		</form>

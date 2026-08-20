@@ -50,7 +50,7 @@ export function AdminDashboardReportSection(): JSX.Element {
 										variant="outline"
 										size="sm"
 										fullWidth
-										disabled={updateStatusMutation.isPending}
+										isLoading={updateStatusMutation.isPending}
 										onClick={function () {
 											updateStatusMutation.mutate({ reportId: report.id, status: "dismissed" });
 										}}>
@@ -59,7 +59,7 @@ export function AdminDashboardReportSection(): JSX.Element {
 									<Button
 										size="sm"
 										fullWidth
-										disabled={updateStatusMutation.isPending}
+										isLoading={updateStatusMutation.isPending}
 										onClick={function () {
 											updateStatusMutation.mutate({ reportId: report.id, status: "resolved" });
 										}}>

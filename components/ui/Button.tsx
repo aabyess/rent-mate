@@ -29,7 +29,8 @@ export const buttonVariants = cva(
 	},
 );
 
-type ButtonProps = ComponentPropsWithoutRef<"button"> & VariantProps<typeof buttonVariants>;
+type ButtonProps = ComponentPropsWithoutRef<"button"> &
+	VariantProps<typeof buttonVariants> & { isLoading?: boolean };
 
 export function Button({
 	className,
@@ -37,13 +38,29 @@ export function Button({
 	size,
 	fullWidth,
 	type = "button",
+	isLoading = false,
+	disabled,
+	children,
 	...props
 }: ButtonProps): JSX.Element {
 	return (
 		<button
 			type={type}
+			disabled={disabled || isLoading}
+			aria-busy={isLoading}
 			className={cn(buttonVariants({ variant, size, fullWidth }), className)}
-			{...props}
-		/>
+			{...props}>
+			{isLoading && (
+				<svg className="mr-1.5 size-4 animate-spin" viewBox="0 0 24 24" fill="none">
+					<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+					<path
+						className="opacity-75"
+						fill="currentColor"
+						d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4z"
+					/>
+				</svg>
+			)}
+			{children}
+		</button>
 	);
 }

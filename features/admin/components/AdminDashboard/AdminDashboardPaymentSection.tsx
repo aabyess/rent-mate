@@ -64,7 +64,7 @@ export function AdminDashboardPaymentSection(): JSX.Element {
 								<Button
 									size="sm"
 									fullWidth
-									disabled={updatePaymentStatusMutation.isPending}
+									isLoading={updatePaymentStatusMutation.isPending}
 									onClick={function () {
 										updatePaymentStatusMutation.mutate({
 											paymentId: payment.id,
@@ -80,7 +80,7 @@ export function AdminDashboardPaymentSection(): JSX.Element {
 									variant="secondary"
 									size="sm"
 									fullWidth
-									disabled={updatePaymentStatusMutation.isPending}
+									isLoading={updatePaymentStatusMutation.isPending}
 									onClick={function () {
 										updatePaymentStatusMutation.mutate({
 											paymentId: payment.id,

@@ -75,7 +75,7 @@ export default function SignupPage(): JSX.Element {
 					{signUpMutation.isError && (
 						<p className="text-error-500 text-sm">{getSignUpErrorMessage(signUpMutation.error)}</p>
 					)}
-					<Button type="submit" fullWidth disabled={signUpMutation.isPending}>
+					<Button type="submit" fullWidth isLoading={signUpMutation.isPending}>
 						{signUpMutation.isPending ? "가입 중..." : "회원가입"}
 					</Button>
 				</form>

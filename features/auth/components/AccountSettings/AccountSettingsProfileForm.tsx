@@ -103,7 +103,11 @@ export function AccountSettingsProfileForm({
 			{patchMyProfileMutation.isError && (
 				<p className="text-error-500 text-sm">{patchMyProfileMutation.error.message}</p>
 			)}
-			<Button type="submit" fullWidth disabled={!isValid || patchMyProfileMutation.isPending}>
+			<Button
+				type="submit"
+				fullWidth
+				disabled={!isValid}
+				isLoading={patchMyProfileMutation.isPending}>
 				{patchMyProfileMutation.isPending ? "저장 중..." : "프로필 저장"}
 			</Button>
 		</form>

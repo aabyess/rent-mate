@@ -45,7 +45,7 @@ export function SafetyCenterBlockList(): JSX.Element {
 						<Button
 							variant="outline"
 							size="sm"
-							disabled={deleteBlockMutation.isPending}
+							isLoading={deleteBlockMutation.isPending}
 							onClick={function () {
 								handleUnblockClick(block.id);
 							}}

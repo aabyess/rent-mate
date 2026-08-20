@@ -158,7 +158,7 @@ export function ReceivedBookingList(): JSX.Element {
 										variant="outline"
 										size="sm"
 										fullWidth
-										disabled={updateStatusMutation.isPending}
+										isLoading={updateStatusMutation.isPending}
 										onClick={function () {
 											handleStatusUpdate(booking.id, "rejected");
 										}}>
@@ -168,7 +168,7 @@ export function ReceivedBookingList(): JSX.Element {
 										variant="secondary"
 										size="sm"
 										fullWidth
-										disabled={updateStatusMutation.isPending}
+										isLoading={updateStatusMutation.isPending}
 										onClick={function () {
 											handleStatusUpdate(booking.id, "accepted");
 										}}>
@@ -186,7 +186,8 @@ export function ReceivedBookingList(): JSX.Element {
 									variant="outline"
 									size="sm"
 									fullWidth
-									disabled={updateStatusMutation.isPending || !isCompletable}
+									disabled={!isCompletable}
+									isLoading={updateStatusMutation.isPending}
 									onClick={function () {
 										handleStatusUpdate(booking.id, "completed");
 									}}>

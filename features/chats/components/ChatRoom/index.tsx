@@ -197,18 +197,37 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 						type="submit"
 						disabled={content.trim().length === 0 || sendMessageMutation.isPending}
 						aria-label="보내기"
+						aria-busy={sendMessageMutation.isPending}
 						className="bg-brand flex size-11 shrink-0 items-center justify-center rounded-full text-white disabled:opacity-40">
-						<svg
-							width="18"
-							height="18"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
-							strokeLinejoin="round">
-							<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z" />
-						</svg>
+						{sendMessageMutation.isPending ? (
+							<svg className="size-4.5 animate-spin" viewBox="0 0 24 24" fill="none">
+								<circle
+									className="opacity-25"
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									strokeWidth="4"
+								/>
+								<path
+									className="opacity-75"
+									fill="currentColor"
+									d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4z"
+								/>
+							</svg>
+						) : (
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round">
+								<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z" />
+							</svg>
+						)}
 					</button>
 				</div>
 			</form>
