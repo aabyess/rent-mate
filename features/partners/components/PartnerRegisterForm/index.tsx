@@ -38,6 +38,8 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [weightKg, setWeightKg] = useState("");
 	const [interests, setInterests] = useState<string[]>([]);
 	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+	const [availableStartHour, setAvailableStartHour] = useState("10");
+	const [availableEndHour, setAvailableEndHour] = useState("22");
 	const [photos, setPhotos] = useState<File[]>([]);
 	const [region, setRegion] = useState<string | null>(null);
 	const [purposeTags, setPurposeTags] = useState<string[]>([]);
@@ -138,6 +140,16 @@ export function PartnerRegisterForm(): JSX.Element {
 				isValid: availableWeekdays.length > 0,
 			},
 			{
+				id: "partner-register-hours",
+				message: "가능 시간대를 0~24 사이로, 시작이 종료보다 빠르게 입력해주세요",
+				isValid:
+					Number(availableStartHour) >= 0 &&
+					Number(availableStartHour) <= 24 &&
+					Number(availableEndHour) >= 0 &&
+					Number(availableEndHour) <= 24 &&
+					Number(availableStartHour) < Number(availableEndHour),
+			},
+			{
 				id: "hourlyRate",
 				message: `시간당 요금은 ${formatKrw(MIN_HOURLY_RATE_KRW)} 이상이어야 해요`,
 				isValid: Number(hourlyRate) >= MIN_HOURLY_RATE_KRW,
@@ -159,6 +171,8 @@ export function PartnerRegisterForm(): JSX.Element {
 				weightKg: weightKg.trim() === "" ? null : Number(weightKg),
 				interests,
 				availableWeekdays,
+				availableStartHour: Number(availableStartHour),
+				availableEndHour: Number(availableEndHour),
 				photos,
 				region: region ?? "",
 				purposeTags,
@@ -409,6 +423,39 @@ export function PartnerRegisterForm(): JSX.Element {
 				</div>
 				<p className="text-sub text-xs">선택한 요일에만 예약을 받을 수 있어요.</p>
 				{fieldError?.id === "partner-register-weekdays" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
+			</section>
+
+			<section id="partner-register-hours" className="flex flex-col gap-2">
+				<span className="text-sm font-medium">가능 시간대</span>
+				<div className="flex items-center gap-2">
+					<Input
+						type="number"
+						value={availableStartHour}
+						onChange={function (event) {
+							setAvailableStartHour(event.target.value);
+						}}
+						placeholder="시작 시각"
+						aria-label="가능 시작 시각"
+						min={0}
+						max={24}
+					/>
+					<span className="text-sub text-sm">~</span>
+					<Input
+						type="number"
+						value={availableEndHour}
+						onChange={function (event) {
+							setAvailableEndHour(event.target.value);
+						}}
+						placeholder="종료 시각"
+						aria-label="가능 종료 시각"
+						min={0}
+						max={24}
+					/>
+				</div>
+				<p className="text-sub text-xs">이 시간대 안에서만 예약을 받을 수 있어요.</p>
+				{fieldError?.id === "partner-register-hours" && (
 					<p className="text-error-500 text-xs">{fieldError.message}</p>
 				)}
 			</section>

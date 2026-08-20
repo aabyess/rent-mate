@@ -101,6 +101,18 @@ export function isStartHourBooked(
 	});
 }
 
+// 시작 시각이 파트너의 가능 시간대(available_start_hour~available_end_hour) 밖이거나,
+// 선택한 이용 시간을 더한 종료 시각이 가능 종료를 넘는지 판정한다.
+export function isStartHourOutOfAvailability(
+	startHour: number,
+	durationMinutes: number,
+	availableStartHour: number,
+	availableEndHour: number,
+): boolean {
+	const endHour = startHour + durationMinutes / 60;
+	return startHour < availableStartHour || endHour > availableEndHour;
+}
+
 export function formatBookingPeriod(startsAt: string, endsAt: string): string {
 	const start = new Date(startsAt);
 	const end = new Date(endsAt);

@@ -20,6 +20,8 @@ export type CreatePartnerProfileInput = {
 	weightKg: number | null;
 	interests: string[];
 	availableWeekdays: number[];
+	availableStartHour: number;
+	availableEndHour: number;
 	photos: File[];
 	region: string;
 	purposeTags: string[];
@@ -33,6 +35,8 @@ export type PatchPartnerProfileInput = {
 	weightKg: number | null;
 	interests: string[];
 	availableWeekdays: number[];
+	availableStartHour: number;
+	availableEndHour: number;
 	region: string;
 	purposeTags: string[];
 	existingPhotoUrls: string[];
@@ -50,6 +54,8 @@ export type PartnerListItem = {
 	weight_kg: number | null;
 	interests: string[];
 	available_weekdays: number[];
+	available_start_hour: number;
+	available_end_hour: number;
 	region: string;
 	purpose_tags: string[];
 	gender: "male" | "female";

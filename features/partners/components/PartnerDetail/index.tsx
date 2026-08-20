@@ -220,7 +220,11 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 
 				<PartnerDetailPricing hourlyRateKrw={partner.hourly_rate_krw} />
 
-				<PartnerDetailAvailability availableWeekdays={partner.available_weekdays} />
+				<PartnerDetailAvailability
+					availableWeekdays={partner.available_weekdays}
+					availableStartHour={partner.available_start_hour}
+					availableEndHour={partner.available_end_hour}
+				/>
 
 				<section className="flex flex-col gap-3">
 					<div className="flex items-center gap-2">

@@ -12,6 +12,7 @@ import {
 	formatDurationLabel,
 	getMonthGrid,
 	isStartHourBooked,
+	isStartHourOutOfAvailability,
 } from "@/features/bookings/utils";
 
 const WEEKDAY_HEADERS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -19,6 +20,8 @@ const WEEKDAY_HEADERS = ["일", "월", "화", "수", "목", "금", "토"];
 type BookingFlowStepScheduleProps = {
 	baseDate: { year: number; month: number; day: number };
 	availableWeekdays: number[];
+	availableStartHour: number;
+	availableEndHour: number;
 	acceptedSlots: BookingTimeRange[];
 	schedule: BookingSchedule | null;
 	viewYear: number;
@@ -30,6 +33,8 @@ type BookingFlowStepScheduleProps = {
 export function BookingFlowStepSchedule({
 	baseDate,
 	availableWeekdays,
+	availableStartHour,
+	availableEndHour,
 	acceptedSlots,
 	schedule,
 	viewYear,
@@ -204,7 +209,13 @@ export function BookingFlowStepSchedule({
 			</section>
 
 			<section className="flex flex-col gap-3">
-				<h2 className="text-[17px] font-semibold">시작 시간</h2>
+				<div className="flex items-center justify-between">
+					<h2 className="text-[17px] font-semibold">시작 시간</h2>
+					<span className="text-sub text-xs tabular-nums">
+						가능 시간 {String(availableStartHour).padStart(2, "0")}:00~
+						{String(availableEndHour).padStart(2, "0")}:00
+					</span>
+				</div>
 				<div className="grid grid-cols-4 gap-2">
 					{START_HOURS.map(function (hour) {
 						const selected = schedule?.startHour === hour;
@@ -218,11 +229,17 @@ export function BookingFlowStepSchedule({
 								durationMinutes,
 								acceptedSlots,
 							);
+						const isOutOfAvailability = isStartHourOutOfAvailability(
+							hour,
+							durationMinutes,
+							availableStartHour,
+							availableEndHour,
+						);
 						return (
 							<button
 								key={hour}
 								type="button"
-								disabled={!schedule || isBooked}
+								disabled={!schedule || isBooked || isOutOfAvailability}
 								onClick={function () {
 									handleStartHourSelect(hour);
 								}}
