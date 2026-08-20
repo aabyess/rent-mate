@@ -24,6 +24,8 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [birthYear, setBirthYear] = useState("");
 	const [bio, setBio] = useState("");
 	const [hourlyRate, setHourlyRate] = useState("30000");
+	const [heightCm, setHeightCm] = useState("");
+	const [weightKg, setWeightKg] = useState("");
 	const [interests, setInterests] = useState<string[]>([]);
 	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
 	const [photos, setPhotos] = useState<File[]>([]);
@@ -85,6 +87,8 @@ export function PartnerRegisterForm(): JSX.Element {
 				bio: bio.trim(),
 				hourlyRateKrw: Number(hourlyRate),
 				birthYear: Number(birthYear),
+				heightCm: heightCm.trim() === "" ? null : Number(heightCm),
+				weightKg: weightKg.trim() === "" ? null : Number(weightKg),
 				interests,
 				availableWeekdays,
 				photos,
@@ -148,6 +152,39 @@ export function PartnerRegisterForm(): JSX.Element {
 				/>
 				<p className="text-sub text-xs">
 					프로필에는 나이로 표시돼요. 만 19세 이상만 활동할 수 있어요.
+				</p>
+			</section>
+
+			<section className="flex flex-col gap-2">
+				<span className="text-sm font-medium">
+					신체 정보 <span className="text-sub font-normal">(선택)</span>
+				</span>
+				<div className="flex gap-2">
+					<Input
+						type="number"
+						value={heightCm}
+						onChange={function (event) {
+							setHeightCm(event.target.value);
+						}}
+						placeholder="키 (cm)"
+						min={130}
+						max={220}
+						aria-label="키 (cm)"
+					/>
+					<Input
+						type="number"
+						value={weightKg}
+						onChange={function (event) {
+							setWeightKg(event.target.value);
+						}}
+						placeholder="몸무게 (kg)"
+						min={30}
+						max={150}
+						aria-label="몸무게 (kg)"
+					/>
+				</div>
+				<p className="text-sub text-xs">
+					입력하면 프로필 상세에 표시돼요. 비워두면 표시되지 않아요.
 				</p>
 			</section>
 

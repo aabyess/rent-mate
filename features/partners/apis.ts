@@ -20,7 +20,7 @@ export async function getMyPartnerProfile(): Promise<MyPartnerProfile | null> {
 	const { data, error } = await supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, gender, created_at, is_approved, is_active",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, created_at, is_approved, is_active",
 		)
 		.eq("profile_id", user.id)
 		.maybeSingle();
@@ -52,6 +52,8 @@ export async function postCreatePartnerProfile({
 	bio,
 	hourlyRateKrw,
 	birthYear,
+	heightCm,
+	weightKg,
 	interests,
 	availableWeekdays,
 	photos,
@@ -90,6 +92,8 @@ export async function postCreatePartnerProfile({
 		bio,
 		hourly_rate_krw: hourlyRateKrw,
 		birth_year: birthYear,
+		height_cm: heightCm,
+		weight_kg: weightKg,
 		interests,
 		available_weekdays: availableWeekdays,
 		photo_urls: photoUrls,
@@ -106,6 +110,8 @@ export async function patchPartnerProfile({
 	nickname,
 	bio,
 	hourlyRateKrw,
+	heightCm,
+	weightKg,
 	interests,
 	availableWeekdays,
 	region,
@@ -131,6 +137,8 @@ export async function patchPartnerProfile({
 			nickname,
 			bio,
 			hourly_rate_krw: hourlyRateKrw,
+			height_cm: heightCm,
+			weight_kg: weightKg,
 			interests,
 			available_weekdays: availableWeekdays,
 			photo_urls: photoUrls,
@@ -167,7 +175,7 @@ export async function getPartnerList(): Promise<PartnerListItem[]> {
 	let query = supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, gender, created_at",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, created_at",
 		)
 		.eq("is_approved", true)
 		.eq("is_active", true);
@@ -187,7 +195,7 @@ export async function getPartnerDetail(profileId: string): Promise<PartnerDetail
 	const { data, error } = await supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, interests, available_weekdays, region, purpose_tags, gender, created_at",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, created_at",
 		)
 		.eq("profile_id", profileId)
 		.eq("is_approved", true)
