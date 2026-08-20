@@ -326,6 +326,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 											partner={item.partner}
 											index={item.partnerIndex}
 											rating={ratings?.[item.partner.profile_id]}
+											showActions={offset === 0}
 										/>
 									</PartnerListDeckMotionCard>
 								);
