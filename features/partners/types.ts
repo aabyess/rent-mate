@@ -16,6 +16,8 @@ export type CreatePartnerProfileInput = {
 	bio: string;
 	hourlyRateKrw: number;
 	birthYear: number;
+	heightCm: number | null;
+	weightKg: number | null;
 	interests: string[];
 	availableWeekdays: number[];
 	photos: File[];
@@ -27,6 +29,8 @@ export type PatchPartnerProfileInput = {
 	nickname: string;
 	bio: string;
 	hourlyRateKrw: number;
+	heightCm: number | null;
+	weightKg: number | null;
 	interests: string[];
 	availableWeekdays: number[];
 	region: string;
@@ -42,6 +46,8 @@ export type PartnerListItem = {
 	hourly_rate_krw: number;
 	photo_urls: string[];
 	birth_year: number | null;
+	height_cm: number | null;
+	weight_kg: number | null;
 	interests: string[];
 	available_weekdays: number[];
 	region: string;

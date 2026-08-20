@@ -170,6 +170,17 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 							<circle cx="12" cy="11" r="2.3" />
 						</svg>
 						{partner.region}
+						{(partner.height_cm !== null || partner.weight_kg !== null) && (
+							<span className="tabular-nums">
+								{" · "}
+								{[
+									partner.height_cm !== null ? `${partner.height_cm}cm` : null,
+									partner.weight_kg !== null ? `${partner.weight_kg}kg` : null,
+								]
+									.filter(Boolean)
+									.join(" · ")}
+							</span>
+						)}
 					</span>
 					<p className="text-[15px] leading-relaxed">{partner.bio}</p>
 					{partner.purpose_tags.length > 0 && (

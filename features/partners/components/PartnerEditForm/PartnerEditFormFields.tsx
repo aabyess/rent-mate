@@ -31,6 +31,12 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 	const [nickname, setNickname] = useState(profile.nickname);
 	const [bio, setBio] = useState(profile.bio);
 	const [hourlyRate, setHourlyRate] = useState(String(profile.hourly_rate_krw));
+	const [heightCm, setHeightCm] = useState(
+		profile.height_cm === null ? "" : String(profile.height_cm),
+	);
+	const [weightKg, setWeightKg] = useState(
+		profile.weight_kg === null ? "" : String(profile.weight_kg),
+	);
 	const [interests, setInterests] = useState<string[]>(profile.interests);
 	const [availableWeekdays, setAvailableWeekdays] = useState<number[]>(profile.available_weekdays);
 	const [region, setRegion] = useState<string | null>(profile.region);
@@ -92,6 +98,8 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 				nickname: nickname.trim(),
 				bio: bio.trim(),
 				hourlyRateKrw: Number(hourlyRate),
+				heightCm: heightCm.trim() === "" ? null : Number(heightCm),
+				weightKg: weightKg.trim() === "" ? null : Number(weightKg),
 				interests,
 				availableWeekdays,
 				region: region ?? "",
@@ -142,6 +150,39 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 				<span className="text-sm font-medium">출생 연도</span>
 				<p className="bg-surface-alt text-sub rounded-xl px-4 py-3 text-sm">
 					{profile.birth_year}년생 (수정 불가)
+				</p>
+			</section>
+
+			<section className="flex flex-col gap-2">
+				<span className="text-sm font-medium">
+					신체 정보 <span className="text-sub font-normal">(선택)</span>
+				</span>
+				<div className="flex gap-2">
+					<Input
+						type="number"
+						value={heightCm}
+						onChange={function (event) {
+							setHeightCm(event.target.value);
+						}}
+						placeholder="키 (cm)"
+						min={130}
+						max={220}
+						aria-label="키 (cm)"
+					/>
+					<Input
+						type="number"
+						value={weightKg}
+						onChange={function (event) {
+							setWeightKg(event.target.value);
+						}}
+						placeholder="몸무게 (kg)"
+						min={30}
+						max={150}
+						aria-label="몸무게 (kg)"
+					/>
+				</div>
+				<p className="text-sub text-xs">
+					입력하면 프로필 상세에 표시돼요. 비워두면 표시되지 않아요.
 				</p>
 			</section>
 
