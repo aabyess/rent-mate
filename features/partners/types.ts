@@ -53,5 +53,7 @@ export type PartnerListItem = {
 	region: string;
 	purpose_tags: string[];
 	gender: "male" | "female";
+	blog_greeting: string | null;
+	blog_cover_url: string | null;
 	created_at: string;
 };
