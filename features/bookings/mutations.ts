@@ -14,7 +14,7 @@ import type {
 	CreateBookingInput,
 } from "@/features/bookings/types";
 import { postNotifyEvent } from "@/features/notifications/apis";
-import type { NotificationType } from "@/features/notifications/types";
+import type { BookingNotificationType } from "@/features/notifications/types";
 
 export function useCreateBookingMutation(): UseMutationResult<string, Error, CreateBookingInput> {
 	const queryClient = useQueryClient();
@@ -32,7 +32,7 @@ type UpdateBookingStatusInput = {
 	status: BookingStatus;
 };
 
-const STATUS_NOTIFICATION_TYPES: Partial<Record<BookingStatus, NotificationType>> = {
+const STATUS_NOTIFICATION_TYPES: Partial<Record<BookingStatus, BookingNotificationType>> = {
 	accepted: "booking_accepted",
 	rejected: "booking_rejected",
 	canceled: "booking_canceled",

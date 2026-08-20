@@ -5,7 +5,11 @@ import Link from "next/link";
 import type { JSX } from "react";
 import { useMarkNotificationReadMutation } from "@/features/notifications/mutations";
 import type { NotificationRow } from "@/features/notifications/types";
-import { NOTIFICATION_LABELS, formatNotificationDate } from "@/features/notifications/utils";
+import {
+	NOTIFICATION_LABELS,
+	formatNotificationDate,
+	getNotificationHref,
+} from "@/features/notifications/utils";
 import { cn } from "@/utils/cn";
 
 type NotificationListItemProps = {
@@ -24,7 +28,7 @@ export function NotificationListItem({ notification }: NotificationListItemProps
 
 	return (
 		<Link
-			href={`/bookings/${notification.payload.bookingId}`}
+			href={getNotificationHref(notification)}
 			onClick={handleClick}
 			className={cn(
 				"flex items-center gap-3 rounded-2xl px-4 py-3.5",
