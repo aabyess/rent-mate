@@ -2,22 +2,18 @@
 "use client";
 
 import type { JSX } from "react";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { useUpdateReportStatusMutation } from "@/features/admin/mutations";
+import { AdminDashboardReportSectionCard } from "@/features/admin/components/AdminDashboard/AdminDashboardReportSectionCard";
+import {
+	useDeactivatePartnerMutation,
+	useUpdateReportStatusMutation,
+} from "@/features/admin/mutations";
 import { useReportsQuery } from "@/features/admin/queries";
 import type { ReportStatus } from "@/features/admin/types";
-import { REPORT_STATUS_LABELS } from "@/features/admin/utils";
-
-const STATUS_BADGE_VARIANTS: Record<ReportStatus, "warning" | "trust" | "neutral"> = {
-	open: "warning",
-	resolved: "trust",
-	dismissed: "neutral",
-};
 
 export function AdminDashboardReportSection(): JSX.Element {
 	const { data: reports, isPending, isError } = useReportsQuery();
 	const updateStatusMutation = useUpdateReportStatusMutation();
+	const deactivatePartnerMutation = useDeactivatePartnerMutation();
 
 	return (
 		<section className="flex flex-col gap-3">
@@ -32,42 +28,18 @@ export function AdminDashboardReportSection(): JSX.Element {
 			{reports &&
 				reports.map(function (report) {
 					return (
-						<article
+						<AdminDashboardReportSectionCard
 							key={report.id}
-							className="bg-surface-alt flex flex-col gap-2.5 rounded-2xl p-4">
-							<div className="flex items-center justify-between">
-								<span className="text-sm font-semibold">
-									{report.reporterName} → {report.targetName}
-								</span>
-								<Badge variant={STATUS_BADGE_VARIANTS[report.status]}>
-									{REPORT_STATUS_LABELS[report.status]}
-								</Badge>
-							</div>
-							<p className="text-sub text-sm leading-relaxed">{report.reason}</p>
-							{report.status === "open" && (
-								<div className="flex gap-2">
-									<Button
-										variant="outline"
-										size="sm"
-										fullWidth
-										isLoading={updateStatusMutation.isPending}
-										onClick={function () {
-											updateStatusMutation.mutate({ reportId: report.id, status: "dismissed" });
-										}}>
-										기각
-									</Button>
-									<Button
-										size="sm"
-										fullWidth
-										isLoading={updateStatusMutation.isPending}
-										onClick={function () {
-											updateStatusMutation.mutate({ reportId: report.id, status: "resolved" });
-										}}>
-										조치 완료
-									</Button>
-								</div>
-							)}
-						</article>
+							report={report}
+							isUpdatingStatus={updateStatusMutation.isPending}
+							isDeactivating={deactivatePartnerMutation.isPending}
+							onUpdateStatus={function (status: ReportStatus, adminNote: string) {
+								updateStatusMutation.mutate({ reportId: report.id, status, adminNote });
+							}}
+							onDeactivatePartner={function () {
+								deactivatePartnerMutation.mutate(report.target_id);
+							}}
+						/>
 					);
 				})}
 		</section>

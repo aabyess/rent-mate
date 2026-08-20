@@ -5,6 +5,7 @@ import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/r
 import {
 	deletePartnerProfile,
 	patchPartnerApproval,
+	patchPartnerDeactivation,
 	patchPaymentStatus,
 	patchReportStatus,
 } from "@/features/admin/apis";
@@ -62,6 +63,7 @@ export function useUpdatePaymentStatusMutation(): UseMutationResult<
 type UpdateReportStatusInput = {
 	reportId: string;
 	status: ReportStatus;
+	adminNote: string;
 };
 
 export function useUpdateReportStatusMutation(): UseMutationResult<
@@ -71,11 +73,24 @@ export function useUpdateReportStatusMutation(): UseMutationResult<
 > {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: function ({ reportId, status }: UpdateReportStatusInput) {
-			return patchReportStatus(reportId, status);
+		mutationFn: function ({ reportId, status, adminNote }: UpdateReportStatusInput) {
+			return patchReportStatus(reportId, status, adminNote);
 		},
 		async onSuccess(): Promise<void> {
 			await queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.reports });
+		},
+	});
+}
+
+export function useDeactivatePartnerMutation(): UseMutationResult<void, Error, string> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: patchPartnerDeactivation,
+		async onSuccess(): Promise<void> {
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.reports }),
+				queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.list }),
+			]);
 		},
 	});
 }

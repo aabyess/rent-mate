@@ -3,6 +3,7 @@ import type {
 	AdminPaymentItem,
 	FlaggedMessageItem,
 	PendingPartnerItem,
+	ReportContext,
 	ReportItem,
 	ReportStatus,
 } from "@/features/admin/types";
@@ -76,25 +77,104 @@ export async function getReports(): Promise<ReportItem[]> {
 	const supabase = createClient();
 	const { data, error } = await supabase
 		.from("reports")
-		.select("id, reporter_id, target_id, booking_id, reason, status, created_at")
+		.select("id, reporter_id, target_id, booking_id, reason, status, admin_note, created_at")
 		.order("created_at", { ascending: false });
 	if (error) {
 		throw error;
 	}
-	const rows = (data ?? []) as Omit<ReportItem, "reporterName" | "targetName">[];
+	const rows = (data ?? []) as Omit<
+		ReportItem,
+		"reporterName" | "targetName" | "targetIsPartner"
+	>[];
 
-	const nameById = await getNamesByProfileIds(
-		rows.flatMap(function (row) {
-			return [row.reporter_id, row.target_id];
-		}),
+	const targetIds = Array.from(
+		new Set(
+			rows.map(function (row) {
+				return row.target_id;
+			}),
+		),
 	);
+	const [nameById, partnerIds] = await Promise.all([
+		getNamesByProfileIds(
+			rows.flatMap(function (row) {
+				return [row.reporter_id, row.target_id];
+			}),
+		),
+		getPartnerProfileIds(targetIds),
+	]);
 	return rows.map(function (row) {
 		return {
 			...row,
 			reporterName: nameById.get(row.reporter_id) ?? "알 수 없음",
 			targetName: nameById.get(row.target_id) ?? "알 수 없음",
+			targetIsPartner: partnerIds.has(row.target_id),
 		};
 	});
+}
+
+async function getPartnerProfileIds(profileIds: string[]): Promise<Set<string>> {
+	const supabase = createClient();
+	if (profileIds.length === 0) {
+		return new Set();
+	}
+	const { data, error } = await supabase
+		.from("partner_profiles")
+		.select("profile_id")
+		.in("profile_id", profileIds);
+	if (error) {
+		throw error;
+	}
+	return new Set(
+		((data ?? []) as { profile_id: string }[]).map(function (row) {
+			return row.profile_id;
+		}),
+	);
+}
+
+export async function getReportContextContent(context: ReportContext): Promise<string | null> {
+	const supabase = createClient();
+	if (context.type === "review") {
+		const { data, error } = await supabase
+			.from("reviews")
+			.select("content")
+			.eq("id", context.id)
+			.maybeSingle();
+		if (error) {
+			throw error;
+		}
+		return data?.content ?? null;
+	}
+	if (context.type === "chat_message") {
+		const { data, error } = await supabase
+			.from("chat_messages")
+			.select("content")
+			.eq("id", context.id)
+			.maybeSingle();
+		if (error) {
+			throw error;
+		}
+		return data?.content ?? null;
+	}
+	const { data, error } = await supabase
+		.from("partner_posts")
+		.select("content")
+		.eq("id", context.id)
+		.maybeSingle();
+	if (error) {
+		throw error;
+	}
+	return data?.content ?? null;
+}
+
+export async function patchPartnerDeactivation(profileId: string): Promise<void> {
+	const supabase = createClient();
+	const { error } = await supabase
+		.from("partner_profiles")
+		.update({ is_active: false })
+		.eq("profile_id", profileId);
+	if (error) {
+		throw error;
+	}
 }
 
 export async function getFlaggedMessages(): Promise<FlaggedMessageItem[]> {
@@ -187,9 +267,16 @@ export async function patchPaymentStatus(
 	}
 }
 
-export async function patchReportStatus(reportId: string, status: ReportStatus): Promise<void> {
+export async function patchReportStatus(
+	reportId: string,
+	status: ReportStatus,
+	adminNote: string,
+): Promise<void> {
 	const supabase = createClient();
-	const { error } = await supabase.from("reports").update({ status }).eq("id", reportId);
+	const { error } = await supabase
+		.from("reports")
+		.update({ status, admin_note: adminNote || null })
+		.eq("id", reportId);
 	if (error) {
 		throw error;
 	}
