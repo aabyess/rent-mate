@@ -5,6 +5,7 @@ import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/r
 import {
 	patchMyProfile,
 	postChangePassword,
+	postDeleteAccount,
 	postCreateProfile,
 	postSignIn,
 	postSignOut,
@@ -70,4 +71,15 @@ export function usePatchMyProfileMutation(): UseMutationResult<void, Error, Patc
 
 export function useChangePasswordMutation(): UseMutationResult<void, Error, ChangePasswordInput> {
 	return useMutation({ mutationFn: postChangePassword });
+}
+
+export function useDeleteAccountMutation(): UseMutationResult<void, Error, void> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: postDeleteAccount,
+		onSuccess(): void {
+			// 캐시에 남은 개인 데이터를 전부 비운다
+			queryClient.clear();
+		},
+	});
 }

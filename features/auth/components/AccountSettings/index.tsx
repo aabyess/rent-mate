@@ -2,6 +2,7 @@
 "use client";
 
 import type { JSX } from "react";
+import { AccountSettingsDeleteSection } from "@/features/auth/components/AccountSettings/AccountSettingsDeleteSection";
 import { AccountSettingsPasswordForm } from "@/features/auth/components/AccountSettings/AccountSettingsPasswordForm";
 import { AccountSettingsProfileForm } from "@/features/auth/components/AccountSettings/AccountSettingsProfileForm";
 import { useMyProfileQuery, useMyUsernameQuery } from "@/features/auth/queries";
@@ -28,6 +29,7 @@ export function AccountSettings(): JSX.Element {
 			{/* key: profile.id 변경 시(사실상 없음)에만 리마운트되어 폼 상태가 초기화된다 */}
 			<AccountSettingsProfileForm key={profile.id} profile={profile} username={username ?? null} />
 			<AccountSettingsPasswordForm />
+			<AccountSettingsDeleteSection />
 		</div>
 	);
 }
