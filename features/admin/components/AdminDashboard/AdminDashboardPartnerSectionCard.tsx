@@ -113,7 +113,7 @@ export function AdminDashboardPartnerSectionCard({
 
 				<p className="text-body text-sm leading-relaxed whitespace-pre-wrap">{partner.bio}</p>
 
-				<p className="bg-warning-100 text-warning-700 rounded-xl px-3.5 py-2.5 text-xs leading-relaxed">
+				<p className="bg-warning-500/15 text-warning-500 rounded-xl px-3.5 py-2.5 text-xs leading-relaxed">
 					선정적·신체접촉 암시 사진/문구, 조건만남 연상 표현이 포함된 프로필은 거절해주세요.
 				</p>
 
