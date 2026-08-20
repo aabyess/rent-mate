@@ -50,6 +50,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 	const [viewMonth, setViewMonth] = useState(BASE_DATE.month);
 	const [schedule, setSchedule] = useState<BookingSchedule | null>(null);
 	const [category, setCategory] = useState<string | null>(null);
+	const [categoryError, setCategoryError] = useState(false);
 	const [placeDetail, setPlaceDetail] = useState("");
 	const [bannedPlacePhrase, setBannedPlacePhrase] = useState<string | null>(null);
 	const [isAgreed, setIsAgreed] = useState(false);
@@ -135,7 +136,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 
 	const isStepValid =
 		(step === 1 && schedule !== null) ||
-		(step === 2 && category !== null && placeDetail.trim().length >= 2) ||
+		(step === 2 && placeDetail.trim().length >= 2) ||
 		(step === 3 && isAgreed) ||
 		step === 4;
 
@@ -149,6 +150,15 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 
 	function handleNext(): void {
 		if (step === 2) {
+			// 카테고리는 필수 — 버튼을 비활성화해 조용히 막는 대신 눌렀을 때 이유를 보여준다
+			if (category === null) {
+				setCategoryError(true);
+				document
+					.getElementById("booking-course-category")
+					?.scrollIntoView({ behavior: "smooth", block: "center" });
+				return;
+			}
+			setCategoryError(false);
 			// 공개 장소 원칙: 숙박업소 등 금지 표현이 든 장소는 다음 단계로 못 넘어간다
 			const banned = findBannedPhrase(placeDetail);
 			if (banned !== null) {
@@ -269,7 +279,11 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 					<BookingFlowStepCourse
 						category={category}
 						placeDetail={placeDetail}
-						onCategoryChange={setCategory}
+						categoryError={categoryError}
+						onCategoryChange={function (next) {
+							setCategory(next);
+							setCategoryError(false);
+						}}
 						onPlaceDetailChange={setPlaceDetail}
 					/>
 				)}
