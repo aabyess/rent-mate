@@ -5,7 +5,7 @@ import type { JSX } from "react";
 // 자리표시자. 데이트 코스 제휴(카페·전시 등) 톤을 유지하고, 유흥·선정 뉘앙스 금지.
 export function PartnerListDeckAdCard(): JSX.Element {
 	return (
-		<article className="from-primary-50 to-secondary-50 via-surface relative flex aspect-[3/4] w-full flex-col items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br">
+		<article className="from-primary-50 to-secondary-50 via-surface relative flex aspect-[2/3] w-full flex-col items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br">
 			<div className="bg-primary-200/40 absolute -top-16 -right-14 size-52 rounded-full blur-3xl" />
 			<div className="bg-secondary-200/40 absolute -bottom-20 -left-16 size-60 rounded-full blur-3xl" />
 			<span className="bg-inverse/70 text-inverse-fg absolute top-4 left-4 rounded-full px-2.5 py-1 text-[11px] font-semibold">

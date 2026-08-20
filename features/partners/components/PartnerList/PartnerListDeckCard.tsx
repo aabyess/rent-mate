@@ -2,6 +2,7 @@
 import Image from "next/image";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
+import { PartnerListDeckCardActions } from "@/features/partners/components/PartnerList/PartnerListDeckCardActions";
 import type { PartnerCardItem } from "@/features/partners/types";
 import { calculateAgeFromBirthYear, formatKrw } from "@/features/partners/utils";
 import type { PartnerRatingSummary } from "@/features/reviews/types";
@@ -17,18 +18,21 @@ type PartnerListDeckCardProps = {
 	partner: PartnerCardItem;
 	index: number;
 	rating?: PartnerRatingSummary;
+	/** 스택 맨 위 카드에서만 좋아요·찜을 렌더한다 (뒷카드 불필요 쿼리·포커스 방지) */
+	showActions?: boolean;
 };
 
 export function PartnerListDeckCard({
 	partner,
 	index,
 	rating,
+	showActions = false,
 }: PartnerListDeckCardProps): JSX.Element {
 	const placeholder = PLACEHOLDER_STYLES[index % PLACEHOLDER_STYLES.length];
 
 	return (
 		<article
-			className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl"
+			className="relative aspect-[2/3] w-full overflow-hidden rounded-xl"
 			style={{ background: placeholder.background }}>
 			<svg
 				className="absolute bottom-0 left-1/2 -translate-x-1/2"
@@ -55,6 +59,7 @@ export function PartnerListDeckCard({
 					NEW
 				</Badge>
 			)}
+			{showActions && <PartnerListDeckCardActions partnerId={partner.profile_id} />}
 			<div className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-5 pt-20 text-white">
 				<div className="flex items-center gap-2">
 					<span className="text-2xl font-bold tracking-tight">
