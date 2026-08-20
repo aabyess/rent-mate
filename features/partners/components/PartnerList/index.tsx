@@ -30,6 +30,8 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const [deckIndex, setDeckIndex] = useState(0);
 	const [isDeckPaused, setIsDeckPaused] = useState(false);
 	const deckRef = useRef<HTMLDivElement>(null);
+	const resumeTimerRef = useRef<number | null>(null);
+	const lastTouchAtRef = useRef(0);
 
 	const blockedIds = new Set(
 		(blocks ?? []).map(function (block) {
@@ -93,9 +95,31 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		[isDeckPaused, deckCount],
 	);
 
+	useEffect(function () {
+		return function () {
+			if (resumeTimerRef.current !== null) {
+				clearTimeout(resumeTimerRef.current);
+			}
+		};
+	}, []);
+
+	// 손을 뗀 뒤에도 관성 스크롤이 이어지는 동안은 자동 넘김을 재개하지 않는다
+	function scheduleDeckResume(): void {
+		if (resumeTimerRef.current !== null) {
+			clearTimeout(resumeTimerRef.current);
+		}
+		resumeTimerRef.current = window.setTimeout(function () {
+			resumeTimerRef.current = null;
+			setIsDeckPaused(false);
+		}, 800);
+	}
+
 	function handleDeckScroll(event: UIEvent<HTMLDivElement>): void {
 		const deck = event.currentTarget;
 		setDeckIndex(Math.round(deck.scrollLeft / deck.clientWidth));
+		if (resumeTimerRef.current !== null) {
+			scheduleDeckResume();
+		}
 	}
 
 	function handleDeckStep(direction: -1 | 1): void {
@@ -186,15 +210,28 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 						ref={deckRef}
 						onScroll={handleDeckScroll}
 						onTouchStart={function () {
+							lastTouchAtRef.current = Date.now();
+							if (resumeTimerRef.current !== null) {
+								clearTimeout(resumeTimerRef.current);
+								resumeTimerRef.current = null;
+							}
 							setIsDeckPaused(true);
 						}}
 						onTouchEnd={function () {
-							setIsDeckPaused(false);
+							lastTouchAtRef.current = Date.now();
+							scheduleDeckResume();
 						}}
 						onMouseEnter={function () {
+							// 탭 직후 브라우저가 쏘는 합성 mouseenter는 mouseleave 없이 끝나 영구 정지를 만든다
+							if (Date.now() - lastTouchAtRef.current < 1000) {
+								return;
+							}
 							setIsDeckPaused(true);
 						}}
 						onMouseLeave={function () {
+							if (Date.now() - lastTouchAtRef.current < 1000) {
+								return;
+							}
 							setIsDeckPaused(false);
 						}}
 						className="-mx-5 flex snap-x snap-mandatory scrollbar-none gap-3 overflow-x-auto px-5">
