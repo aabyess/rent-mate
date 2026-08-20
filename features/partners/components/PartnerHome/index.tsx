@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useState, type JSX } from "react";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
 import { formatBookingPeriod, sumBookingAmountsKrw } from "@/features/bookings/utils";
-import { PartnerPostComposer } from "@/features/partnerPosts/components/PartnerPostComposer";
-import { PartnerPostList } from "@/features/partnerPosts/components/PartnerPostList";
 import { formatKrw } from "@/features/partners/utils";
 import type { MyPartnerProfile } from "@/features/partners/types";
 
@@ -110,22 +108,23 @@ export function PartnerHome({ partnerProfile }: PartnerHomeProps): JSX.Element {
 				</span>
 			</Link>
 
-			<PartnerPostComposer partnerId={partnerProfile.profile_id} />
-
-			<section className="flex flex-col gap-2.5">
-				<div className="flex items-center justify-between">
-					<h2 className="text-[15px] font-semibold">내 소식</h2>
-					<Link
-						href={`/partners/${partnerProfile.profile_id}`}
-						className="text-brand text-[13px] font-medium">
-						고객에게 보이는 내 프로필 →
-					</Link>
-				</div>
-				<PartnerPostList
-					partnerId={partnerProfile.profile_id}
-					partnerNickname={partnerProfile.nickname}
-				/>
-			</section>
+			<Link
+				href={`/partners/${partnerProfile.profile_id}`}
+				className="bg-surface text-body flex items-center justify-between rounded-2xl px-4.5 py-4">
+				<span className="text-sm font-semibold">고객에게 보이는 내 프로필</span>
+				<svg
+					className="text-sub"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round">
+					<path d="M9 5l7 7-7 7" />
+				</svg>
+			</Link>
 		</div>
 	);
 }
