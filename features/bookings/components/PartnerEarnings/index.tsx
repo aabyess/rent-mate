@@ -5,10 +5,15 @@ import Link from "next/link";
 import type { JSX } from "react";
 import { PartnerEarningsMonthGroup } from "@/features/bookings/components/PartnerEarnings/PartnerEarningsMonthGroup";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
-import { groupCompletedBookingsByMonth, sumBookingAmountsKrw } from "@/features/bookings/utils";
+import {
+	calculateEarningsBreakdown,
+	groupCompletedBookingsByMonth,
+	sumBookingAmountsKrw,
+} from "@/features/bookings/utils";
 import { useMyPartnerProfileQuery } from "@/features/partners/queries";
 import { formatKrw } from "@/features/partners/utils";
 import { usePaymentStatusesQuery } from "@/features/payments/queries";
+import { PartnerPayoutAccountCard } from "@/features/payouts/components/PartnerPayoutAccountCard";
 
 export function PartnerEarnings(): JSX.Element {
 	const { data: myPartnerProfile, isPending: isProfilePending } = useMyPartnerProfileQuery();
@@ -52,16 +57,22 @@ export function PartnerEarnings(): JSX.Element {
 			return booking.total_amount_krw;
 		}),
 	);
+	const { feeKrw, netKrw } = calculateEarningsBreakdown(totalKrw);
 	const monthlyGroups = groupCompletedBookingsByMonth(completed);
 
 	return (
 		<div className="flex flex-col gap-5">
+			<PartnerPayoutAccountCard />
+
 			<div className="bg-secondary-50 flex flex-col gap-1 rounded-2xl px-4.5 py-4">
 				<span className="text-secondary-700 text-sm font-semibold">전체 누적 정산 금액</span>
 				<span className="text-secondary-700 text-2xl font-bold tabular-nums">
-					{formatKrw(totalKrw)}
+					{formatKrw(netKrw)}
 				</span>
-				<span className="text-secondary-700 text-xs">완료된 데이트 {completed.length}건 기준</span>
+				<span className="text-secondary-700 text-xs">
+					완료된 데이트 {completed.length}건 · 총액 {formatKrw(totalKrw)} · 수수료(5%){" "}
+					{formatKrw(feeKrw)}
+				</span>
 			</div>
 
 			{monthlyGroups.length === 0 ? (

@@ -124,11 +124,30 @@ export function canCompleteBookingNow(booking: MyBookingItem): boolean {
 	return booking.status === "accepted" && Date.now() >= new Date(booking.starts_at).getTime();
 }
 
+// 플랫폼 수수료 — DB의 complete_partner_settlement RPC와 동일하게 유지할 것.
+// 클라이언트는 미리보기용, DB 쪽이 최종 권위.
+export const PLATFORM_FEE_RATIO = 0.05;
+
+export type EarningsBreakdown = {
+	totalKrw: number;
+	feeKrw: number;
+	netKrw: number;
+};
+
+// 수수료는 floor 처리(취소 수수료 계산과 동일한 반올림 컨벤션 재사용)
+export function calculateEarningsBreakdown(totalKrw: number): EarningsBreakdown {
+	const feeKrw = new Decimal(totalKrw).times(PLATFORM_FEE_RATIO).floor().toNumber();
+	const netKrw = new Decimal(totalKrw).minus(feeKrw).toNumber();
+	return { totalKrw, feeKrw, netKrw };
+}
+
 export type MonthlyEarningsGroup = {
 	monthKey: string;
 	monthLabel: string;
 	bookings: MyBookingItem[];
 	subtotalKrw: number;
+	feeKrw: number;
+	netKrw: number;
 };
 
 // 완료된 예약을 데이트 일자(starts_at) 기준 월별로 묶는다 — 최신 달이 먼저
@@ -151,15 +170,19 @@ export function groupCompletedBookingsByMonth(bookings: MyBookingItem[]): Monthl
 				return new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime();
 			});
 			const [year, month] = monthKey.split("-");
+			const subtotalKrw = sumBookingAmountsKrw(
+				sorted.map(function (booking) {
+					return booking.total_amount_krw;
+				}),
+			);
+			const { feeKrw, netKrw } = calculateEarningsBreakdown(subtotalKrw);
 			return {
 				monthKey,
 				monthLabel: `${year}년 ${Number(month)}월`,
 				bookings: sorted,
-				subtotalKrw: sumBookingAmountsKrw(
-					sorted.map(function (booking) {
-						return booking.total_amount_krw;
-					}),
-				),
+				subtotalKrw,
+				feeKrw,
+				netKrw,
 			};
 		});
 }

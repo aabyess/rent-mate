@@ -10,6 +10,7 @@ export const NOTIFICATION_LABELS: Record<NotificationType, string> = {
 	booking_reminder: "다가오는 데이트가 있어요",
 	partner_approved: "파트너 승인이 완료됐어요 — 활동을 시작해보세요!",
 	partner_rejected: "파트너 승인이 거절됐어요. 프로필을 보완해 다시 신청할 수 있어요.",
+	payout_released: "정산이 완료됐어요",
 };
 
 export function getNotificationHref(notification: NotificationRow): string {
@@ -18,6 +19,9 @@ export function getNotificationHref(notification: NotificationRow): string {
 	}
 	if (notification.type === "partner_rejected") {
 		return "/partner/register";
+	}
+	if (notification.type === "payout_released") {
+		return "/partner/earnings";
 	}
 	return `/bookings/${notification.payload.bookingId}`;
 }

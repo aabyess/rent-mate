@@ -4,7 +4,10 @@
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { useUpdatePaymentStatusMutation } from "@/features/admin/mutations";
+import {
+	useCompletePartnerSettlementMutation,
+	useUpdatePaymentStatusMutation,
+} from "@/features/admin/mutations";
 import { usePaymentsOverviewQuery } from "@/features/admin/queries";
 import { BOOKING_STATUS_LABELS } from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
@@ -28,6 +31,7 @@ const PAYMENT_STATUS_BADGE_VARIANTS: Record<PaymentStatus, "warning" | "trust" |
 export function AdminDashboardPaymentSection(): JSX.Element {
 	const { data: payments, isPending, isError } = usePaymentsOverviewQuery();
 	const updatePaymentStatusMutation = useUpdatePaymentStatusMutation();
+	const completeSettlementMutation = useCompletePartnerSettlementMutation();
 
 	return (
 		<section className="flex flex-col gap-3">
@@ -60,6 +64,14 @@ export function AdminDashboardPaymentSection(): JSX.Element {
 									{formatKrw(payment.amount_krw)}
 								</span>
 							</div>
+							{payment.status === "released" &&
+								payment.payout_amount_krw !== null &&
+								payment.payout_fee_krw !== null && (
+									<p className="text-sub text-xs tabular-nums">
+										정산액 {formatKrw(payment.payout_amount_krw)} · 수수료(5%){" "}
+										{formatKrw(payment.payout_fee_krw)}
+									</p>
+								)}
 							{payment.needsRefund && (
 								<Button
 									size="sm"
@@ -80,20 +92,20 @@ export function AdminDashboardPaymentSection(): JSX.Element {
 									variant="secondary"
 									size="sm"
 									fullWidth
-									isLoading={updatePaymentStatusMutation.isPending}
+									isLoading={completeSettlementMutation.isPending}
 									onClick={function () {
-										updatePaymentStatusMutation.mutate({
-											paymentId: payment.id,
-											status: "released",
-										});
+										completeSettlementMutation.mutate(payment.id);
 									}}>
-									파트너 정산 처리
+									정산 완료
 								</Button>
 							)}
 							{updatePaymentStatusMutation.isError && (
 								<p className="text-error-500 text-sm">
 									{updatePaymentStatusMutation.error.message}
 								</p>
+							)}
+							{completeSettlementMutation.isError && (
+								<p className="text-error-500 text-sm">{completeSettlementMutation.error.message}</p>
 							)}
 						</article>
 					);

@@ -1,7 +1,11 @@
 // features/bookings/components/PartnerEarnings/PartnerEarningsMonthGroup.tsx
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
-import { formatBookingPeriod, type MonthlyEarningsGroup } from "@/features/bookings/utils";
+import {
+	calculateEarningsBreakdown,
+	formatBookingPeriod,
+	type MonthlyEarningsGroup,
+} from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
 import type { PaymentStatus } from "@/features/payments/types";
 
@@ -32,13 +36,19 @@ export function PartnerEarningsMonthGroup({
 		<section className="flex flex-col gap-2.5">
 			<div className="flex items-center justify-between">
 				<h2 className="text-[15px] font-semibold">{group.monthLabel}</h2>
-				<span className="text-sub text-sm font-semibold tabular-nums">
-					{formatKrw(group.subtotalKrw)}
-				</span>
+				<div className="flex flex-col items-end">
+					<span className="text-sub text-sm font-semibold tabular-nums">
+						{formatKrw(group.netKrw)}
+					</span>
+					<span className="text-sub text-xs tabular-nums">
+						총 {formatKrw(group.subtotalKrw)} · 수수료 {formatKrw(group.feeKrw)}
+					</span>
+				</div>
 			</div>
 			<div className="bg-surface divide-line flex flex-col divide-y rounded-2xl">
 				{group.bookings.map(function (booking) {
 					const paymentStatus = paymentStatuses[booking.id];
+					const { feeKrw, netKrw } = calculateEarningsBreakdown(booking.total_amount_krw);
 					return (
 						<div key={booking.id} className="flex items-center justify-between gap-3 px-4.5 py-3.5">
 							<div className="flex flex-col gap-0.5">
@@ -52,9 +62,12 @@ export function PartnerEarningsMonthGroup({
 									{paymentStatus ? ESCROW_LABELS[paymentStatus] : "결제 내역 없음"}
 								</Badge>
 							</div>
-							<span className="text-[15px] font-bold tabular-nums">
-								{formatKrw(booking.total_amount_krw)}
-							</span>
+							<div className="flex flex-col items-end gap-0.5">
+								<span className="text-[15px] font-bold tabular-nums">{formatKrw(netKrw)}</span>
+								<span className="text-sub text-xs tabular-nums">
+									총 {formatKrw(booking.total_amount_krw)} · 수수료 {formatKrw(feeKrw)}
+								</span>
+							</div>
 						</div>
 					);
 				})}
