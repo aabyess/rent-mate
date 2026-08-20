@@ -117,18 +117,11 @@ export function PreferenceWizardForm({
 	return (
 		<div className="flex w-full max-w-sm flex-col gap-5">
 			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-1.5">
-					{STEPS.map(function (item, index) {
-						return (
-							<span
-								key={item.key}
-								className={cn(
-									"h-1.5 rounded-full transition-all duration-300",
-									index === stepIndex ? "bg-brand w-6" : "bg-surface-alt w-1.5",
-								)}
-							/>
-						);
-					})}
+				<div className="bg-surface-alt mr-4 h-2 grow overflow-hidden rounded-full">
+					<div
+						className="bg-brand h-full rounded-full transition-all duration-500 ease-out"
+						style={{ width: `${((stepIndex + 1) / STEPS.length) * 100}%` }}
+					/>
 				</div>
 				<button
 					type="button"
