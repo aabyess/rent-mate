@@ -97,7 +97,7 @@ export function BottomTabBar(): JSX.Element {
 						key={item.href}
 						href={item.href}
 						className={cn(
-							"relative flex h-12 grow flex-col items-center justify-center gap-0.5",
+							"relative flex h-12 grow flex-col items-center justify-center gap-0.5 transition-transform duration-100 active:scale-90 active:opacity-60",
 							isActive ? "text-brand font-semibold" : "text-sub",
 						)}>
 						{item.icon}
