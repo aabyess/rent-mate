@@ -114,7 +114,7 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 		return (
 			<div className="flex flex-col items-center gap-4 py-24">
 				<p className="text-sub text-sm">차단한 파트너예요.</p>
-				<Link href="/safety-center#blocks" className="text-brand font-medium underline">
+				<Link href="/safety-center/blocks" className="text-brand font-medium underline">
 					차단 목록에서 해제하기
 				</Link>
 			</div>

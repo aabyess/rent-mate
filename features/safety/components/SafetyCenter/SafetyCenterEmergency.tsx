@@ -3,8 +3,7 @@ import type { JSX } from "react";
 
 export function SafetyCenterEmergency(): JSX.Element {
 	return (
-		<section id="emergency" className="bg-surface flex flex-col gap-3 rounded-2xl p-4.5">
-			<h2 className="text-[17px] font-semibold">긴급 연락</h2>
+		<section className="bg-surface flex flex-col gap-3 rounded-2xl p-4.5">
 			<p className="text-sub text-sm">
 				위험을 느끼면 망설이지 말고 바로 경찰에 신고하세요. 데이트는 항상 공개 장소에서만 진행돼요.
 			</p>
