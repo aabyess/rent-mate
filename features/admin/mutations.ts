@@ -10,17 +10,19 @@ import {
 } from "@/features/admin/apis";
 import { ADMIN_QUERY_KEYS } from "@/features/admin/queries";
 import type { ReportStatus } from "@/features/admin/types";
+import { postNotifyEvent } from "@/features/notifications/apis";
 import { PARTNERS_QUERY_KEYS } from "@/features/partners/queries";
 
 export function useApprovePartnerMutation(): UseMutationResult<void, Error, string> {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: patchPartnerApproval,
-		async onSuccess(): Promise<void> {
+		async onSuccess(_data, partnerId): Promise<void> {
 			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.pendingPartners }),
 				queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.list }),
 			]);
+			void postNotifyEvent({ type: "partner_approved", partnerId });
 		},
 	});
 }
@@ -29,8 +31,9 @@ export function useRejectPartnerMutation(): UseMutationResult<void, Error, strin
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: deletePartnerProfile,
-		async onSuccess(): Promise<void> {
+		async onSuccess(_data, partnerId): Promise<void> {
 			await queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.pendingPartners });
+			void postNotifyEvent({ type: "partner_rejected", partnerId });
 		},
 	});
 }
