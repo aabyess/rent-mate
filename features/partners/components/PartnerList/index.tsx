@@ -60,7 +60,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const router = useRouter();
 	const { data: partners, isPending, isError } = usePartnerListQuery();
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
-	const { data: myPreferences } = useMyPreferencesQuery();
+	const { data: myPreferences, isPending: isPreferencesPending } = useMyPreferencesQuery();
 	const { data: ratings } = usePartnerRatingsQuery(
 		(partners ?? []).map(function (partner) {
 			return partner.profile_id;
@@ -220,7 +220,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		});
 	}
 
-	if (isPending || isBlocksPending) {
+	if (isPending || isBlocksPending || isPreferencesPending) {
 		return (
 			<div className="flex flex-col gap-3">
 				<div className="bg-surface-alt aspect-[3/4] w-full animate-pulse rounded-3xl" />
