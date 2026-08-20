@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { JSX, ReactNode } from "react";
 import { useUnreadChatTotal } from "@/features/chats/hooks";
+import { useMyPartnerProfileQuery } from "@/features/partners/queries";
 import { cn } from "@/utils/cn";
 
 type TabItem = {
@@ -84,13 +85,35 @@ const TAB_ITEMS: TabItem[] = [
 	},
 ];
 
+// 승인된 파트너의 홈 탭 — 탐색 덱이 아니라 파트너 홈/내 블로그가 뜨므로 라벨·아이콘을 맞춘다
+const PARTNER_HOME_TAB: TabItem = {
+	href: "/",
+	label: "블로그",
+	icon: (
+		<svg
+			width="22"
+			height="22"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.8"
+			strokeLinecap="round"
+			strokeLinejoin="round">
+			<path d="M4 20h16M5 16.5L15.5 6a2.1 2.1 0 0 1 3 3L8 19.5l-4 1z" />
+		</svg>
+	),
+};
+
 export function BottomTabBar(): JSX.Element {
 	const pathname = usePathname();
 	const unreadChatTotal = useUnreadChatTotal();
+	const { data: myPartnerProfile } = useMyPartnerProfileQuery();
+	const isApprovedPartner = !!myPartnerProfile && myPartnerProfile.is_approved;
+	const tabItems = isApprovedPartner ? [PARTNER_HOME_TAB, ...TAB_ITEMS.slice(1)] : TAB_ITEMS;
 
 	return (
 		<nav className="border-line bg-surface/80 fixed bottom-0 left-1/2 z-10 flex w-full max-w-md -translate-x-1/2 items-center border-t px-3 pt-2 pb-5 backdrop-blur-xl">
-			{TAB_ITEMS.map(function (item) {
+			{tabItems.map(function (item) {
 				const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 				return (
 					<Link
