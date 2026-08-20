@@ -1,7 +1,7 @@
 // app/(main)/(tabs)/page.tsx
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
-import { PartnerExplorer } from "@/features/partners/components/PartnerExplorer";
+import { HomeSwitcher } from "@/features/partners/components/HomeSwitcher";
 
 export default function HomePage(): JSX.Element {
 	return (
@@ -24,7 +24,7 @@ export default function HomePage(): JSX.Element {
 					안전 정책
 				</Badge>
 			</header>
-			<PartnerExplorer />
+			<HomeSwitcher />
 		</main>
 	);
 }
