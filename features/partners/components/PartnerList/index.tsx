@@ -1,23 +1,49 @@
 // features/partners/components/PartnerList/index.tsx
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState, type JSX, type UIEvent } from "react";
+import { AnimatePresence } from "motion/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, type JSX } from "react";
 import { REGIONS } from "@/constants/regions";
+import { PartnerListDeckAdCard } from "@/features/partners/components/PartnerList/PartnerListDeckAdCard";
 import { PartnerListDeckCard } from "@/features/partners/components/PartnerList/PartnerListDeckCard";
+import {
+	PartnerListDeckMotionCard,
+	type DeckMotionCustom,
+} from "@/features/partners/components/PartnerList/PartnerListDeckMotionCard";
 import { usePartnerListQuery } from "@/features/partners/queries";
+import type { PartnerCardItem } from "@/features/partners/types";
 import { usePartnerRatingsQuery } from "@/features/reviews/queries";
 import { useMyBlocksQuery } from "@/features/safety/queries";
 import { cn } from "@/utils/cn";
 
 const INTEREST_FILTERS = ["전체", "카페", "전시", "산책", "맛집", "영화"];
 const REGION_FILTERS = ["전체", ...REGIONS];
+const AD_INTERVAL = 5; // 파트너 카드 5장마다 광고 카드 1장
+const AUTOPLAY_MS = 3000;
+const STACK_SIZE = 3;
+
+type DeckItem =
+	| { kind: "partner"; partner: PartnerCardItem; partnerIndex: number }
+	| { kind: "ad"; adIndex: number };
+
+function buildDeckItems(partners: PartnerCardItem[]): DeckItem[] {
+	const items: DeckItem[] = [];
+	partners.forEach(function (partner, index) {
+		items.push({ kind: "partner", partner, partnerIndex: index });
+		if ((index + 1) % AD_INTERVAL === 0) {
+			items.push({ kind: "ad", adIndex: (index + 1) / AD_INTERVAL - 1 });
+		}
+	});
+	return items;
+}
 
 type PartnerListProps = {
 	searchQuery?: string;
 };
 
 export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element {
+	const router = useRouter();
 	const { data: partners, isPending, isError } = usePartnerListQuery();
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
 	const { data: ratings } = usePartnerRatingsQuery(
@@ -27,9 +53,11 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	);
 	const [activeFilter, setActiveFilter] = useState("전체");
 	const [activeRegion, setActiveRegion] = useState("전체");
-	const [deckIndex, setDeckIndex] = useState(0);
+	// deckPosition은 단조 증가하는 스택 위치 — 실제 카드는 deckItems[position % length]
+	const [deckPosition, setDeckPosition] = useState(0);
+	const [navDirection, setNavDirection] = useState<-1 | 1>(1);
+	const [exitX, setExitX] = useState<-1 | 1>(-1);
 	const [isDeckPaused, setIsDeckPaused] = useState(false);
-	const deckRef = useRef<HTMLDivElement>(null);
 	const resumeTimerRef = useRef<number | null>(null);
 	const lastTouchAtRef = useRef(0);
 
@@ -72,22 +100,31 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 						})
 					);
 				});
-	const deckCount = filteredPartners.length;
+	const deckItems = buildDeckItems(filteredPartners);
+	const deckCount = deckItems.length;
 
-	// 3초마다 다음 카드로 자동 넘김 — 마지막에서 처음으로 순환, 사용자가 만지는 동안은 정지
+	// 필터·검색이 바뀌면 스택을 처음부터 다시 쌓는다 (렌더 중 상태 조정 패턴)
+	const filterSignature = `${activeFilter}|${activeRegion}|${normalizedQuery}`;
+	const [prevFilterSignature, setPrevFilterSignature] = useState(filterSignature);
+	if (prevFilterSignature !== filterSignature) {
+		setPrevFilterSignature(filterSignature);
+		setDeckPosition(0);
+		setNavDirection(1);
+	}
+
+	// 3초마다 다음 카드로 자동 넘김 — 사용자가 만지는 동안은 정지
 	useEffect(
 		function () {
 			if (isDeckPaused || deckCount <= 1) {
 				return;
 			}
 			const timer = setInterval(function () {
-				const deck = deckRef.current;
-				if (!deck) {
-					return;
-				}
-				const nextIndex = (Math.round(deck.scrollLeft / deck.clientWidth) + 1) % deckCount;
-				deck.scrollTo({ left: nextIndex * deck.clientWidth, behavior: "smooth" });
-			}, 3000);
+				setExitX(-1);
+				setNavDirection(1);
+				setDeckPosition(function (position) {
+					return position + 1;
+				});
+			}, AUTOPLAY_MS);
 			return function () {
 				clearInterval(timer);
 			};
@@ -103,7 +140,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		};
 	}, []);
 
-	// 손을 뗀 뒤에도 관성 스크롤이 이어지는 동안은 자동 넘김을 재개하지 않는다
+	// 손을 뗀 직후 바로 자동 넘김이 끼어들지 않도록 잠깐 여유를 두고 재개한다
 	function scheduleDeckResume(): void {
 		if (resumeTimerRef.current !== null) {
 			clearTimeout(resumeTimerRef.current);
@@ -114,19 +151,34 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		}, 800);
 	}
 
-	function handleDeckScroll(event: UIEvent<HTMLDivElement>): void {
-		const deck = event.currentTarget;
-		setDeckIndex(Math.round(deck.scrollLeft / deck.clientWidth));
+	function pauseDeck(): void {
 		if (resumeTimerRef.current !== null) {
-			scheduleDeckResume();
+			clearTimeout(resumeTimerRef.current);
+			resumeTimerRef.current = null;
 		}
+		setIsDeckPaused(true);
+	}
+
+	function handleSwipe(direction: -1 | 1): void {
+		setExitX(direction);
+		setNavDirection(1);
+		setDeckPosition(function (position) {
+			return position + 1;
+		});
 	}
 
 	function handleDeckStep(direction: -1 | 1): void {
-		const deck = deckRef.current;
-		if (deck) {
-			deck.scrollBy({ left: direction * deck.clientWidth, behavior: "smooth" });
+		if (direction === 1) {
+			handleSwipe(-1);
+			return;
 		}
+		if (deckPosition === 0) {
+			return;
+		}
+		setNavDirection(-1);
+		setDeckPosition(function (position) {
+			return position - 1;
+		});
 	}
 
 	if (isPending || isBlocksPending) {
@@ -158,7 +210,16 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 		return "아직 등록된 파트너가 없어요.";
 	}
 
-	const clampedIndex = Math.min(deckIndex, Math.max(filteredPartners.length - 1, 0));
+	// 아래 카드부터 그려서 맨 위 카드가 마지막(위)에 오도록 한다
+	const stack: { position: number; item: DeckItem; offset: number }[] = [];
+	if (deckCount > 0) {
+		for (let offset = Math.min(STACK_SIZE, deckCount) - 1; offset >= 0; offset -= 1) {
+			const position = deckPosition + offset;
+			stack.push({ position, item: deckItems[position % deckCount], offset });
+		}
+	}
+	const topItem = deckCount > 0 ? deckItems[deckPosition % deckCount] : null;
+	const presenceCustom: DeckMotionCustom = { exitX, nav: navDirection, offset: 0 };
 
 	return (
 		<div className="flex flex-col gap-3.5">
@@ -202,20 +263,14 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 					);
 				})}
 			</div>
-			{filteredPartners.length === 0 ? (
+			{deckCount === 0 ? (
 				<p className="text-sub py-16 text-center text-sm">{getEmptyMessage()}</p>
 			) : (
 				<div className="flex flex-col gap-3">
 					<div
-						ref={deckRef}
-						onScroll={handleDeckScroll}
 						onTouchStart={function () {
 							lastTouchAtRef.current = Date.now();
-							if (resumeTimerRef.current !== null) {
-								clearTimeout(resumeTimerRef.current);
-								resumeTimerRef.current = null;
-							}
-							setIsDeckPaused(true);
+							pauseDeck();
 						}}
 						onTouchEnd={function () {
 							lastTouchAtRef.current = Date.now();
@@ -226,30 +281,53 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 							if (Date.now() - lastTouchAtRef.current < 1000) {
 								return;
 							}
-							setIsDeckPaused(true);
+							pauseDeck();
 						}}
 						onMouseLeave={function () {
 							if (Date.now() - lastTouchAtRef.current < 1000) {
 								return;
 							}
-							setIsDeckPaused(false);
+							scheduleDeckResume();
 						}}
-						className="-mx-5 flex snap-x snap-mandatory scrollbar-none gap-3 overflow-x-auto px-5">
-						{filteredPartners.map(function (partner, index) {
-							return (
-								<Link
-									key={partner.profile_id}
-									href={`/partners/${partner.profile_id}`}
-									aria-label={`${partner.nickname} 프로필 보기`}
-									className="w-full shrink-0 snap-center">
-									<PartnerListDeckCard
-										partner={partner}
-										index={index}
-										rating={ratings?.[partner.profile_id]}
-									/>
-								</Link>
-							);
-						})}
+						className="relative aspect-[3/4] w-full pb-6">
+						<AnimatePresence initial={false} custom={presenceCustom}>
+							{stack.map(function ({ position, item, offset }) {
+								const custom: DeckMotionCustom = { exitX, nav: navDirection, offset };
+								if (item.kind === "ad") {
+									return (
+										<PartnerListDeckMotionCard
+											key={position}
+											isTop={offset === 0}
+											custom={custom}
+											ariaLabel="광고 카드"
+											onSwipe={handleSwipe}
+											onDragStart={pauseDeck}
+											onDragEnd={scheduleDeckResume}>
+											<PartnerListDeckAdCard />
+										</PartnerListDeckMotionCard>
+									);
+								}
+								return (
+									<PartnerListDeckMotionCard
+										key={position}
+										isTop={offset === 0}
+										custom={custom}
+										ariaLabel={`${item.partner.nickname} 프로필 보기`}
+										onSwipe={handleSwipe}
+										onDragStart={pauseDeck}
+										onDragEnd={scheduleDeckResume}
+										onTap={function () {
+											router.push(`/partners/${item.partner.profile_id}`);
+										}}>
+										<PartnerListDeckCard
+											partner={item.partner}
+											index={item.partnerIndex}
+											rating={ratings?.[item.partner.profile_id]}
+										/>
+									</PartnerListDeckMotionCard>
+								);
+							})}
+						</AnimatePresence>
 					</div>
 					<div className="flex items-center justify-between px-1">
 						<button
@@ -257,7 +335,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 							onClick={function () {
 								handleDeckStep(-1);
 							}}
-							disabled={clampedIndex === 0}
+							disabled={deckPosition === 0}
 							aria-label="이전 파트너"
 							className="bg-surface-alt text-body flex size-11 items-center justify-center rounded-full disabled:opacity-40">
 							<svg
@@ -273,16 +351,17 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 							</svg>
 						</button>
 						<span className="text-sub text-sm tabular-nums">
-							{clampedIndex + 1} / {filteredPartners.length}
+							{topItem?.kind === "partner"
+								? `${topItem.partnerIndex + 1} / ${filteredPartners.length}`
+								: "광고"}
 						</span>
 						<button
 							type="button"
 							onClick={function () {
 								handleDeckStep(1);
 							}}
-							disabled={clampedIndex >= filteredPartners.length - 1}
 							aria-label="다음 파트너"
-							className="bg-surface-alt text-body flex size-11 items-center justify-center rounded-full disabled:opacity-40">
+							className="bg-surface-alt text-body flex size-11 items-center justify-center rounded-full">
 							<svg
 								width="18"
 								height="18"
