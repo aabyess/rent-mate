@@ -35,7 +35,6 @@ export function PartnerExplorer(): JSX.Element {
 				</label>
 			</div>
 			<section className="flex flex-col gap-3.5 px-5 py-4">
-				<h2 className="text-lg font-semibold">지금 만날 수 있는 파트너</h2>
 				<PartnerList searchQuery={searchQuery} />
 			</section>
 		</div>
