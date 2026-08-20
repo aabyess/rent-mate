@@ -22,6 +22,7 @@ import { formatKrw } from "@/features/partners/utils";
 import { useMyProfileQuery } from "@/features/auth/queries";
 import { getTossClientKey, startTossCheckout } from "@/features/payments/apis";
 import { cn } from "@/utils/cn";
+import { findBannedPhrase } from "@/utils/bannedPhrases";
 
 const NOW = new Date();
 const BASE_DATE = { year: NOW.getFullYear(), month: NOW.getMonth() + 1, day: NOW.getDate() };
@@ -50,6 +51,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 	const [schedule, setSchedule] = useState<BookingSchedule | null>(null);
 	const [category, setCategory] = useState<string | null>(null);
 	const [placeDetail, setPlaceDetail] = useState("");
+	const [bannedPlacePhrase, setBannedPlacePhrase] = useState<string | null>(null);
 	const [isAgreed, setIsAgreed] = useState(false);
 
 	if (isPartnerPending) {
@@ -146,6 +148,15 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 	}
 
 	function handleNext(): void {
+		if (step === 2) {
+			// 공개 장소 원칙: 숙박업소 등 금지 표현이 든 장소는 다음 단계로 못 넘어간다
+			const banned = findBannedPhrase(placeDetail);
+			if (banned !== null) {
+				setBannedPlacePhrase(banned);
+				return;
+			}
+			setBannedPlacePhrase(null);
+		}
 		if (step < 4) {
 			setStep(step + 1);
 			return;
@@ -284,6 +295,12 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 				</div>
 				{createBookingMutation.isError && (
 					<p className="text-error-500 text-sm">{createBookingMutation.error.message}</p>
+				)}
+				{bannedPlacePhrase !== null && (
+					<p className="text-error-500 text-sm">
+						&lsquo;{bannedPlacePhrase}&rsquo; 표현이 든 장소는 선택할 수 없어요. 데이트는 공개된
+						장소에서만 가능해요.
+					</p>
 				)}
 				{paymentErrorMessage && <p className="text-error-500 text-sm">{paymentErrorMessage}</p>}
 				<Button

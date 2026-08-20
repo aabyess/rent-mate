@@ -12,7 +12,7 @@ import { ChatRoomMessageList } from "@/features/chats/components/ChatRoom/ChatRo
 import { useChatRoomRealtime } from "@/features/chats/hooks";
 import { useMarkChatReadMutation, useSendChatMessageMutation } from "@/features/chats/mutations";
 import { useChatMessagesQuery } from "@/features/chats/queries";
-import { findBannedPhrase } from "@/features/chats/utils";
+import { findBannedPhrase } from "@/utils/bannedPhrases";
 import { BlockConfirmDialog } from "@/features/safety/components/BlockConfirmDialog";
 import { ReportDialog } from "@/features/safety/components/ReportDialog";
 
@@ -45,6 +45,8 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 	const [isReportOpen, setIsReportOpen] = useState(false);
 	const [isBlockOpen, setIsBlockOpen] = useState(false);
 	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
+	// 메시지 지목 신고 시 사유에 태깅할 맥락 — 헤더 메뉴 신고는 null(전체 신고)
+	const [reportContext, setReportContext] = useState<string | null>(null);
 
 	function handleBack(): void {
 		router.back();
@@ -125,6 +127,7 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 								<button
 									type="button"
 									onClick={function () {
+										setReportContext(null);
 										setIsReportOpen(true);
 									}}
 									className="text-error-500 data-focus:bg-surface-alt w-full rounded-lg px-3 py-2.5 text-left text-sm">
@@ -163,7 +166,8 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 				<ChatRoomMessageList
 					messages={messages ?? []}
 					myProfileId={profile.id}
-					onReportClick={function () {
+					onReportClick={function (message) {
+						setReportContext(`채팅 메시지 ${message.id}`);
 						setIsReportOpen(true);
 					}}
 				/>
@@ -213,9 +217,11 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 				<ReportDialog
 					onClose={function () {
 						setIsReportOpen(false);
+						setReportContext(null);
 					}}
 					targetId={booking.counterpartId}
 					targetNickname={booking.counterpartName}
+					reasonContext={reportContext ?? undefined}
 				/>
 			)}
 
