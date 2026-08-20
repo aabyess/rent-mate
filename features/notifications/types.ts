@@ -5,7 +5,8 @@ export type NotificationType =
 	| "booking_accepted"
 	| "booking_rejected"
 	| "booking_canceled"
-	| "review_received";
+	| "review_received"
+	| "booking_reminder";
 
 export type NotificationRow = {
 	id: string;
