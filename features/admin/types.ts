@@ -35,6 +35,13 @@ export type FlaggedMessageItem = {
 	senderName: string;
 };
 
+export type ReportContextType = "review" | "chat_message" | "diary";
+
+export type ReportContext = {
+	type: ReportContextType;
+	id: string;
+};
+
 export type ReportItem = {
 	id: string;
 	reporter_id: string;
@@ -42,7 +49,9 @@ export type ReportItem = {
 	booking_id: string | null;
 	reason: string;
 	status: ReportStatus;
+	admin_note: string | null;
 	created_at: string;
 	reporterName: string;
 	targetName: string;
+	targetIsPartner: boolean;
 };
