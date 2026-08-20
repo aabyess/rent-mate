@@ -110,6 +110,16 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 				isValid: nickname.trim().length >= 2 && !nicknameBanned,
 			},
 			{
+				id: "heightCm",
+				message: "키는 130~220cm 사이로 입력해주세요",
+				isValid: heightCm.trim() === "" || (Number(heightCm) >= 130 && Number(heightCm) <= 220),
+			},
+			{
+				id: "weightKg",
+				message: "몸무게는 30~150kg 사이로 입력해주세요",
+				isValid: weightKg.trim() === "" || (Number(weightKg) >= 30 && Number(weightKg) <= 150),
+			},
+			{
 				id: "bio",
 				message: bioBanned
 					? `'${bioBanned}' 표현은 소개에 사용할 수 없어요.`
@@ -203,31 +213,35 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 				</span>
 				<div className="flex gap-2">
 					<Input
+						id="heightCm"
 						type="number"
 						value={heightCm}
 						onChange={function (event) {
 							setHeightCm(event.target.value);
 						}}
 						placeholder="키 (cm)"
-						min={130}
-						max={220}
 						aria-label="키 (cm)"
 					/>
 					<Input
+						id="weightKg"
 						type="number"
 						value={weightKg}
 						onChange={function (event) {
 							setWeightKg(event.target.value);
 						}}
 						placeholder="몸무게 (kg)"
-						min={30}
-						max={150}
 						aria-label="몸무게 (kg)"
 					/>
 				</div>
 				<p className="text-sub text-xs">
 					입력하면 프로필 상세에 표시돼요. 비워두면 표시되지 않아요.
 				</p>
+				{fieldError?.id === "heightCm" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
+				{fieldError?.id === "weightKg" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
