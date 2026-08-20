@@ -28,7 +28,8 @@ export default function SignupPage(): JSX.Element {
 			{ username, password },
 			{
 				onSuccess: function (): void {
-					router.replace("/");
+					// 가입 즉시 세션이 발급되므로(자동 로그인) 로그인 화면을 거치지 않고 온보딩 직행
+					router.replace("/onboarding");
 					router.refresh();
 				},
 			},
@@ -75,8 +76,16 @@ export default function SignupPage(): JSX.Element {
 					{signUpMutation.isError && (
 						<p className="text-error-500 text-sm">{getSignUpErrorMessage(signUpMutation.error)}</p>
 					)}
-					<Button type="submit" fullWidth isLoading={signUpMutation.isPending}>
-						{signUpMutation.isPending ? "가입 중..." : "회원가입"}
+					<Button
+						type="submit"
+						fullWidth
+						isLoading={signUpMutation.isPending}
+						disabled={signUpMutation.isSuccess}>
+						{signUpMutation.isSuccess
+							? "가입 완료! 프로필을 만들러 가요 🎉"
+							: signUpMutation.isPending
+								? "가입 중..."
+								: "회원가입"}
 					</Button>
 				</form>
 				<p className="text-sub text-center text-sm">
