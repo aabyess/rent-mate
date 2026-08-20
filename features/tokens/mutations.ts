@@ -9,7 +9,8 @@ export function useSpendTokenMutation(): UseMutationResult<number, Error, string
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: postSpendToken,
-		async onSuccess(): Promise<void> {
+		// 실패(다른 기기 선사용 레이스)에도 잔액을 다시 읽어야 배지가 실제 값으로 수렴한다
+		async onSettled(): Promise<void> {
 			await queryClient.invalidateQueries({ queryKey: TOKENS_QUERY_KEYS.myBalance });
 		},
 	});
