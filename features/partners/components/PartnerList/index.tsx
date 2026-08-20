@@ -5,7 +5,6 @@ import { AnimatePresence } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type JSX } from "react";
-import { REGIONS } from "@/constants/regions";
 import { PartnerListDeckAdCard } from "@/features/partners/components/PartnerList/PartnerListDeckAdCard";
 import { PartnerListDeckCard } from "@/features/partners/components/PartnerList/PartnerListDeckCard";
 import {
@@ -17,10 +16,7 @@ import type { PartnerCardItem } from "@/features/partners/types";
 import { useMyPreferencesQuery } from "@/features/preferences/queries";
 import { usePartnerRatingsQuery } from "@/features/reviews/queries";
 import { useMyBlocksQuery } from "@/features/safety/queries";
-import { cn } from "@/utils/cn";
 
-const INTEREST_FILTERS = ["전체", "카페", "전시", "산책", "맛집", "영화"];
-const REGION_FILTERS = ["전체", ...REGIONS];
 const AD_INTERVAL = 5; // 파트너 카드 5장마다 광고 카드 1장
 const AUTOPLAY_MS = 3000;
 const STACK_SIZE = 3;
@@ -67,8 +63,6 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 			return partner.profile_id;
 		}),
 	);
-	const [activeFilter, setActiveFilter] = useState("전체");
-	const [activeRegion, setActiveRegion] = useState("전체");
 	// deckPosition은 단조 증가하는 스택 위치 — 실제 카드는 deckItems[position % length]
 	const [deckPosition, setDeckPosition] = useState(0);
 	const [navDirection, setNavDirection] = useState<-1 | 1>(1);
@@ -88,26 +82,11 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const visiblePartners = (partners ?? []).filter(function (partner) {
 		return !blockedIds.has(partner.profile_id);
 	});
-	const regionFilteredPartners =
-		activeRegion === "전체"
-			? visiblePartners
-			: visiblePartners.filter(function (partner) {
-					return partner.region === activeRegion;
-				});
-	const chipFilteredPartners =
-		activeFilter === "전체"
-			? regionFilteredPartners
-			: regionFilteredPartners.filter(function (partner) {
-					return partner.interests.some(function (interest) {
-						return interest.includes(activeFilter);
-					});
-				});
-
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 	const filteredPartners =
 		normalizedQuery === ""
-			? chipFilteredPartners
-			: chipFilteredPartners.filter(function (partner) {
+			? visiblePartners
+			: visiblePartners.filter(function (partner) {
 					return (
 						partner.nickname.toLowerCase().includes(normalizedQuery) ||
 						partner.region.toLowerCase().includes(normalizedQuery) ||
@@ -144,7 +123,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const deckCount = deckItems.length;
 
 	// 필터·검색이 바뀌면 스택을 처음부터 다시 쌓는다 (렌더 중 상태 조정 패턴)
-	const filterSignature = `${activeFilter}|${activeRegion}|${normalizedQuery}`;
+	const filterSignature = normalizedQuery;
 	const [prevFilterSignature, setPrevFilterSignature] = useState(filterSignature);
 	if (prevFilterSignature !== filterSignature) {
 		setPrevFilterSignature(filterSignature);
@@ -224,7 +203,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	if (isPending || isBlocksPending || isPreferencesPending) {
 		return (
 			<div className="flex flex-col gap-3">
-				<div className="bg-surface-alt aspect-[3/4] w-full animate-pulse rounded-3xl" />
+				<div className="bg-surface-alt aspect-[2/3] w-full animate-pulse rounded-xl" />
 				<div className="bg-surface-alt mx-auto h-4 w-1/3 animate-pulse rounded" />
 			</div>
 		);
@@ -235,19 +214,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	}
 
 	function getEmptyMessage(): string {
-		if (normalizedQuery !== "") {
-			return `'${searchQuery.trim()}' 검색 결과가 없어요.`;
-		}
-		if (activeRegion !== "전체" && activeFilter !== "전체") {
-			return `'${activeRegion}' 지역의 '${activeFilter}' 관심사를 가진 파트너가 아직 없어요.`;
-		}
-		if (activeRegion !== "전체") {
-			return `'${activeRegion}' 지역 파트너가 아직 없어요.`;
-		}
-		if (activeFilter !== "전체") {
-			return `'${activeFilter}' 관심사를 가진 파트너가 아직 없어요.`;
-		}
-		return "아직 등록된 파트너가 없어요.";
+		return `'${searchQuery.trim()}' 검색 결과가 없어요.`;
 	}
 
 	// 아래 카드부터 그려서 맨 위 카드가 마지막(위)에 오도록 한다
@@ -263,49 +230,9 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 
 	return (
 		<div className="flex flex-col gap-3.5">
-			<div className="-mx-5 flex scrollbar-none gap-2 overflow-x-auto px-5">
-				{INTEREST_FILTERS.map(function (filter) {
-					const isActive = activeFilter === filter;
-					return (
-						<button
-							key={filter}
-							type="button"
-							onClick={function () {
-								setActiveFilter(filter);
-							}}
-							className={cn(
-								"h-9 shrink-0 rounded-full px-3.5 text-[13px]",
-								isActive && "bg-inverse text-inverse-fg font-semibold",
-								!isActive && "border-line bg-surface text-body border",
-							)}>
-							{filter}
-						</button>
-					);
-				})}
-			</div>
-			<div className="-mx-5 flex scrollbar-none gap-2 overflow-x-auto px-5">
-				{REGION_FILTERS.map(function (region) {
-					const isActive = activeRegion === region;
-					return (
-						<button
-							key={region}
-							type="button"
-							onClick={function () {
-								setActiveRegion(region);
-							}}
-							className={cn(
-								"h-9 shrink-0 rounded-full px-3.5 text-[13px]",
-								isActive && "bg-inverse text-inverse-fg font-semibold",
-								!isActive && "border-line bg-surface text-body border",
-							)}>
-							{region}
-						</button>
-					);
-				})}
-			</div>
 			{deckCount === 0 ? (
 				visiblePartners.length === 0 ? (
-					<div className="bg-surface flex flex-col items-center gap-4 rounded-3xl px-6 py-16 text-center">
+					<div className="bg-surface flex flex-col items-center gap-4 rounded-xl px-6 py-16 text-center">
 						<div className="bg-brand-subtle flex size-14 items-center justify-center rounded-2xl">
 							<svg
 								width="26"
@@ -361,7 +288,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 							}
 							scheduleDeckResume();
 						}}
-						className="relative aspect-[3/4] w-full pb-6">
+						className="relative aspect-[2/3] w-full pb-6">
 						<AnimatePresence initial={false} custom={presenceCustom}>
 							{stack.map(function ({ position, item, offset }) {
 								const custom: DeckMotionCustom = { exitX, nav: navDirection, offset };

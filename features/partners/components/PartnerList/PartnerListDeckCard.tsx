@@ -29,7 +29,7 @@ export function PartnerListDeckCard({
 
 	return (
 		<article
-			className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl"
+			className="relative aspect-[2/3] w-full overflow-hidden rounded-xl"
 			style={{ background: placeholder.background }}>
 			<svg
 				className="absolute bottom-0 left-1/2 -translate-x-1/2"
