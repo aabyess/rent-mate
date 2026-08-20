@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, type ChangeEvent, type FormEvent, type JSX } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { useCreatePartnerPostMutation } from "@/features/partnerPosts/mutations";
 import { findBannedPhrase } from "@/utils/bannedPhrases";
@@ -19,6 +19,18 @@ export function PartnerPostComposer({ partnerId }: PartnerPostComposerProps): JS
 	const [photo, setPhoto] = useState<File | null>(null);
 	const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
 	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
+
+	// 언마운트 시(작성 중 탭 전환 등) 미리보기 objectURL 해제
+	useEffect(
+		function () {
+			return function () {
+				if (photoPreviewUrl) {
+					URL.revokeObjectURL(photoPreviewUrl);
+				}
+			};
+		},
+		[photoPreviewUrl],
+	);
 
 	function handlePhotoChange(event: ChangeEvent<HTMLInputElement>): void {
 		const file = event.target.files?.[0] ?? null;
