@@ -96,5 +96,8 @@ as $$
 		and b.ends_at >= now();
 $$;
 
--- 로그인 사용자만 조회 가능 (팀 표준: 기본 grant를 authenticated로 좁힘)
-revoke execute on function public.get_partner_accepted_slots(uuid) from anon;
+-- 로그인 사용자만 조회 가능. 함수는 생성 시 기본으로 PUBLIC에 execute가
+-- 부여되므로 anon만 revoke하면 PUBLIC 경유로 여전히 실행할 수 있다 —
+-- public까지 명시적으로 걷어내고 authenticated에만 다시 부여한다.
+revoke execute on function public.get_partner_accepted_slots(uuid) from public, anon;
+grant execute on function public.get_partner_accepted_slots(uuid) to authenticated;
