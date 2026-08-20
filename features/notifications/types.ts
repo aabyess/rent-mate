@@ -8,11 +8,12 @@ export type NotificationType =
 	| "review_received"
 	| "booking_reminder"
 	| "partner_approved"
-	| "partner_rejected";
+	| "partner_rejected"
+	| "payout_released";
 
 export type BookingNotificationType = Exclude<
 	NotificationType,
-	"partner_approved" | "partner_rejected"
+	"partner_approved" | "partner_rejected" | "payout_released"
 >;
 
 export type NotificationPayload = {

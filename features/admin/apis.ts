@@ -205,7 +205,7 @@ export async function getPaymentsOverview(): Promise<AdminPaymentItem[]> {
 	const { data, error } = await supabase
 		.from("payments")
 		.select(
-			"id, booking_id, customer_id, amount_krw, status, provider, provider_payment_key, approved_at, created_at",
+			"id, booking_id, customer_id, amount_krw, status, provider, provider_payment_key, approved_at, created_at, refunded_amount_krw, cancellation_fee_krw, payout_amount_krw, payout_fee_krw, released_at",
 		)
 		.order("created_at", { ascending: false })
 		.limit(50);
@@ -253,10 +253,7 @@ export async function getPaymentsOverview(): Promise<AdminPaymentItem[]> {
 	});
 }
 
-export async function patchPaymentStatus(
-	paymentId: string,
-	status: "released" | "refunded",
-): Promise<void> {
+export async function patchPaymentStatus(paymentId: string, status: "refunded"): Promise<void> {
 	const supabase = createClient();
 	const { error } = await supabase.rpc("update_payment_status", {
 		p_payment_id: paymentId,
@@ -265,6 +262,20 @@ export async function patchPaymentStatus(
 	if (error) {
 		throw error;
 	}
+}
+
+export async function postCompletePartnerSettlement(
+	paymentId: string,
+): Promise<{ payoutAmountKrw: number; payoutFeeKrw: number }> {
+	const supabase = createClient();
+	const { data, error } = await supabase.rpc("complete_partner_settlement", {
+		p_payment_id: paymentId,
+	});
+	if (error) {
+		throw error;
+	}
+	const row = (data as { payout_amount_krw: number; payout_fee_krw: number }[])[0];
+	return { payoutAmountKrw: row?.payout_amount_krw ?? 0, payoutFeeKrw: row?.payout_fee_krw ?? 0 };
 }
 
 export async function patchReportStatus(

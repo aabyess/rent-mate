@@ -8,6 +8,7 @@ import {
 	patchPartnerDeactivation,
 	patchPaymentStatus,
 	patchReportStatus,
+	postCompletePartnerSettlement,
 } from "@/features/admin/apis";
 import { ADMIN_QUERY_KEYS } from "@/features/admin/queries";
 import type { ReportStatus } from "@/features/admin/types";
@@ -41,7 +42,7 @@ export function useRejectPartnerMutation(): UseMutationResult<void, Error, strin
 
 type UpdatePaymentStatusInput = {
 	paymentId: string;
-	status: "released" | "refunded";
+	status: "refunded";
 };
 
 export function useUpdatePaymentStatusMutation(): UseMutationResult<
@@ -54,6 +55,20 @@ export function useUpdatePaymentStatusMutation(): UseMutationResult<
 		mutationFn: function ({ paymentId, status }: UpdatePaymentStatusInput) {
 			return patchPaymentStatus(paymentId, status);
 		},
+		async onSuccess(): Promise<void> {
+			await queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.payments });
+		},
+	});
+}
+
+export function useCompletePartnerSettlementMutation(): UseMutationResult<
+	{ payoutAmountKrw: number; payoutFeeKrw: number },
+	Error,
+	string
+> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: postCompletePartnerSettlement,
 		async onSuccess(): Promise<void> {
 			await queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.payments });
 		},

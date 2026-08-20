@@ -12,6 +12,11 @@ export type PaymentRow = {
 	provider_payment_key: string | null;
 	approved_at: string | null;
 	created_at: string;
+	refunded_amount_krw: number | null;
+	cancellation_fee_krw: number | null;
+	payout_amount_krw: number | null;
+	payout_fee_krw: number | null;
+	released_at: string | null;
 };
 
 export type StartTossCheckoutInput = {
