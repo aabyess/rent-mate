@@ -113,6 +113,12 @@ export function MyPageContent(): JSX.Element {
 					</svg>
 				</div>
 				<div className="flex flex-wrap gap-2">
+					{myPartnerProfile &&
+						(myPartnerProfile.is_approved ? (
+							<Badge variant="accent">파트너</Badge>
+						) : (
+							<Badge variant="neutral">파트너 승인 대기</Badge>
+						))}
 					{profile.adult_verified_at !== null && <Badge variant="trust">성인인증</Badge>}
 					<Badge variant="trust">실명인증</Badge>
 					{profile.phone_verified_at === null ? (

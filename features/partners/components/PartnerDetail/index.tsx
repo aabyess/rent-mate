@@ -13,6 +13,7 @@ import { PartnerDetailPricing } from "@/features/partners/components/PartnerDeta
 import { usePartnerDetailQuery } from "@/features/partners/queries";
 import { calculateAgeFromBirthYear } from "@/features/partners/utils";
 import { useMyBlocksQuery } from "@/features/safety/queries";
+import { PartnerPostList } from "@/features/partnerPosts/components/PartnerPostList";
 import { PartnerReviewList } from "@/features/reviews/components/PartnerReviewList";
 
 const DATE_COURSES = [
@@ -245,6 +246,11 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 							);
 						})}
 					</div>
+				</section>
+
+				<section className="flex flex-col gap-3">
+					<h2 className="text-[17px] font-semibold">소식</h2>
+					<PartnerPostList partnerId={partner.profile_id} partnerNickname={partner.nickname} />
 				</section>
 
 				<PartnerReviewList partnerId={partner.profile_id} />
