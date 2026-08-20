@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, type JSX } from "react";
+import { PartnerBlog } from "@/features/partners/components/PartnerBlog";
 import { PartnerExplorer } from "@/features/partners/components/PartnerExplorer";
 import { PartnerHome } from "@/features/partners/components/PartnerHome";
 import { useMyPartnerProfileQuery } from "@/features/partners/queries";
@@ -9,12 +10,12 @@ import { cn } from "@/utils/cn";
 
 const VIEWS = [
 	{ key: "partner", label: "파트너 홈" },
-	{ key: "explore", label: "탐색" },
+	{ key: "blog", label: "내 블로그" },
 ] as const;
 
 type ViewKey = (typeof VIEWS)[number]["key"];
 
-// 승인된 파트너는 홈에서 탐색 덱 대신 파트너 홈이 기본 — 토글로 탐색도 볼 수 있다
+// 승인된 파트너는 홈에서 탐색 덱 대신 파트너 홈이 기본 — 두 번째 탭은 내 블로그(꾸미기·글쓰기)
 export function HomeSwitcher(): JSX.Element {
 	const { data: myPartnerProfile, isPending } = useMyPartnerProfileQuery();
 	const [view, setView] = useState<ViewKey>("partner");
@@ -54,7 +55,11 @@ export function HomeSwitcher(): JSX.Element {
 					);
 				})}
 			</div>
-			{view === "partner" ? <PartnerHome partnerProfile={myPartnerProfile} /> : <PartnerExplorer />}
+			{view === "partner" ? (
+				<PartnerHome partnerProfile={myPartnerProfile} />
+			) : (
+				<PartnerBlog partnerProfile={myPartnerProfile} />
+			)}
 		</div>
 	);
 }
