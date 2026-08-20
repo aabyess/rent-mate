@@ -174,7 +174,7 @@ export function MyPageContent(): JSX.Element {
 					{ label: "결제 수단" },
 					{ label: "취향 설정", href: "/preferences" },
 					{ label: "후기 관리", href: "/my-reviews" },
-					{ label: "차단 목록", href: "/safety-center#blocks" },
+					{ label: "차단 목록", href: "/safety-center/blocks" },
 				]}
 			/>
 
@@ -182,11 +182,11 @@ export function MyPageContent(): JSX.Element {
 				title="안전"
 				items={[
 					{ label: "안전 센터", href: "/safety-center" },
-					{ label: "신고 내역", href: "/safety-center#reports" },
+					{ label: "신고 내역", href: "/safety-center/reports" },
 					{
 						label: "긴급 연락",
 						labelClassName: "font-medium text-error-700",
-						href: "/safety-center#emergency",
+						href: "/safety-center/emergency",
 					},
 				]}
 			/>

@@ -96,7 +96,7 @@ export default function SupportPage(): JSX.Element {
 				<span className="text-warning-500 text-sm font-semibold">위급한 상황이신가요?</span>
 				<p className="text-warning-500 text-xs leading-relaxed">
 					신체적 위협이나 긴급 상황에서는 즉시 112에 신고한 뒤,{" "}
-					<Link href="/safety-center#emergency" className="font-semibold underline">
+					<Link href="/safety-center/emergency" className="font-semibold underline">
 						안전 센터
 					</Link>
 					의 긴급 연락 기능을 이용해주세요.
