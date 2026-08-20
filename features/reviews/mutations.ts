@@ -15,6 +15,7 @@ export function useCreateReviewMutation(): UseMutationResult<void, Error, Create
 			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: REVIEWS_QUERY_KEYS.myReviewedBookingIds }),
 				queryClient.invalidateQueries({ queryKey: REVIEWS_QUERY_KEYS.partnerList(partnerId) }),
+				queryClient.invalidateQueries({ queryKey: REVIEWS_QUERY_KEYS.byBookingId(bookingId) }),
 			]);
 			void postNotifyEvent({ type: "review_received", bookingId });
 		},

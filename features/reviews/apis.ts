@@ -33,6 +33,19 @@ export async function postCreateReview({
 	}
 }
 
+export async function getReviewByBookingId(bookingId: string): Promise<ReviewRow | null> {
+	const supabase = createClient();
+	const { data, error } = await supabase
+		.from("reviews")
+		.select("id, booking_id, partner_id, author_id, rating, content, created_at")
+		.eq("booking_id", bookingId)
+		.maybeSingle();
+	if (error) {
+		throw error;
+	}
+	return data as ReviewRow | null;
+}
+
 export async function getPartnerReviews(partnerId: string): Promise<ReviewRow[]> {
 	const supabase = createClient();
 	const { data, error } = await supabase

@@ -7,6 +7,7 @@ import { useState, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { BookingDetailCounterpart } from "@/features/bookings/components/BookingDetail/BookingDetailCounterpart";
 import { BookingDetailPayment } from "@/features/bookings/components/BookingDetail/BookingDetailPayment";
+import { BookingDetailReview } from "@/features/bookings/components/BookingDetail/BookingDetailReview";
 import { BookingDetailStatusSteps } from "@/features/bookings/components/BookingDetail/BookingDetailStatusSteps";
 import { MyBookingListCancelDialog } from "@/features/bookings/components/MyBookingList/MyBookingListCancelDialog";
 import { useUpdateBookingStatusMutation } from "@/features/bookings/mutations";
@@ -20,7 +21,10 @@ import {
 import { usePartnerDetailQuery } from "@/features/partners/queries";
 import { usePaymentByBookingIdQuery } from "@/features/payments/queries";
 import { ReviewDialog } from "@/features/reviews/components/ReviewDialog";
-import { useMyReviewedBookingIdsQuery } from "@/features/reviews/queries";
+import {
+	useMyReviewedBookingIdsQuery,
+	useReviewByBookingIdQuery,
+} from "@/features/reviews/queries";
 
 const NOW_MS = Date.now();
 
@@ -33,6 +37,7 @@ export function BookingDetail({ bookingId }: BookingDetailProps): JSX.Element {
 	const { data: booking, isPending, isError } = useBookingDetailQuery(bookingId);
 	const { data: payment } = usePaymentByBookingIdQuery(bookingId);
 	const { data: reviewedBookingIds } = useMyReviewedBookingIdsQuery();
+	const { data: review } = useReviewByBookingIdQuery(bookingId);
 	const { data: partnerProfile } = usePartnerDetailQuery(booking?.counterpartId ?? "");
 	const updateStatusMutation = useUpdateBookingStatusMutation();
 
@@ -129,6 +134,8 @@ export function BookingDetail({ bookingId }: BookingDetailProps): JSX.Element {
 			</section>
 
 			<BookingDetailPayment payment={payment ?? null} totalAmountKrw={booking.total_amount_krw} />
+
+			{booking.status === "completed" && review && <BookingDetailReview review={review} />}
 
 			<div className="flex flex-col gap-2">
 				{booking.status !== "canceled" && booking.status !== "rejected" && (

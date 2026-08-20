@@ -7,12 +7,16 @@ import {
 	getMyReviews,
 	getPartnerRatingSummaries,
 	getPartnerReviews,
+	getReviewByBookingId,
 } from "@/features/reviews/apis";
 import type { MyReviewItem, PartnerRatingSummary, ReviewRow } from "@/features/reviews/types";
 
 export const REVIEWS_QUERY_KEYS = {
 	partnerList: function (partnerId: string) {
 		return ["reviews", "partnerList", partnerId] as const;
+	},
+	byBookingId: function (bookingId: string) {
+		return ["reviews", "byBookingId", bookingId] as const;
 	},
 	myReviewedBookingIds: ["reviews", "myReviewedBookingIds"] as const,
 	myReviews: ["reviews", "myReviews"] as const,
@@ -25,6 +29,16 @@ export function useMyReviewsQuery(): UseQueryResult<MyReviewItem[]> {
 	return useQuery({
 		queryKey: REVIEWS_QUERY_KEYS.myReviews,
 		queryFn: getMyReviews,
+	});
+}
+
+export function useReviewByBookingIdQuery(bookingId: string): UseQueryResult<ReviewRow | null> {
+	return useQuery({
+		queryKey: REVIEWS_QUERY_KEYS.byBookingId(bookingId),
+		queryFn: function () {
+			return getReviewByBookingId(bookingId);
+		},
+		enabled: bookingId !== "",
 	});
 }
 
