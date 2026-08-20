@@ -7,6 +7,31 @@ import type {
 	MyBookingItem,
 } from "@/features/bookings/types";
 
+// 취소 정책 — DB의 cancel_booking_with_refund RPC와 동일하게 유지할 것
+export const FREE_CANCELLATION_WINDOW_HOURS = 24;
+export const LATE_CANCELLATION_FEE_RATIO = 0.5;
+
+export type CancellationQuote = {
+	feeKrw: number;
+	refundKrw: number;
+	isFreeCancellation: boolean;
+};
+
+// 데이트 시작 24시간 전까지는 무료 취소, 이후에는 결제 금액의 50%가 수수료로 남는다.
+// 수수료는 고객에게 유리한 쪽으로 내림 처리한다.
+export function calculateCancellationQuote(
+	startsAt: string,
+	totalAmountKrw: number,
+): CancellationQuote {
+	const hoursUntilStart = (new Date(startsAt).getTime() - Date.now()) / (1000 * 60 * 60);
+	const isFreeCancellation = hoursUntilStart >= FREE_CANCELLATION_WINDOW_HOURS;
+	const feeKrw = isFreeCancellation
+		? 0
+		: new Decimal(totalAmountKrw).times(LATE_CANCELLATION_FEE_RATIO).floor().toNumber();
+	const refundKrw = new Decimal(totalAmountKrw).minus(feeKrw).toNumber();
+	return { feeKrw, refundKrw, isFreeCancellation };
+}
+
 export const MIN_DURATION_MINUTES = 120;
 export const MAX_DURATION_MINUTES = 480;
 export const DURATION_STEP_MINUTES = 30;

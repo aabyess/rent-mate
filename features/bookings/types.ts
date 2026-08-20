@@ -40,3 +40,9 @@ export type BookingTimeRange = {
 	starts_at: string;
 	ends_at: string;
 };
+
+export type CancellationResult = {
+	feeKrw: number;
+	refundKrw: number;
+	hadPayment: boolean;
+};

@@ -2,9 +2,17 @@
 "use client";
 
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
-import { patchBookingStatus, postCreateBooking } from "@/features/bookings/apis";
+import {
+	patchBookingStatus,
+	postCancelBookingWithRefund,
+	postCreateBooking,
+} from "@/features/bookings/apis";
 import { BOOKINGS_QUERY_KEYS } from "@/features/bookings/queries";
-import type { BookingStatus, CreateBookingInput } from "@/features/bookings/types";
+import type {
+	BookingStatus,
+	CancellationResult,
+	CreateBookingInput,
+} from "@/features/bookings/types";
 import { postNotifyEvent } from "@/features/notifications/apis";
 import type { NotificationType } from "@/features/notifications/types";
 
@@ -49,6 +57,25 @@ export function useUpdateBookingStatusMutation(): UseMutationResult<
 			if (notificationType) {
 				void postNotifyEvent({ type: notificationType, bookingId });
 			}
+		},
+	});
+}
+
+export function useCancelBookingWithRefundMutation(): UseMutationResult<
+	CancellationResult,
+	Error,
+	string
+> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: postCancelBookingWithRefund,
+		async onSuccess(_data, bookingId): Promise<void> {
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: BOOKINGS_QUERY_KEYS.myList }),
+				queryClient.invalidateQueries({ queryKey: BOOKINGS_QUERY_KEYS.detail(bookingId) }),
+				queryClient.invalidateQueries({ queryKey: ["payments"] }),
+			]);
+			void postNotifyEvent({ type: "booking_canceled", bookingId });
 		},
 	});
 }
