@@ -388,7 +388,11 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 										onSwipe={handleSwipe}
 										onDragStart={pauseDeck}
 										onDragEnd={scheduleDeckResume}
-										onTap={function () {
+										onTap={function (event) {
+											// 좋아요·찜 오버레이 탭은 프로필 이동으로 이어지지 않게 한다
+											if ((event.target as HTMLElement | null)?.closest("[data-deck-action]")) {
+												return;
+											}
 											router.push(`/partners/${item.partner.profile_id}`);
 										}}>
 										<PartnerListDeckCard

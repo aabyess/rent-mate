@@ -2,6 +2,7 @@
 import Image from "next/image";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
+import { PartnerListDeckCardActions } from "@/features/partners/components/PartnerList/PartnerListDeckCardActions";
 import type { PartnerCardItem } from "@/features/partners/types";
 import { calculateAgeFromBirthYear, formatKrw } from "@/features/partners/utils";
 import type { PartnerRatingSummary } from "@/features/reviews/types";
@@ -55,6 +56,7 @@ export function PartnerListDeckCard({
 					NEW
 				</Badge>
 			)}
+			<PartnerListDeckCardActions partnerId={partner.profile_id} />
 			<div className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-5 pt-20 text-white">
 				<div className="flex items-center gap-2">
 					<span className="text-2xl font-bold tracking-tight">

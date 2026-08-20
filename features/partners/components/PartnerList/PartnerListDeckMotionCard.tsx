@@ -21,7 +21,7 @@ type PartnerListDeckMotionCardProps = {
 	onSwipe: (direction: -1 | 1) => void;
 	onDragStart: () => void;
 	onDragEnd: () => void;
-	onTap?: () => void;
+	onTap?: (event: MouseEvent | TouchEvent | PointerEvent) => void;
 	children: ReactNode;
 };
 
