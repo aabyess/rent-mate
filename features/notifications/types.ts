@@ -11,9 +11,11 @@ export type NotificationType =
 	| "partner_rejected"
 	| "payout_released";
 
+// 클라이언트(postNotifyEvent)가 직접 보낼 수 있는 예약류 타입. booking_reminder는
+// cron 라우트가 admin 클라이언트로 직접 insert하므로 여기서 제외한다.
 export type BookingNotificationType = Exclude<
 	NotificationType,
-	"partner_approved" | "partner_rejected" | "payout_released"
+	"partner_approved" | "partner_rejected" | "payout_released" | "booking_reminder"
 >;
 
 export type NotificationPayload = {

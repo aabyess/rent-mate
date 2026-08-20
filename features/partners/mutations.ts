@@ -2,7 +2,12 @@
 "use client";
 
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
-import { patchPartnerProfile, postCreatePartnerProfile } from "@/features/partners/apis";
+import {
+	patchBlogCover,
+	patchBlogGreeting,
+	patchPartnerProfile,
+	postCreatePartnerProfile,
+} from "@/features/partners/apis";
 import { PARTNERS_QUERY_KEYS } from "@/features/partners/queries";
 import type {
 	CreatePartnerProfileInput,
@@ -43,6 +48,44 @@ export function usePatchPartnerProfileMutation(): UseMutationResult<
 			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.myProfile }),
 				queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.list }),
+				...(user
+					? [queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.detail(user.id) })]
+					: []),
+			]);
+		},
+	});
+}
+
+export function usePatchBlogGreetingMutation(): UseMutationResult<void, Error, string> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: patchBlogGreeting,
+		async onSuccess(): Promise<void> {
+			const supabase = createClient();
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.myProfile }),
+				...(user
+					? [queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.detail(user.id) })]
+					: []),
+			]);
+		},
+	});
+}
+
+export function usePatchBlogCoverMutation(): UseMutationResult<string, Error, File> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: patchBlogCover,
+		async onSuccess(): Promise<void> {
+			const supabase = createClient();
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.myProfile }),
 				...(user
 					? [queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.detail(user.id) })]
 					: []),

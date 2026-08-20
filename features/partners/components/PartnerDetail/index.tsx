@@ -256,6 +256,11 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 
 				<section className="flex flex-col gap-3">
 					<h2 className="text-[17px] font-semibold">소식</h2>
+					{partner.blog_greeting && (
+						<p className="bg-brand-subtle text-primary-700 rounded-2xl rounded-bl-md px-4 py-3 text-sm leading-relaxed">
+							{partner.blog_greeting}
+						</p>
+					)}
 					<PartnerPostList partnerId={partner.profile_id} partnerNickname={partner.nickname} />
 				</section>
 

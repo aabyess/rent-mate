@@ -20,7 +20,7 @@ export async function getMyPartnerProfile(): Promise<MyPartnerProfile | null> {
 	const { data, error } = await supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, created_at, is_approved, is_active",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at, is_approved, is_active",
 		)
 		.eq("profile_id", user.id)
 		.maybeSingle();
@@ -175,7 +175,7 @@ export async function getPartnerList(): Promise<PartnerListItem[]> {
 	let query = supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, created_at",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at",
 		)
 		.eq("is_approved", true)
 		.eq("is_active", true);
@@ -195,7 +195,7 @@ export async function getPartnerDetail(profileId: string): Promise<PartnerDetail
 	const { data, error } = await supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, created_at",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at",
 		)
 		.eq("profile_id", profileId)
 		.eq("is_approved", true)
@@ -205,4 +205,50 @@ export async function getPartnerDetail(profileId: string): Promise<PartnerDetail
 		throw error;
 	}
 	return (data ?? null) as PartnerDetailItem | null;
+}
+
+export async function patchBlogGreeting(greeting: string): Promise<void> {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		throw new Error("로그인이 필요합니다.");
+	}
+
+	const trimmed = greeting.trim();
+	const { error } = await supabase
+		.from("partner_profiles")
+		.update({ blog_greeting: trimmed === "" ? null : trimmed })
+		.eq("profile_id", user.id);
+	if (error) {
+		throw error;
+	}
+}
+
+export async function patchBlogCover(photo: File): Promise<string> {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		throw new Error("로그인이 필요합니다.");
+	}
+
+	const extension = photo.name.split(".").pop() ?? "jpg";
+	const path = `${user.id}/cover-${crypto.randomUUID()}.${extension}`;
+	const { error: uploadError } = await supabase.storage.from("partner-photos").upload(path, photo);
+	if (uploadError) {
+		throw uploadError;
+	}
+	const { data } = supabase.storage.from("partner-photos").getPublicUrl(path);
+
+	const { error } = await supabase
+		.from("partner_profiles")
+		.update({ blog_cover_url: data.publicUrl })
+		.eq("profile_id", user.id);
+	if (error) {
+		throw error;
+	}
+	return data.publicUrl;
 }
