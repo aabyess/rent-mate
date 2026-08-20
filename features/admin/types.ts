@@ -42,6 +42,11 @@ export type ReportContext = {
 	id: string;
 };
 
+export type ReportContextContent = {
+	content: string | null;
+	imagePath: string | null;
+};
+
 export type ReportItem = {
 	id: string;
 	reporter_id: string;

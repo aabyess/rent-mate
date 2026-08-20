@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef, type JSX } from "react";
+import { ChatImage } from "@/features/chats/components/ChatImage";
 import type { ChatMessage } from "@/features/chats/types";
 import { cn } from "@/utils/cn";
 
@@ -50,14 +51,25 @@ export function ChatRoomMessageList({
 						key={message.id}
 						className={cn("flex flex-col gap-1", isMine ? "items-end" : "items-start")}>
 						<div className={cn("flex items-end gap-1.5", isMine && "flex-row-reverse")}>
-							<p
+							<div
 								className={cn(
-									"max-w-[75%] rounded-2xl px-3.5 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap",
-									isMine && "bg-brand text-white",
-									!isMine && "bg-surface-alt text-body",
+									"flex max-w-[75%] flex-col gap-1",
+									isMine ? "items-end" : "items-start",
 								)}>
-								{message.content}
-							</p>
+								{message.image_url !== null && (
+									<ChatImage imagePath={message.image_url} alt="채팅 이미지" className="size-56" />
+								)}
+								{message.content.length > 0 && (
+									<p
+										className={cn(
+											"rounded-2xl px-3.5 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap",
+											isMine && "bg-brand text-white",
+											!isMine && "bg-surface-alt text-body",
+										)}>
+										{message.content}
+									</p>
+								)}
+							</div>
 							<span className="text-sub text-[11px] tabular-nums">
 								{formatMessageTime(message.created_at)}
 							</span>

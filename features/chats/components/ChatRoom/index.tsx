@@ -2,9 +2,10 @@
 "use client";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent, type JSX } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type JSX } from "react";
 import { useMyProfileQuery } from "@/features/auth/queries";
 import { useBookingDetailQuery } from "@/features/bookings/queries";
 import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
@@ -42,33 +43,71 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 	);
 
 	const [content, setContent] = useState("");
+	const [image, setImage] = useState<File | null>(null);
+	const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 	const [isReportOpen, setIsReportOpen] = useState(false);
 	const [isBlockOpen, setIsBlockOpen] = useState(false);
 	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
 	// 메시지 지목 신고 시 사유에 태깅할 맥락 — 헤더 메뉴 신고는 null(전체 신고)
 	const [reportContext, setReportContext] = useState<string | null>(null);
+	const imageInputRef = useRef<HTMLInputElement>(null);
+
+	// 언마운트 시(전송 전 방 이탈 등) 미리보기 objectURL 해제
+	useEffect(
+		function () {
+			return function () {
+				if (imagePreviewUrl) {
+					URL.revokeObjectURL(imagePreviewUrl);
+				}
+			};
+		},
+		[imagePreviewUrl],
+	);
 
 	function handleBack(): void {
 		router.back();
 	}
 
+	function handleImageChange(event: ChangeEvent<HTMLInputElement>): void {
+		const file = event.target.files?.[0] ?? null;
+		setImage(file);
+		if (imagePreviewUrl) {
+			URL.revokeObjectURL(imagePreviewUrl);
+		}
+		setImagePreviewUrl(file ? URL.createObjectURL(file) : null);
+	}
+
+	function handleRemoveImage(): void {
+		setImage(null);
+		if (imagePreviewUrl) {
+			URL.revokeObjectURL(imagePreviewUrl);
+		}
+		setImagePreviewUrl(null);
+		if (imageInputRef.current) {
+			imageInputRef.current.value = "";
+		}
+	}
+
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
 		const trimmed = content.trim();
-		if (trimmed.length === 0 || sendMessageMutation.isPending) {
+		if ((trimmed.length === 0 && !image) || sendMessageMutation.isPending) {
 			return;
 		}
 		// 조건만남 유도 등 금지 표현은 전송 전에 차단한다 (법적 제약 3번)
-		const detected = findBannedPhrase(trimmed);
-		if (detected !== null) {
-			setBannedPhrase(detected);
-			return;
+		if (trimmed.length > 0) {
+			const detected = findBannedPhrase(trimmed);
+			if (detected !== null) {
+				setBannedPhrase(detected);
+				return;
+			}
 		}
 		sendMessageMutation.mutate(
-			{ bookingId, content: trimmed },
+			{ bookingId, content: trimmed, imageFile: image ?? undefined },
 			{
 				onSuccess: function (): void {
 					setContent("");
+					handleRemoveImage();
 				},
 			},
 		);
@@ -182,7 +221,59 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 						금지 행위는 제재 대상입니다.
 					</p>
 				)}
+				{imagePreviewUrl && (
+					<div className="relative size-20">
+						<Image
+							src={imagePreviewUrl}
+							alt="전송할 이미지 미리보기"
+							fill
+							className="rounded-xl object-cover"
+						/>
+						<button
+							type="button"
+							onClick={handleRemoveImage}
+							aria-label="이미지 취소"
+							className="bg-inverse text-inverse-fg absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full">
+							<svg
+								width="10"
+								height="10"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="3"
+								strokeLinecap="round">
+								<path d="M6 6l12 12M18 6L6 18" />
+							</svg>
+						</button>
+					</div>
+				)}
 				<div className="flex items-center gap-2">
+					<input
+						ref={imageInputRef}
+						type="file"
+						accept="image/jpeg,image/png,image/webp"
+						onChange={handleImageChange}
+						className="hidden"
+						id="chat-room-image-input"
+					/>
+					<label
+						htmlFor="chat-room-image-input"
+						aria-label="사진 첨부"
+						className="bg-surface-alt text-body flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full">
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.8"
+							strokeLinecap="round"
+							strokeLinejoin="round">
+							<rect x="3" y="5" width="18" height="14" rx="2" />
+							<circle cx="9" cy="11" r="2" />
+							<path d="M21 15l-4.5-4.5L7 20" />
+						</svg>
+					</label>
 					<input
 						value={content}
 						onChange={function (event) {
@@ -195,7 +286,7 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 					/>
 					<button
 						type="submit"
-						disabled={content.trim().length === 0 || sendMessageMutation.isPending}
+						disabled={(content.trim().length === 0 && !image) || sendMessageMutation.isPending}
 						aria-label="보내기"
 						aria-busy={sendMessageMutation.isPending}
 						className="bg-brand flex size-11 shrink-0 items-center justify-center rounded-full text-white disabled:opacity-40">

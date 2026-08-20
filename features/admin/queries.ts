@@ -14,6 +14,7 @@ import type {
 	FlaggedMessageItem,
 	PendingPartnerItem,
 	ReportContext,
+	ReportContextContent,
 	ReportItem,
 } from "@/features/admin/types";
 
@@ -55,7 +56,9 @@ export function useReportsQuery(): UseQueryResult<ReportItem[]> {
 	});
 }
 
-export function useReportContextQuery(context: ReportContext): UseQueryResult<string | null> {
+export function useReportContextQuery(
+	context: ReportContext,
+): UseQueryResult<ReportContextContent> {
 	return useQuery({
 		queryKey: ADMIN_QUERY_KEYS.reportContext(context),
 		queryFn: function () {

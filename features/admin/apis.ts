@@ -4,6 +4,7 @@ import type {
 	FlaggedMessageItem,
 	PendingPartnerItem,
 	ReportContext,
+	ReportContextContent,
 	ReportItem,
 	ReportStatus,
 } from "@/features/admin/types";
@@ -131,7 +132,9 @@ async function getPartnerProfileIds(profileIds: string[]): Promise<Set<string>> 
 	);
 }
 
-export async function getReportContextContent(context: ReportContext): Promise<string | null> {
+export async function getReportContextContent(
+	context: ReportContext,
+): Promise<ReportContextContent> {
 	const supabase = createClient();
 	if (context.type === "review") {
 		const { data, error } = await supabase
@@ -142,18 +145,18 @@ export async function getReportContextContent(context: ReportContext): Promise<s
 		if (error) {
 			throw error;
 		}
-		return data?.content ?? null;
+		return { content: data?.content ?? null, imagePath: null };
 	}
 	if (context.type === "chat_message") {
 		const { data, error } = await supabase
 			.from("chat_messages")
-			.select("content")
+			.select("content, image_url")
 			.eq("id", context.id)
 			.maybeSingle();
 		if (error) {
 			throw error;
 		}
-		return data?.content ?? null;
+		return { content: data?.content ?? null, imagePath: data?.image_url ?? null };
 	}
 	const { data, error } = await supabase
 		.from("partner_posts")
@@ -163,7 +166,7 @@ export async function getReportContextContent(context: ReportContext): Promise<s
 	if (error) {
 		throw error;
 	}
-	return data?.content ?? null;
+	return { content: data?.content ?? null, imagePath: null };
 }
 
 export async function patchPartnerDeactivation(profileId: string): Promise<void> {

@@ -5,6 +5,7 @@ export type ChatMessage = {
 	booking_id: string;
 	sender_id: string;
 	content: string;
+	image_url: string | null;
 	flagged: boolean;
 	created_at: string;
 };
@@ -12,10 +13,12 @@ export type ChatMessage = {
 export type SendChatMessageInput = {
 	bookingId: string;
 	content: string;
+	imageFile?: File;
 };
 
 export type ChatLastMessage = {
 	content: string;
+	image_url: string | null;
 	sender_id: string;
 	created_at: string;
 };
