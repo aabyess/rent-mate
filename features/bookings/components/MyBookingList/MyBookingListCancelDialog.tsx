@@ -51,7 +51,7 @@ export function MyBookingListCancelDialog({
 						</Button>
 						<Button
 							fullWidth
-							disabled={updateStatusMutation.isPending}
+							isLoading={updateStatusMutation.isPending}
 							onClick={handleCancelConfirm}
 							className="bg-error-500 hover:bg-error-700 active:bg-error-700">
 							{updateStatusMutation.isPending ? "취소 중..." : "예약 취소"}

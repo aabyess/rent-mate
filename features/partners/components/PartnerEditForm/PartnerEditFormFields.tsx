@@ -348,8 +348,13 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 					type="submit"
 					size="lg"
 					fullWidth
-					disabled={!isValid || patchPartnerProfileMutation.isPending}>
-					{patchPartnerProfileMutation.isPending ? "저장 중..." : "변경사항 저장"}
+					disabled={!isValid}
+					isLoading={patchPartnerProfileMutation.isPending}>
+					{patchPartnerProfileMutation.isPending
+						? newPhotos.length > 0
+							? "사진 업로드 중..."
+							: "저장 중..."
+						: "변경사항 저장"}
 				</Button>
 			</div>
 		</form>

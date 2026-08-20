@@ -107,7 +107,11 @@ export default function OnboardingPage(): JSX.Element {
 					{createProfileMutation.isError && (
 						<p className="text-error-500 text-sm">{createProfileMutation.error.message}</p>
 					)}
-					<Button type="submit" fullWidth disabled={!gender || createProfileMutation.isPending}>
+					<Button
+						type="submit"
+						fullWidth
+						disabled={!gender}
+						isLoading={createProfileMutation.isPending}>
 						{createProfileMutation.isPending ? "저장 중..." : "시작하기"}
 					</Button>
 				</form>

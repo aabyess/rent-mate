@@ -65,7 +65,7 @@ export function AccountSettingsDeleteSection(): JSX.Element {
 									</Button>
 									<Button
 										fullWidth
-										disabled={deleteAccountMutation.isPending}
+										isLoading={deleteAccountMutation.isPending}
 										onClick={handleConfirmDelete}>
 										{deleteAccountMutation.isPending ? "처리 중..." : "탈퇴하기"}
 									</Button>

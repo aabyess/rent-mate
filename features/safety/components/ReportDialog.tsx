@@ -75,7 +75,7 @@ export function ReportDialog({
 								<Button
 									type="submit"
 									fullWidth
-									disabled={createReportMutation.isPending}
+									isLoading={createReportMutation.isPending}
 									className="bg-error-500 hover:bg-error-700 active:bg-error-700">
 									{createReportMutation.isPending ? "접수 중..." : "신고하기"}
 								</Button>

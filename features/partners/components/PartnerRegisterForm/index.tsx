@@ -351,8 +351,9 @@ export function PartnerRegisterForm(): JSX.Element {
 					type="submit"
 					size="lg"
 					fullWidth
-					disabled={!isValid || createPartnerProfileMutation.isPending}>
-					{createPartnerProfileMutation.isPending ? "등록 중..." : "파트너 프로필 등록"}
+					disabled={!isValid}
+					isLoading={createPartnerProfileMutation.isPending}>
+					{createPartnerProfileMutation.isPending ? "사진 업로드 중..." : "파트너 프로필 등록"}
 				</Button>
 			</div>
 		</form>

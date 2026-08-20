@@ -118,10 +118,10 @@ export function AdminDashboardPartnerSectionCard({
 				</p>
 
 				<div className="flex gap-2">
-					<Button variant="outline" size="sm" fullWidth disabled={isMutating} onClick={onReject}>
+					<Button variant="outline" size="sm" fullWidth isLoading={isMutating} onClick={onReject}>
 						거절
 					</Button>
-					<Button variant="secondary" size="sm" fullWidth disabled={isMutating} onClick={onApprove}>
+					<Button variant="secondary" size="sm" fullWidth isLoading={isMutating} onClick={onApprove}>
 						승인
 					</Button>
 				</div>

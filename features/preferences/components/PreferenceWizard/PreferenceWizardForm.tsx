@@ -185,7 +185,11 @@ export function PreferenceWizardForm({
 						이전
 					</Button>
 				)}
-				<Button fullWidth onClick={handleConfirm} disabled={isMutating}>
+				<Button
+					fullWidth
+					onClick={handleConfirm}
+					disabled={isMutating}
+					isLoading={savePreferencesMutation.isPending}>
 					{isLastStep ? (savePreferencesMutation.isPending ? "저장 중..." : "완료") : "확인"}
 				</Button>
 			</div>

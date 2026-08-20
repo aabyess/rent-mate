@@ -57,7 +57,7 @@ export default function LoginPage(): JSX.Element {
 					{signInMutation.isError && (
 						<p className="text-error-500 text-sm">아이디 또는 비밀번호를 확인해주세요.</p>
 					)}
-					<Button type="submit" fullWidth disabled={signInMutation.isPending}>
+					<Button type="submit" fullWidth isLoading={signInMutation.isPending}>
 						{signInMutation.isPending ? "로그인 중..." : "로그인"}
 					</Button>
 				</form>

@@ -144,7 +144,7 @@ export function BookingDetail({ bookingId }: BookingDetailProps): JSX.Element {
 						<Button
 							variant="outline"
 							fullWidth
-							disabled={updateStatusMutation.isPending}
+							isLoading={updateStatusMutation.isPending}
 							onClick={function () {
 								handleStatusUpdate("rejected");
 							}}>
@@ -153,7 +153,7 @@ export function BookingDetail({ bookingId }: BookingDetailProps): JSX.Element {
 						<Button
 							variant="secondary"
 							fullWidth
-							disabled={updateStatusMutation.isPending}
+							isLoading={updateStatusMutation.isPending}
 							onClick={function () {
 								handleStatusUpdate("accepted");
 							}}>
@@ -166,7 +166,8 @@ export function BookingDetail({ bookingId }: BookingDetailProps): JSX.Element {
 						<Button
 							variant="outline"
 							fullWidth
-							disabled={updateStatusMutation.isPending || !isCompletableNow}
+							disabled={!isCompletableNow}
+							isLoading={updateStatusMutation.isPending}
 							onClick={function () {
 								handleStatusUpdate("completed");
 							}}>

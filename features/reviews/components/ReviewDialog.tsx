@@ -89,7 +89,8 @@ export function ReviewDialog({
 								<Button
 									type="submit"
 									fullWidth
-									disabled={rating === 0 || createReviewMutation.isPending}>
+									disabled={rating === 0}
+									isLoading={createReviewMutation.isPending}>
 									{createReviewMutation.isPending ? "등록 중..." : "후기 등록"}
 								</Button>
 							</div>

@@ -58,7 +58,7 @@ export function BlockConfirmDialog({
 								</Button>
 								<Button
 									fullWidth
-									disabled={createBlockMutation.isPending}
+									isLoading={createBlockMutation.isPending}
 									onClick={handleBlockClick}
 									className="bg-error-500 hover:bg-error-700 active:bg-error-700">
 									{createBlockMutation.isPending ? "차단 중..." : "차단하기"}
