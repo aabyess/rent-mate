@@ -116,3 +116,14 @@ export async function postChangePassword({ password }: ChangePasswordInput): Pro
 		throw error;
 	}
 }
+
+// 회원 탈퇴 — 소프트 삭제·로그인 차단·세션 종료까지 서버 라우트가 처리한다
+export async function postDeleteAccount(): Promise<void> {
+	const response = await fetch("/api/account/delete", { method: "POST" });
+	if (!response.ok) {
+		const body = (await response.json().catch(function () {
+			return null;
+		})) as { error?: string } | null;
+		throw new Error(body?.error ?? "탈퇴 처리에 실패했어요.");
+	}
+}
