@@ -18,6 +18,10 @@ export type PendingPartnerItem = {
 	hourly_rate_krw: number;
 	birth_year: number | null;
 	interests: string[];
+	photo_urls: string[];
+	gender: "male" | "female";
+	region: string;
+	purpose_tags: string[];
 	created_at: string;
 	realName: string;
 };

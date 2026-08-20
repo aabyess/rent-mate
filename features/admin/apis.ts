@@ -33,7 +33,9 @@ export async function getPendingPartners(): Promise<PendingPartnerItem[]> {
 	const supabase = createClient();
 	const { data, error } = await supabase
 		.from("partner_profiles")
-		.select("profile_id, nickname, bio, hourly_rate_krw, birth_year, interests, created_at")
+		.select(
+			"profile_id, nickname, bio, hourly_rate_krw, birth_year, interests, photo_urls, gender, region, purpose_tags, created_at",
+		)
 		.eq("is_approved", false)
 		.order("created_at", { ascending: true });
 	if (error) {
