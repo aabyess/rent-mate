@@ -34,6 +34,8 @@ begin
 		delete from public.notifications
 		where (payload ->> 'bookingId')::uuid = any (doomed_bookings);
 		delete from public.chat_reads where booking_id = any (doomed_bookings);
+		-- booking_id FK도 implicit RESTRICT — 당사자 predicate만으로는 이론상 누락 가능 (리뷰 #220500 보강)
+		delete from public.reports where booking_id = any (doomed_bookings);
 		delete from public.payments where booking_id = any (doomed_bookings);
 		delete from public.chat_messages where booking_id = any (doomed_bookings);
 		delete from public.reviews where booking_id = any (doomed_bookings);
