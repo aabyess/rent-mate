@@ -18,12 +18,15 @@ type PartnerListDeckCardProps = {
 	partner: PartnerCardItem;
 	index: number;
 	rating?: PartnerRatingSummary;
+	/** 스택 맨 위 카드에서만 좋아요·찜을 렌더한다 (뒷카드 불필요 쿼리·포커스 방지) */
+	showActions?: boolean;
 };
 
 export function PartnerListDeckCard({
 	partner,
 	index,
 	rating,
+	showActions = false,
 }: PartnerListDeckCardProps): JSX.Element {
 	const placeholder = PLACEHOLDER_STYLES[index % PLACEHOLDER_STYLES.length];
 
@@ -56,7 +59,7 @@ export function PartnerListDeckCard({
 					NEW
 				</Badge>
 			)}
-			<PartnerListDeckCardActions partnerId={partner.profile_id} />
+			{showActions && <PartnerListDeckCardActions partnerId={partner.profile_id} />}
 			<div className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-5 pt-20 text-white">
 				<div className="flex items-center gap-2">
 					<span className="text-2xl font-bold tracking-tight">
