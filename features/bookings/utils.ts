@@ -99,6 +99,46 @@ export function canCompleteBookingNow(booking: MyBookingItem): boolean {
 	return booking.status === "accepted" && Date.now() >= new Date(booking.starts_at).getTime();
 }
 
+export type MonthlyEarningsGroup = {
+	monthKey: string;
+	monthLabel: string;
+	bookings: MyBookingItem[];
+	subtotalKrw: number;
+};
+
+// 완료된 예약을 데이트 일자(starts_at) 기준 월별로 묶는다 — 최신 달이 먼저
+export function groupCompletedBookingsByMonth(bookings: MyBookingItem[]): MonthlyEarningsGroup[] {
+	const groupByKey = new Map<string, MyBookingItem[]>();
+	for (const booking of bookings) {
+		const start = new Date(booking.starts_at);
+		const key = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
+		const group = groupByKey.get(key) ?? [];
+		group.push(booking);
+		groupByKey.set(key, group);
+	}
+
+	return Array.from(groupByKey.entries())
+		.sort(function ([a], [b]) {
+			return b.localeCompare(a);
+		})
+		.map(function ([monthKey, monthBookings]) {
+			const sorted = [...monthBookings].sort(function (a, b) {
+				return new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime();
+			});
+			const [year, month] = monthKey.split("-");
+			return {
+				monthKey,
+				monthLabel: `${year}년 ${Number(month)}월`,
+				bookings: sorted,
+				subtotalKrw: sumBookingAmountsKrw(
+					sorted.map(function (booking) {
+						return booking.total_amount_krw;
+					}),
+				),
+			};
+		});
+}
+
 const OVERLAP_MESSAGE = "이미 확정된 예약과 시간이 겹쳐요.";
 
 // 예약 수락 시 겹침 에러를 사람이 읽을 수 있는 문구로 통일한다. 대부분은 전이

@@ -88,14 +88,30 @@ export function ReceivedBookingList(): JSX.Element {
 	return (
 		<div className="flex flex-col gap-3">
 			{completed.length > 0 && (
-				<div className="bg-secondary-50 flex items-center justify-between rounded-2xl px-4.5 py-4">
+				<Link
+					href="/partner/earnings"
+					className="bg-secondary-50 flex items-center justify-between gap-2 rounded-2xl px-4.5 py-4">
 					<span className="text-secondary-700 text-sm font-semibold">
 						완료된 데이트 {completed.length}건
 					</span>
-					<span className="text-secondary-700 text-base font-bold tabular-nums">
-						정산 예정 {formatKrw(totalEarningsKrw)}
+					<span className="flex items-center gap-1">
+						<span className="text-secondary-700 text-base font-bold tabular-nums">
+							정산 예정 {formatKrw(totalEarningsKrw)}
+						</span>
+						<svg
+							className="text-secondary-600 shrink-0"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round">
+							<path d="M9 5l7 7-7 7" />
+						</svg>
 					</span>
-				</div>
+				</Link>
 			)}
 			{received.map(function (booking) {
 				const paymentStatus = paymentStatuses?.[booking.id];
