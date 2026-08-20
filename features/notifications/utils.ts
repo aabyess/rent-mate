@@ -7,7 +7,7 @@ export const NOTIFICATION_LABELS: Record<NotificationType, string> = {
 	booking_rejected: "예약이 거절됐어요",
 	booking_canceled: "예약이 취소됐어요",
 	review_received: "새 후기가 도착했어요",
-	booking_reminder: "내일 예정된 데이트가 있어요",
+	booking_reminder: "다가오는 데이트가 있어요",
 };
 
 export function formatNotificationDate(createdAt: string): string {
