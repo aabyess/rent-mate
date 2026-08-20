@@ -10,6 +10,7 @@ import { BookingFlowStepCourse } from "@/features/bookings/components/BookingFlo
 import { BookingFlowStepPayment } from "@/features/bookings/components/BookingFlow/BookingFlowStepPayment";
 import { BookingFlowStepSchedule } from "@/features/bookings/components/BookingFlow/BookingFlowStepSchedule";
 import { useCreateBookingMutation } from "@/features/bookings/mutations";
+import { usePartnerAcceptedSlotsQuery } from "@/features/bookings/queries";
 import type { BookingSchedule } from "@/features/bookings/types";
 import {
 	calculateTotalPriceKrw,
@@ -38,6 +39,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 	const router = useRouter();
 	const { data: partner, isPending: isPartnerPending } = usePartnerDetailQuery(partnerId);
 	const { data: myProfile } = useMyProfileQuery();
+	const { data: acceptedSlots } = usePartnerAcceptedSlotsQuery(partnerId);
 	const createBookingMutation = useCreateBookingMutation();
 
 	const [step, setStep] = useState(1);
@@ -242,6 +244,7 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 					<BookingFlowStepSchedule
 						baseDate={BASE_DATE}
 						availableWeekdays={partner.available_weekdays}
+						acceptedSlots={acceptedSlots ?? []}
 						schedule={schedule}
 						viewYear={viewYear}
 						viewMonth={viewMonth}

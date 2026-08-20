@@ -1,6 +1,11 @@
 // features/bookings/utils.ts
 import Decimal from "decimal.js";
-import type { BookingSchedule, BookingStatus, MyBookingItem } from "@/features/bookings/types";
+import type {
+	BookingSchedule,
+	BookingStatus,
+	BookingTimeRange,
+	MyBookingItem,
+} from "@/features/bookings/types";
 
 export const MIN_DURATION_MINUTES = 120;
 export const MAX_DURATION_MINUTES = 480;
@@ -52,6 +57,25 @@ export function toBookingRange(schedule: BookingSchedule): { startsAt: string; e
 	return { startsAt: start.toISOString(), endsAt: end.toISOString() };
 }
 
+// 선택한 날짜·시작 시각·이용 시간이 파트너의 확정된 예약과 겹치는지 — DB의
+// EXCLUDE 제약(tstzrange '[)' 반개구간)과 동일한 경계 규칙으로 판정한다.
+export function isStartHourBooked(
+	year: number,
+	month: number,
+	day: number,
+	startHour: number,
+	durationMinutes: number,
+	acceptedSlots: BookingTimeRange[],
+): boolean {
+	const candidateStart = new Date(year, month - 1, day, startHour, 0, 0).getTime();
+	const candidateEnd = candidateStart + durationMinutes * 60 * 1000;
+	return acceptedSlots.some(function (slot) {
+		const slotStart = new Date(slot.starts_at).getTime();
+		const slotEnd = new Date(slot.ends_at).getTime();
+		return candidateStart < slotEnd && slotStart < candidateEnd;
+	});
+}
+
 export function formatBookingPeriod(startsAt: string, endsAt: string): string {
 	const start = new Date(startsAt);
 	const end = new Date(endsAt);
@@ -73,6 +97,22 @@ export function sumBookingAmountsKrw(amounts: number[]): number {
 // DB의 상태 전이 잠금 트리거(accepted→completed는 파트너·시작 이후만)와 동일한 규칙
 export function canCompleteBookingNow(booking: MyBookingItem): boolean {
 	return booking.status === "accepted" && Date.now() >= new Date(booking.starts_at).getTime();
+}
+
+const OVERLAP_MESSAGE = "이미 확정된 예약과 시간이 겹쳐요.";
+
+// 예약 수락 시 겹침 에러를 사람이 읽을 수 있는 문구로 통일한다. 대부분은 전이
+// 트리거가 이미 이 문구를 그대로 던지지만, 동시 수락 레이스에서는 EXCLUDE
+// 제약(23P01)이 대신 막을 수 있어 코드/제약 이름으로도 감지한다.
+export function getBookingAcceptErrorMessage(error: { code?: string; message?: string }): string {
+	if (
+		error.code === "23P01" ||
+		error.message?.includes("bookings_no_overlapping_accepted") ||
+		error.message === OVERLAP_MESSAGE
+	) {
+		return OVERLAP_MESSAGE;
+	}
+	return error.message ?? "예약 수락에 실패했어요.";
 }
 
 export const BOOKING_STATUS_LABELS: Record<BookingStatus, string> = {

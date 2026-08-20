@@ -35,3 +35,8 @@ export type BookingSchedule = {
 	startHour: number;
 	durationMinutes: number;
 };
+
+export type BookingTimeRange = {
+	starts_at: string;
+	ends_at: string;
+};
