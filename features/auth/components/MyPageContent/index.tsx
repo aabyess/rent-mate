@@ -166,6 +166,7 @@ export function MyPageContent(): JSX.Element {
 			<MyPageContentMenuGroup
 				items={[
 					{ label: "결제 수단" },
+					{ label: "취향 설정", href: "/preferences" },
 					{ label: "후기 관리", href: "/my-reviews" },
 					{ label: "차단 목록", href: "/safety-center#blocks" },
 				]}
