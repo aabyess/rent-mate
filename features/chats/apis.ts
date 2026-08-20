@@ -11,7 +11,7 @@ export async function getChatMessages(bookingId: string): Promise<ChatMessage[]>
 	const supabase = createClient();
 	const { data, error } = await supabase
 		.from("chat_messages")
-		.select("id, booking_id, sender_id, content, flagged, created_at")
+		.select("id, booking_id, sender_id, content, image_url, flagged, created_at")
 		.eq("booking_id", bookingId)
 		.order("created_at", { ascending: true });
 	if (error) {
@@ -20,7 +20,34 @@ export async function getChatMessages(bookingId: string): Promise<ChatMessage[]>
 	return (data ?? []) as ChatMessage[];
 }
 
-export async function postChatMessage({ bookingId, content }: SendChatMessageInput): Promise<void> {
+// 본인이 속한 예약 폴더({bookingId}/...)에만 업로드 가능 — storage RLS로 강제된다
+async function uploadChatImage(bookingId: string, file: File): Promise<string> {
+	const supabase = createClient();
+	const extension = file.name.split(".").pop() ?? "jpg";
+	const path = `${bookingId}/${crypto.randomUUID()}.${extension}`;
+	const { error } = await supabase.storage.from("chat-images").upload(path, file);
+	if (error) {
+		throw error;
+	}
+	return path;
+}
+
+export async function getChatImageSignedUrl(imagePath: string): Promise<string> {
+	const supabase = createClient();
+	const { data, error } = await supabase.storage
+		.from("chat-images")
+		.createSignedUrl(imagePath, 3600);
+	if (error) {
+		throw error;
+	}
+	return data.signedUrl;
+}
+
+export async function postChatMessage({
+	bookingId,
+	content,
+	imageFile,
+}: SendChatMessageInput): Promise<void> {
 	const supabase = createClient();
 	const {
 		data: { user },
@@ -29,10 +56,13 @@ export async function postChatMessage({ bookingId, content }: SendChatMessageInp
 		throw new Error("로그인이 필요합니다.");
 	}
 
+	const imagePath = imageFile ? await uploadChatImage(bookingId, imageFile) : null;
+
 	const { error } = await supabase.from("chat_messages").insert({
 		booking_id: bookingId,
 		sender_id: user.id,
 		content,
+		image_url: imagePath,
 	});
 	if (error) {
 		throw error;
@@ -88,7 +118,7 @@ export async function getChatRoomSummaries(
 		bookingIds.map(async function (bookingId) {
 			const { data: lastRows, error: lastError } = await supabase
 				.from("chat_messages")
-				.select("content, sender_id, created_at")
+				.select("content, image_url, sender_id, created_at")
 				.eq("booking_id", bookingId)
 				.order("created_at", { ascending: false })
 				.limit(1);

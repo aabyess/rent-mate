@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useMyBookingsQuery } from "@/features/bookings/queries";
 import { BOOKING_STATUS_LABELS, formatBookingPeriod } from "@/features/bookings/utils";
 import { useChatRoomSummariesQuery } from "@/features/chats/queries";
-import { formatChatListTime } from "@/features/chats/utils";
+import { formatChatListPreview, formatChatListTime } from "@/features/chats/utils";
 import { useMyBlocksQuery } from "@/features/safety/queries";
 
 export function ChatRoomList(): JSX.Element {
@@ -88,8 +88,9 @@ export function ChatRoomList(): JSX.Element {
 								</Badge>
 							</div>
 							<span className="text-sub truncate text-[13px]">
-								{summaries[booking.id]?.lastMessage?.content ??
-									formatBookingPeriod(booking.starts_at, booking.ends_at)}
+								{summaries[booking.id]?.lastMessage
+									? formatChatListPreview(summaries[booking.id].lastMessage!)
+									: formatBookingPeriod(booking.starts_at, booking.ends_at)}
 							</span>
 						</div>
 						<div className="ml-auto flex shrink-0 flex-col items-end gap-1">
