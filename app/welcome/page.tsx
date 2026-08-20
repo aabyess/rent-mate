@@ -10,7 +10,7 @@ export default function WelcomePage(): JSX.Element {
 	const router = useRouter();
 
 	function handleCustomerStart(): void {
-		router.replace("/intro");
+		router.replace("/preferences?from=signup");
 	}
 
 	function handlePartnerStart(): void {

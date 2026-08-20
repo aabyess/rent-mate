@@ -13,6 +13,7 @@ import {
 } from "@/features/partners/components/PartnerList/PartnerListDeckMotionCard";
 import { usePartnerListQuery } from "@/features/partners/queries";
 import type { PartnerCardItem } from "@/features/partners/types";
+import { useMyPreferencesQuery } from "@/features/preferences/queries";
 import { usePartnerRatingsQuery } from "@/features/reviews/queries";
 import { useMyBlocksQuery } from "@/features/safety/queries";
 import { cn } from "@/utils/cn";
@@ -59,6 +60,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const router = useRouter();
 	const { data: partners, isPending, isError } = usePartnerListQuery();
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
+	const { data: myPreferences } = useMyPreferencesQuery();
 	const { data: ratings } = usePartnerRatingsQuery(
 		(partners ?? []).map(function (partner) {
 			return partner.profile_id;
@@ -117,7 +119,27 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 					);
 				});
 	const shuffledPartners = shuffleWithSeed(filteredPartners, shuffleSeed);
-	const deckItems = buildDeckItems(shuffledPartners);
+	// 취향(관심사·지역·목적)이 겹칠수록 앞쪽에 — 동점끼리는 셔플 순서 유지(stable sort)
+	function scoreByPreferences(partner: PartnerCardItem): number {
+		if (!myPreferences) {
+			return 0;
+		}
+		let score = 0;
+		score += partner.interests.filter(function (interest) {
+			return myPreferences.interests.includes(interest);
+		}).length;
+		if (myPreferences.regions.includes(partner.region)) {
+			score += 1;
+		}
+		score += partner.purpose_tags.filter(function (tag) {
+			return myPreferences.purposes.includes(tag);
+		}).length;
+		return score;
+	}
+	const rankedPartners = [...shuffledPartners].sort(function (a, b) {
+		return scoreByPreferences(b) - scoreByPreferences(a);
+	});
+	const deckItems = buildDeckItems(rankedPartners);
 	const deckCount = deckItems.length;
 
 	// 필터·검색이 바뀌면 스택을 처음부터 다시 쌓는다 (렌더 중 상태 조정 패턴)
@@ -369,7 +391,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 						</button>
 						<span className="text-sub text-sm tabular-nums">
 							{topItem?.kind === "partner"
-								? `${topItem.partnerIndex + 1} / ${shuffledPartners.length}`
+								? `${topItem.partnerIndex + 1} / ${rankedPartners.length}`
 								: "광고"}
 						</span>
 						<button
