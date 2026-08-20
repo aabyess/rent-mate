@@ -6,14 +6,24 @@ const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
 type PartnerDetailAvailabilityProps = {
 	availableWeekdays: number[];
+	availableStartHour: number;
+	availableEndHour: number;
 };
 
 export function PartnerDetailAvailability({
 	availableWeekdays,
+	availableStartHour,
+	availableEndHour,
 }: PartnerDetailAvailabilityProps): JSX.Element {
 	return (
 		<section className="flex flex-col gap-3">
-			<h2 className="text-[17px] font-semibold">가능 요일</h2>
+			<div className="flex items-center justify-between">
+				<h2 className="text-[17px] font-semibold">가능 요일</h2>
+				<span className="text-sub text-xs tabular-nums">
+					{String(availableStartHour).padStart(2, "0")}:00~
+					{String(availableEndHour).padStart(2, "0")}:00
+				</span>
+			</div>
 			<div className="grid grid-cols-7 gap-1.5">
 				{WEEKDAY_LABELS.map(function (label, weekday) {
 					const isAvailable = availableWeekdays.includes(weekday);

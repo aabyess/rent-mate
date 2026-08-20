@@ -20,7 +20,7 @@ export async function getMyPartnerProfile(): Promise<MyPartnerProfile | null> {
 	const { data, error } = await supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at, is_approved, is_active",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, available_start_hour, available_end_hour, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at, is_approved, is_active",
 		)
 		.eq("profile_id", user.id)
 		.maybeSingle();
@@ -56,6 +56,8 @@ export async function postCreatePartnerProfile({
 	weightKg,
 	interests,
 	availableWeekdays,
+	availableStartHour,
+	availableEndHour,
 	photos,
 	region,
 	purposeTags,
@@ -96,6 +98,8 @@ export async function postCreatePartnerProfile({
 		weight_kg: weightKg,
 		interests,
 		available_weekdays: availableWeekdays,
+		available_start_hour: availableStartHour,
+		available_end_hour: availableEndHour,
 		photo_urls: photoUrls,
 		region,
 		gender: profile.gender,
@@ -114,6 +118,8 @@ export async function patchPartnerProfile({
 	weightKg,
 	interests,
 	availableWeekdays,
+	availableStartHour,
+	availableEndHour,
 	region,
 	purposeTags,
 	existingPhotoUrls,
@@ -141,6 +147,8 @@ export async function patchPartnerProfile({
 			weight_kg: weightKg,
 			interests,
 			available_weekdays: availableWeekdays,
+			available_start_hour: availableStartHour,
+			available_end_hour: availableEndHour,
 			photo_urls: photoUrls,
 			region,
 			purpose_tags: purposeTags,
@@ -175,7 +183,7 @@ export async function getPartnerList(): Promise<PartnerListItem[]> {
 	let query = supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, available_start_hour, available_end_hour, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at",
 		)
 		.eq("is_approved", true)
 		.eq("is_active", true);
@@ -195,7 +203,7 @@ export async function getPartnerDetail(profileId: string): Promise<PartnerDetail
 	const { data, error } = await supabase
 		.from("partner_profiles")
 		.select(
-			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at",
+			"profile_id, nickname, bio, hourly_rate_krw, photo_urls, birth_year, height_cm, weight_kg, interests, available_weekdays, available_start_hour, available_end_hour, region, purpose_tags, gender, blog_greeting, blog_cover_url, created_at",
 		)
 		.eq("profile_id", profileId)
 		.eq("is_approved", true)

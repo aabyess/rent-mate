@@ -255,6 +255,8 @@ export function BookingFlow({ partnerId }: BookingFlowProps): JSX.Element {
 					<BookingFlowStepSchedule
 						baseDate={BASE_DATE}
 						availableWeekdays={partner.available_weekdays}
+						availableStartHour={partner.available_start_hour}
+						availableEndHour={partner.available_end_hour}
 						acceptedSlots={acceptedSlots ?? []}
 						schedule={schedule}
 						viewYear={viewYear}
