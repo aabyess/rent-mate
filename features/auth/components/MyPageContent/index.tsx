@@ -12,6 +12,7 @@ import { useMyBookingsQuery } from "@/features/bookings/queries";
 import type { MyBookingItem } from "@/features/bookings/types";
 import { formatBookingPeriod } from "@/features/bookings/utils";
 import { useMyPartnerProfileQuery } from "@/features/partners/queries";
+import { useMyTokenBalanceQuery } from "@/features/tokens/queries";
 
 const NOW_MS = Date.now();
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -41,6 +42,7 @@ export function MyPageContent(): JSX.Element {
 	const { data: profile, isPending } = useMyProfileQuery();
 	const { data: bookings } = useMyBookingsQuery();
 	const { data: myPartnerProfile } = useMyPartnerProfileQuery();
+	const { data: tokenBalance } = useMyTokenBalanceQuery();
 	const signOutMutation = useSignOutMutation();
 
 	function handleSignOut(): void {
@@ -127,6 +129,27 @@ export function MyPageContent(): JSX.Element {
 						<Badge variant="trust">휴대전화 인증</Badge>
 					)}
 				</div>
+			</Link>
+
+			<Link
+				href="/wallet"
+				className="bg-surface flex items-center justify-between rounded-2xl px-4.5 py-4">
+				<span className="text-sm font-semibold">내 토큰 지갑</span>
+				<span className="flex items-center gap-1.5">
+					<span className="text-base font-bold tabular-nums">🪙 {tokenBalance ?? 0}</span>
+					<svg
+						className="text-sub"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round">
+						<path d="M9 5l7 7-7 7" />
+					</svg>
+				</span>
 			</Link>
 
 			{upcomingBooking && (
