@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
+import { useMyProfileQuery } from "@/features/auth/queries";
+import { FavoriteActions } from "@/features/favorites/components/FavoriteActions";
 import { PartnerDetailActionBar } from "@/features/partners/components/PartnerDetail/PartnerDetailActionBar";
 import { PartnerDetailAvailability } from "@/features/partners/components/PartnerDetail/PartnerDetailAvailability";
 import { PartnerDetailMenu } from "@/features/partners/components/PartnerDetail/PartnerDetailMenu";
@@ -78,6 +80,7 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 	const router = useRouter();
 	const { data: partner, isPending, isError } = usePartnerDetailQuery(profileId);
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
+	const { data: myProfile } = useMyProfileQuery();
 
 	function handleBackClick(): void {
 		router.back();
@@ -157,6 +160,9 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 						<Badge variant="trust">성인인증</Badge>
 						<Badge variant="trust">실명인증</Badge>
 					</div>
+					{myProfile && myProfile.id !== partner.profile_id && (
+						<FavoriteActions partnerId={partner.profile_id} />
+					)}
 					<span className="text-sub flex items-center gap-1.5 text-[13px]">
 						<svg
 							width="15"
