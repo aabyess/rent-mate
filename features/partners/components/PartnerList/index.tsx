@@ -11,11 +11,14 @@ import {
 	PartnerListDeckMotionCard,
 	type DeckMotionCustom,
 } from "@/features/partners/components/PartnerList/PartnerListDeckMotionCard";
+import { PartnerListRewindDialog } from "@/features/partners/components/PartnerList/PartnerListRewindDialog";
 import { usePartnerListQuery } from "@/features/partners/queries";
 import type { PartnerCardItem } from "@/features/partners/types";
 import { useMyPreferencesQuery } from "@/features/preferences/queries";
 import { usePartnerRatingsQuery } from "@/features/reviews/queries";
 import { useMyBlocksQuery } from "@/features/safety/queries";
+import { useSpendTokenMutation } from "@/features/tokens/mutations";
+import { useMyTokenBalanceQuery } from "@/features/tokens/queries";
 
 const AD_INTERVAL = 5; // 파트너 카드 5장마다 광고 카드 1장
 const AUTOPLAY_MS = 3000;
@@ -58,6 +61,9 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const { data: partners, isPending, isError } = usePartnerListQuery();
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
 	const { data: myPreferences, isPending: isPreferencesPending } = useMyPreferencesQuery();
+	const { data: tokenBalance } = useMyTokenBalanceQuery();
+	const spendTokenMutation = useSpendTokenMutation();
+	const [isRewindDialogOpen, setIsRewindDialogOpen] = useState(false);
 	const { data: ratings } = usePartnerRatingsQuery(
 		(partners ?? []).map(function (partner) {
 			return partner.profile_id;
@@ -191,12 +197,31 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 			handleSwipe(-1);
 			return;
 		}
-		if (deckPosition === 0) {
+		if (deckPosition === 0 || spendTokenMutation.isPending) {
 			return;
 		}
-		setNavDirection(-1);
-		setDeckPosition(function (position) {
-			return position - 1;
+		// 되감기는 토큰 1개 소모 — 광고 카드는 공짜로 건너뛰고 이전 파트너로 간다
+		let target = deckPosition - 1;
+		while (target > 0 && deckItems[target % deckCount].kind === "ad") {
+			target -= 1;
+		}
+		if (target < 0 || deckItems[target % deckCount].kind === "ad") {
+			return;
+		}
+		if ((tokenBalance ?? 0) < 1) {
+			setIsRewindDialogOpen(true);
+			return;
+		}
+		const rewindTarget = target;
+		spendTokenMutation.mutate("rewind", {
+			onSuccess: function (): void {
+				setNavDirection(-1);
+				setDeckPosition(rewindTarget);
+			},
+			onError: function (): void {
+				// 다른 기기에서 먼저 써버린 레이스 — 잔액 안내로 수렴
+				setIsRewindDialogOpen(true);
+			},
 		});
 	}
 
@@ -339,9 +364,9 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 							onClick={function () {
 								handleDeckStep(-1);
 							}}
-							disabled={deckPosition === 0}
-							aria-label="이전 파트너"
-							className="bg-surface-alt text-body flex size-11 items-center justify-center rounded-full disabled:opacity-40">
+							disabled={deckPosition === 0 || spendTokenMutation.isPending}
+							aria-label={`이전 파트너 (토큰 1개 사용, 보유 ${tokenBalance ?? 0}개)`}
+							className="bg-surface-alt text-body relative flex size-11 items-center justify-center rounded-full disabled:opacity-40">
 							<svg
 								width="18"
 								height="18"
@@ -353,6 +378,9 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 								strokeLinejoin="round">
 								<path d="M15 5l-7 7 7 7" />
 							</svg>
+							<span className="bg-accent-500 absolute -top-1 -right-1.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white tabular-nums">
+								🪙{tokenBalance ?? 0}
+							</span>
 						</button>
 						<span className="text-sub text-sm tabular-nums">
 							{topItem?.kind === "partner"
@@ -379,6 +407,13 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 							</svg>
 						</button>
 					</div>
+					{isRewindDialogOpen && (
+						<PartnerListRewindDialog
+							onClose={function () {
+								setIsRewindDialogOpen(false);
+							}}
+						/>
+					)}
 				</div>
 			)}
 		</div>
