@@ -55,3 +55,32 @@ export function calculateBaseTwoHourPrice(hourlyRateKrw: number): number {
 export function calculateHalfHourExtensionPrice(hourlyRateKrw: number): number {
 	return new Decimal(hourlyRateKrw).div(2).toNumber();
 }
+
+export type FieldValidation = {
+	id: string;
+	message: string;
+	isValid: boolean;
+};
+
+export function findFirstInvalidField(validations: FieldValidation[]): FieldValidation | null {
+	return (
+		validations.find(function (validation) {
+			return !validation.isValid;
+		}) ?? null
+	);
+}
+
+// 실패한 첫 섹션으로 스크롤 + (입력형 필드면) 포커스. 포커스는 스크롤 애니메이션이
+// 끝난 뒤로 살짝 늦춰야 브라우저가 즉시 점프시키지 않는다.
+export function scrollToFieldError(fieldId: string): void {
+	const element = document.getElementById(fieldId);
+	if (!element) {
+		return;
+	}
+	element.scrollIntoView({ behavior: "smooth", block: "center" });
+	if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+		setTimeout(function () {
+			element.focus({ preventScroll: true });
+		}, 400);
+	}
+}

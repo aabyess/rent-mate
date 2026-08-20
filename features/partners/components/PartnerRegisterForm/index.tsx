@@ -12,7 +12,14 @@ import {
 	PartnerPhotoUploader,
 } from "@/features/partners/components/PartnerPhotoUploader";
 import { useCreatePartnerProfileMutation } from "@/features/partners/mutations";
-import { INTEREST_OPTIONS, MIN_HOURLY_RATE_KRW, WEEKDAY_OPTIONS } from "@/features/partners/utils";
+import {
+	findFirstInvalidField,
+	formatKrw,
+	INTEREST_OPTIONS,
+	MIN_HOURLY_RATE_KRW,
+	scrollToFieldError,
+	WEEKDAY_OPTIONS,
+} from "@/features/partners/utils";
 import { findBannedPhrase } from "@/utils/bannedPhrases";
 import { cn } from "@/utils/cn";
 
@@ -31,7 +38,7 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [photos, setPhotos] = useState<File[]>([]);
 	const [region, setRegion] = useState<string | null>(null);
 	const [purposeTags, setPurposeTags] = useState<string[]>([]);
-	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
+	const [fieldError, setFieldError] = useState<{ id: string; message: string } | null>(null);
 
 	function handlePurposeTagToggle(tag: string): void {
 		setPurposeTags(function (current) {
@@ -75,12 +82,60 @@ export function PartnerRegisterForm(): JSX.Element {
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
 		// 성매매 연상 표현은 프로필에 저장 자체를 막는다 (법적 제약 3번, DB 트리거와 이중 방어)
-		const banned = findBannedPhrase(`${nickname} ${bio}`);
-		if (banned !== null) {
-			setBannedPhrase(banned);
+		const nicknameBanned = findBannedPhrase(nickname);
+		const bioBanned = findBannedPhrase(bio);
+		const firstInvalid = findFirstInvalidField([
+			{
+				id: "nickname",
+				message: nicknameBanned
+					? `'${nicknameBanned}' 표현은 닉네임에 사용할 수 없어요.`
+					: "닉네임은 2자 이상이에요",
+				isValid: nickname.trim().length >= 2 && !nicknameBanned,
+			},
+			{
+				id: "birthYear",
+				message: "출생 연도를 확인해주세요 (1950~2007)",
+				isValid: Number(birthYear) >= 1950 && Number(birthYear) <= 2007,
+			},
+			{
+				id: "bio",
+				message: bioBanned
+					? `'${bioBanned}' 표현은 소개에 사용할 수 없어요.`
+					: "소개는 10자 이상 적어주세요",
+				isValid: bio.trim().length >= 10 && !bioBanned,
+			},
+			{
+				id: "partner-register-photos",
+				message: "사진은 최소 3장 올려야 해요",
+				isValid: photos.length >= MIN_PARTNER_PHOTOS,
+			},
+			{
+				id: "partner-register-region",
+				message: "활동 지역을 선택해주세요",
+				isValid: region !== null,
+			},
+			{
+				id: "partner-register-interests",
+				message: "관심사를 1개 이상 골라주세요",
+				isValid: interests.length > 0,
+			},
+			{
+				id: "partner-register-weekdays",
+				message: "가능 요일을 선택해주세요",
+				isValid: availableWeekdays.length > 0,
+			},
+			{
+				id: "hourlyRate",
+				message: `시간당 요금은 ${formatKrw(MIN_HOURLY_RATE_KRW)} 이상이어야 해요`,
+				isValid: Number(hourlyRate) >= MIN_HOURLY_RATE_KRW,
+			},
+		]);
+		if (firstInvalid) {
+			setFieldError(firstInvalid);
+			scrollToFieldError(firstInvalid.id);
 			return;
 		}
-		setBannedPhrase(null);
+		setFieldError(null);
 		createPartnerProfileMutation.mutate(
 			{
 				nickname: nickname.trim(),
@@ -104,19 +159,8 @@ export function PartnerRegisterForm(): JSX.Element {
 		);
 	}
 
-	const isValid =
-		nickname.trim().length >= 2 &&
-		bio.trim().length >= 10 &&
-		Number(birthYear) >= 1950 &&
-		Number(birthYear) <= 2007 &&
-		Number(hourlyRate) >= MIN_HOURLY_RATE_KRW &&
-		interests.length > 0 &&
-		availableWeekdays.length > 0 &&
-		region !== null &&
-		photos.length >= MIN_PARTNER_PHOTOS;
-
 	return (
-		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
+		<form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
 			<section className="flex flex-col gap-2">
 				<label htmlFor="nickname" className="text-sm font-medium">
 					활동 닉네임
@@ -128,10 +172,11 @@ export function PartnerRegisterForm(): JSX.Element {
 						setNickname(event.target.value);
 					}}
 					placeholder="프로필에 표시될 닉네임 (2자 이상)"
-					required
-					minLength={2}
 					maxLength={12}
 				/>
+				{fieldError?.id === "nickname" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -146,13 +191,13 @@ export function PartnerRegisterForm(): JSX.Element {
 						setBirthYear(event.target.value);
 					}}
 					placeholder="예: 1999"
-					required
-					min={1950}
-					max={2007}
 				/>
 				<p className="text-sub text-xs">
 					프로필에는 나이로 표시돼요. 만 19세 이상만 활동할 수 있어요.
 				</p>
+				{fieldError?.id === "birthYear" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -199,23 +244,25 @@ export function PartnerRegisterForm(): JSX.Element {
 						setBio(event.target.value);
 					}}
 					placeholder="어떤 데이트를 좋아하는지 알려주세요 (10자 이상)"
-					required
-					minLength={10}
 					maxLength={300}
 					rows={4}
 					className="bg-surface-alt text-body placeholder:text-sub w-full resize-none rounded-xl p-4 text-base focus:outline-none"
 				/>
+				{fieldError?.id === "bio" && <p className="text-error-500 text-xs">{fieldError.message}</p>}
 			</section>
 
-			<section className="flex flex-col gap-2">
+			<section id="partner-register-photos" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">프로필 사진 (3~9장 필수)</span>
 				<PartnerPhotoUploader photos={photos} onPhotosChange={setPhotos} />
 				<p className="text-sub text-xs">
 					최소 3장을 올려야 등록할 수 있어요. 첫 번째 사진이 대표 사진이에요.
 				</p>
+				{fieldError?.id === "partner-register-photos" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
-			<section className="flex flex-col gap-2">
+			<section id="partner-register-region" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">활동 지역</span>
 				<div className="flex flex-wrap gap-2">
 					{REGIONS.map(function (regionOption) {
@@ -237,6 +284,9 @@ export function PartnerRegisterForm(): JSX.Element {
 						);
 					})}
 				</div>
+				{fieldError?.id === "partner-register-region" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -266,7 +316,7 @@ export function PartnerRegisterForm(): JSX.Element {
 				</p>
 			</section>
 
-			<section className="flex flex-col gap-2">
+			<section id="partner-register-interests" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">관심사 (최대 3개)</span>
 				<div className="flex flex-wrap gap-2">
 					{INTEREST_OPTIONS.map(function (interest) {
@@ -288,9 +338,12 @@ export function PartnerRegisterForm(): JSX.Element {
 						);
 					})}
 				</div>
+				{fieldError?.id === "partner-register-interests" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
-			<section className="flex flex-col gap-2">
+			<section id="partner-register-weekdays" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">가능 요일</span>
 				<div className="grid grid-cols-7 gap-1.5">
 					{WEEKDAY_OPTIONS.map(function (weekday) {
@@ -313,6 +366,9 @@ export function PartnerRegisterForm(): JSX.Element {
 					})}
 				</div>
 				<p className="text-sub text-xs">선택한 요일에만 예약을 받을 수 있어요.</p>
+				{fieldError?.id === "partner-register-weekdays" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<section className="flex flex-col gap-2">
@@ -326,10 +382,11 @@ export function PartnerRegisterForm(): JSX.Element {
 					onChange={function (event) {
 						setHourlyRate(event.target.value);
 					}}
-					required
-					min={MIN_HOURLY_RATE_KRW}
 					step={1000}
 				/>
+				{fieldError?.id === "hourlyRate" && (
+					<p className="text-error-500 text-xs">{fieldError.message}</p>
+				)}
 			</section>
 
 			<div className="flex flex-col gap-2.5">
@@ -338,12 +395,6 @@ export function PartnerRegisterForm(): JSX.Element {
 					위반 시 계정이 영구 제한되고 관련 법에 따라 신고될 수 있어요. 등록 후 관리자 승인을 거쳐
 					프로필이 공개돼요.
 				</p>
-				{bannedPhrase !== null && (
-					<p className="text-error-500 text-sm">
-						&lsquo;{bannedPhrase}&rsquo; 표현은 프로필에 사용할 수 없어요. 성적 서비스를 연상시키는
-						표현은 제재 대상입니다.
-					</p>
-				)}
 				{createPartnerProfileMutation.isError && (
 					<p className="text-error-500 text-sm">{createPartnerProfileMutation.error.message}</p>
 				)}
@@ -351,7 +402,6 @@ export function PartnerRegisterForm(): JSX.Element {
 					type="submit"
 					size="lg"
 					fullWidth
-					disabled={!isValid}
 					isLoading={createPartnerProfileMutation.isPending}>
 					{createPartnerProfileMutation.isPending ? "사진 업로드 중..." : "파트너 프로필 등록"}
 				</Button>
