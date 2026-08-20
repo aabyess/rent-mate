@@ -15,7 +15,8 @@ function formatMessageTime(createdAt: string): string {
 type ChatRoomMessageListProps = {
 	messages: ChatMessage[];
 	myProfileId: string;
-	onReportClick: () => void;
+	/** 특정 메시지를 지목해 신고 — 신고 사유에 메시지 ID가 태깅된다 */
+	onReportClick: (message: ChatMessage) => void;
 };
 
 export function ChatRoomMessageList({
@@ -60,6 +61,27 @@ export function ChatRoomMessageList({
 							<span className="text-sub text-[11px] tabular-nums">
 								{formatMessageTime(message.created_at)}
 							</span>
+							{!isMine && (
+								<button
+									type="button"
+									onClick={function () {
+										onReportClick(message);
+									}}
+									aria-label="이 메시지 신고"
+									className="text-sub/50 hover:text-error-500 shrink-0 p-0.5">
+									<svg
+										width="12"
+										height="12"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round">
+										<path d="M4 21V4m0 11h14l-3-5 3-5H4" />
+									</svg>
+								</button>
+							)}
 						</div>
 						{message.flagged && (
 							<span className="text-warning-700 flex items-center gap-1.5 text-[11px]">
@@ -67,7 +89,9 @@ export function ChatRoomMessageList({
 								{!isMine && (
 									<button
 										type="button"
-										onClick={onReportClick}
+										onClick={function () {
+											onReportClick(message);
+										}}
 										className="text-error-500 font-medium underline">
 										신고하기
 									</button>

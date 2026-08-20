@@ -6,6 +6,7 @@ import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { ReviewStars } from "@/features/reviews/components/ReviewStars";
 import { useCreateReviewMutation } from "@/features/reviews/mutations";
+import { findBannedPhrase } from "@/utils/bannedPhrases";
 
 // 닫히면 언마운트되는 전제라 열릴 때마다 입력·뮤테이션 상태가 초기화된다
 type ReviewDialogProps = {
@@ -24,12 +25,20 @@ export function ReviewDialog({
 	const createReviewMutation = useCreateReviewMutation();
 	const [rating, setRating] = useState(0);
 	const [content, setContent] = useState("");
+	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
 		if (rating === 0) {
 			return;
 		}
+		// 후기도 공개 지면이므로 성매매 연상 표현을 차단한다 (DB 트리거와 이중 방어)
+		const banned = findBannedPhrase(content);
+		if (banned !== null) {
+			setBannedPhrase(banned);
+			return;
+		}
+		setBannedPhrase(null);
 		createReviewMutation.mutate({ bookingId, partnerId, rating, content });
 	}
 
@@ -65,6 +74,11 @@ export function ReviewDialog({
 								rows={4}
 								className="bg-surface-alt text-body placeholder:text-sub w-full resize-none rounded-xl p-4 text-base focus:outline-none"
 							/>
+							{bannedPhrase !== null && (
+								<p className="text-error-500 text-sm">
+									&lsquo;{bannedPhrase}&rsquo; 표현은 후기에 사용할 수 없어요.
+								</p>
+							)}
 							{createReviewMutation.isError && (
 								<p className="text-error-500 text-sm">{createReviewMutation.error.message}</p>
 							)}

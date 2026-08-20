@@ -13,6 +13,7 @@ import {
 } from "@/features/partners/components/PartnerPhotoUploader";
 import { useCreatePartnerProfileMutation } from "@/features/partners/mutations";
 import { INTEREST_OPTIONS, MIN_HOURLY_RATE_KRW, WEEKDAY_OPTIONS } from "@/features/partners/utils";
+import { findBannedPhrase } from "@/utils/bannedPhrases";
 import { cn } from "@/utils/cn";
 
 export function PartnerRegisterForm(): JSX.Element {
@@ -28,6 +29,7 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [photos, setPhotos] = useState<File[]>([]);
 	const [region, setRegion] = useState<string | null>(null);
 	const [purposeTags, setPurposeTags] = useState<string[]>([]);
+	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
 
 	function handlePurposeTagToggle(tag: string): void {
 		setPurposeTags(function (current) {
@@ -70,6 +72,13 @@ export function PartnerRegisterForm(): JSX.Element {
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
+		// 성매매 연상 표현은 프로필에 저장 자체를 막는다 (법적 제약 3번, DB 트리거와 이중 방어)
+		const banned = findBannedPhrase(`${nickname} ${bio}`);
+		if (banned !== null) {
+			setBannedPhrase(banned);
+			return;
+		}
+		setBannedPhrase(null);
 		createPartnerProfileMutation.mutate(
 			{
 				nickname: nickname.trim(),
@@ -292,6 +301,12 @@ export function PartnerRegisterForm(): JSX.Element {
 					위반 시 계정이 영구 제한되고 관련 법에 따라 신고될 수 있어요. 등록 후 관리자 승인을 거쳐
 					프로필이 공개돼요.
 				</p>
+				{bannedPhrase !== null && (
+					<p className="text-error-500 text-sm">
+						&lsquo;{bannedPhrase}&rsquo; 표현은 프로필에 사용할 수 없어요. 성적 서비스를 연상시키는
+						표현은 제재 대상입니다.
+					</p>
+				)}
 				{createPartnerProfileMutation.isError && (
 					<p className="text-error-500 text-sm">{createPartnerProfileMutation.error.message}</p>
 				)}

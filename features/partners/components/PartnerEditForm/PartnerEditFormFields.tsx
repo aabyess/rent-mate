@@ -16,6 +16,7 @@ import { usePatchPartnerProfileMutation } from "@/features/partners/mutations";
 import type { MyPartnerProfile } from "@/features/partners/types";
 import { INTEREST_OPTIONS, MIN_HOURLY_RATE_KRW, WEEKDAY_OPTIONS } from "@/features/partners/utils";
 import { cn } from "@/utils/cn";
+import { findBannedPhrase } from "@/utils/bannedPhrases";
 
 type PartnerEditFormFieldsProps = {
 	profile: MyPartnerProfile;
@@ -36,6 +37,7 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 	const [purposeTags, setPurposeTags] = useState<string[]>(profile.purpose_tags);
 	const [existingPhotoUrls, setExistingPhotoUrls] = useState<string[]>(profile.photo_urls);
 	const [newPhotos, setNewPhotos] = useState<File[]>([]);
+	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
 
 	function handleWeekdayToggle(weekday: number): void {
 		setAvailableWeekdays(function (current) {
@@ -78,6 +80,13 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
+		// 성매매 연상 표현은 프로필에 저장 자체를 막는다 (법적 제약 3번, DB 트리거와 이중 방어)
+		const banned = findBannedPhrase(`${nickname} ${bio}`);
+		if (banned !== null) {
+			setBannedPhrase(banned);
+			return;
+		}
+		setBannedPhrase(null);
 		patchPartnerProfileMutation.mutate(
 			{
 				nickname: nickname.trim(),
@@ -283,6 +292,12 @@ export function PartnerEditFormFields({ profile }: PartnerEditFormFieldsProps): 
 					<p className="bg-warning-500/15 text-warning-500 rounded-xl px-4 py-3 text-xs leading-relaxed">
 						수정 사항은 저장 즉시 반영돼요. 부적절한 내용으로 변경하면 관리자 검토 후 활동이 제한될
 						수 있어요.
+					</p>
+				)}
+				{bannedPhrase !== null && (
+					<p className="text-error-500 text-sm">
+						&lsquo;{bannedPhrase}&rsquo; 표현은 프로필에 사용할 수 없어요. 성적 서비스를 연상시키는
+						표현은 제재 대상입니다.
 					</p>
 				)}
 				{patchPartnerProfileMutation.isError && (
