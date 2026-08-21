@@ -39,8 +39,11 @@
 - develop 머지 = 프로덕션 자동 배포 (원격에 main 없음 — develop이 배포 브랜치).
 - **vercel.json의 `ignoreCommand`(develop 외 브랜치 빌드 스킵)를 제거하지 말 것** — 프리뷰 빌드가 무료 한도(100회/일)를 소모해 프로덕션까지 막혔던 사고(2026-08-20)의 재발 방지 장치.
 - 한도 초과 시 해제까지 약 24시간. **프로젝트 재생성은 계정 단위 한도라 무효.**
-- **develop 머지도 배포 1회씩 카운트된다** (롤링 24h 61회 도달 사례, 8/21). 머지 커밋 제목에 `[skip deploy]`가 있으면 빌드 스킵 — docs 전용 / 플래그 꺼진 기능 / 연속 머지 배치의 중간 건은 태그, **사용자에게 보이는 변경의 마지막 머지만 실배포**. `gh pr merge --subject "... [skip deploy]"`.
-- ⚠️ PR 제목·본문에 "[skip deploy]" 문자열을 언급만 해도 머지 커밋에 포함돼 의도치 않게 스킵된다 — 배포가 필요한 PR에서는 이 문자열을 쓰지 말 것.
+- **⚠️ 배포는 기본 OFF, 옵트인 방식이다 (8/21, [skip deploy] 옵트아웃 방식에서 전환)**: develop에 머지해도 커밋 메시지에 `[deploy]`가 명시적으로 없으면 빌드 자체가 스킵된다. 배포하려면 `gh pr merge --subject "... [deploy]"`.
+  - 배경: 옵트아웃(기본 배포, 스킵 태그로 예외) 방식이었을 때, 태그를 도입하기 전 이미 40건 넘게 실빌드가 쌓여 **일일 배포 한도를 소진 → 실배포 완전 차단(24시간)** 사고가 났다 (8/21). "깜빡하면 배포됨"은 위험하고 "깜빡하면 안 됨"이 안전해서 기본값을 뒤집었다.
+  - 운영: PM(리더)이 여러 머지를 모아뒀다가 **하루 몇 차례만, 사용자가 볼 필요가 있는 시점에** `[deploy]` 태그로 의도적으로 내보낸다. 워커는 기본적으로 태그 없이 머지(자동 스킵) — PM 지시 없이 임의로 `[deploy]` 태그를 붙이지 않는다.
+  - ⚠️ PR 제목·본문에 "[deploy]" 문자열이 우연히 들어가면 머지 커밋에 섞여 의도치 않게 배포될 수 있다 — 무관한 PR에서 이 문자열 사용 금지.
+  - 한도 소진 시 Vercel 커밋 상태 API로 정확한 원인 확인: `gh api repos/aabyess/rent-mate/commits/<sha>/status --jq '.statuses[]'` → `description`에 "Deployment rate limited — retry in 24 hours" 같은 원문이 그대로 나온다. 스킵된 커밋은 `"Canceled by Ignored Build Step"` / success로 구분된다.
 - 공유 체크아웃에서 브랜치 전환은 남의 HEAD를 옮긴다 — **워커는 각자 git worktree에서 작업** (8/21부터 담당1: rent-mate-safety, 담당2: rent-mate-w2). 커밋 전 `git rev-parse --abbrev-ref HEAD`로 현재 브랜치 확인.
 - 크론 리마인더: Vercel env `CRON_SECRET` 필요, `/api/reminders/run`은 인증 미들웨어 예외(PUBLIC_PATHS) — 자체 Bearer 검증.
 
