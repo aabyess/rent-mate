@@ -3,17 +3,29 @@
 @import "tailwindcss";
 
 @theme {
-	/* Primary — Warm Coral */
-	--color-primary-50: #fff5f2;
-	--color-primary-100: #ffe8e1;
-	--color-primary-200: #ffd0c2;
-	--color-primary-300: #ffab93;
-	--color-primary-400: #fb8666;
-	--color-primary-500: #f26b4a;
-	--color-primary-600: #dd5230;
-	--color-primary-700: #b83f23;
-	--color-primary-800: #963621;
-	--color-primary-900: #7a3020;
+	/* Primary — Blue (하이브리드 팔레트 전환: 기존 코랄은 --color-heart-*로 이관, 아래 참고) */
+	--color-primary-50: #f0f5fe;
+	--color-primary-100: #dce8fd;
+	--color-primary-200: #b9d2fb;
+	--color-primary-300: #8db4f8;
+	--color-primary-400: #5990f5;
+	--color-primary-500: #2b6ef5;
+	--color-primary-600: #1f56d6;
+	--color-primary-700: #1949b8;
+	--color-primary-800: #163c93;
+	--color-primary-900: #10254d;
+
+	/* Heart — 기존 Warm Coral 팔레트를 하트·찜 전용으로 이관 (하이브리드 전환) */
+	--color-heart-50: #fff5f2;
+	--color-heart-100: #ffe8e1;
+	--color-heart-200: #ffd0c2;
+	--color-heart-300: #ffab93;
+	--color-heart-400: #fb8666;
+	--color-heart-500: #f26b4a;
+	--color-heart-600: #dd5230;
+	--color-heart-700: #b83f23;
+	--color-heart-800: #963621;
+	--color-heart-900: #7a3020;
 
 	/* Secondary — Trust Teal */
 	--color-secondary-50: #f0faf9;
@@ -64,6 +76,8 @@
 }
 
 /* 시맨틱 토큰 — 라이트 기본, 다크는 prefers-color-scheme 스왑 */
+/* 하이브리드 팔레트 원칙: 블루(primary)는 브랜드 포인트 전용이다. bg/surface는
+   계속 zinc(neutral)를 쓰고, primary-900(딥네이비)를 전면 배경으로 쓰지 않는다. */
 :root {
 	--bg: var(--color-neutral-50);
 	--surface: var(--color-neutral-0);
@@ -74,6 +88,7 @@
 	--brand: var(--color-primary-500);
 	--brand-subtle: var(--color-primary-50);
 	--trust: var(--color-secondary-500);
+	--heart: var(--color-heart-500);
 	/* 다크에서 반전되는 "선택됨" 상태용 (필터 칩 등 raw #18181b 대체) */
 	--inverse: var(--color-neutral-900);
 	--inverse-fg: var(--color-neutral-0);
@@ -88,8 +103,10 @@
 		--text-token: var(--color-neutral-100);
 		--text-sub: var(--color-neutral-400);
 		--brand: var(--color-primary-400);
-		--brand-subtle: #3a2620;
+		/* 다크 전용 선택 상태 배경 — primary 스케일 밖의 신규 값 (리서치 확정) */
+		--brand-subtle: #16233f;
 		--trust: var(--color-secondary-400);
+		--heart: var(--color-heart-400);
 		--inverse: var(--color-neutral-100);
 		--inverse-fg: var(--color-neutral-900);
 	}
@@ -106,6 +123,7 @@
 	--color-brand: var(--brand);
 	--color-brand-subtle: var(--brand-subtle);
 	--color-trust: var(--trust);
+	--color-heart: var(--heart);
 	--color-inverse: var(--inverse);
 	--color-inverse-fg: var(--inverse-fg);
 }

@@ -33,27 +33,40 @@
 
 ### 선정 근거
 
-- **Primary — Warm Coral**: 따뜻함·환대·에너지. 헬스케어 UI 트렌드에서도 "부담스럽지 않은 따뜻함"으로 코랄·피치가 쓰인다. 에어비앤비(Rausch)가 검증한 "숙박·만남 서비스 + 코랄 계열" 조합.
-- **Secondary — Trust Teal**: 신뢰·안정·차분함. 블루의 신뢰와 그린의 안전을 잇는 색. 인증·안전·보조 버튼 담당.
-- **Accent — Apricot Amber**: 뱃지·하이라이트·프로모션용 포인트. 주조색과 같은 온도의 노랑 계열이라 화면이 따뜻하게 유지된다.
-- **상태색**: 관용적 의미(초록=성공, 호박=경고, 빨강=오류)를 따르되 채도를 한 단계 낮춰 네온 느낌을 없앤다. Error 빨강은 primary 코랄과 혼동되지 않도록 순빨강 쪽으로 분리했다.
-- **Neutral**: **쿨 그레이(zinc 계열) + 순백 배경**. 초기안은 웜 그레이(stone)였으나, 크림 배경 + 코랄 조합이 Claude/Anthropic 브랜드를 연상시킨다는 피드백으로 쿨 그레이로 교체했다. 따뜻함은 코랄·앰버 포인트가 담당하고, 바탕은 중립을 유지한다. 크림/아이보리 톤(`#faf9f7` 류) 배경 사용 금지.
+- **Primary — Blue (2026-08-21 코랄→블루 하이브리드 전환, 사용자 확정)**: 초기안은 Warm Coral(에어비앤비 Rausch 계열)이었으나, 신뢰·안정감을 더 앞세우는 방향으로 주조색을 블루로 교체했다. **하이브리드 원칙**: 블루는 브랜드 포인트(CTA, 활성 상태, 링크)로만 쓰고, 기존 코랄 팔레트는 폐기하지 않고 `--color-heart-*`로 이관해 하트·찜 전용 색으로 남긴다. bg/surface는 계속 zinc 중립을 유지하고, primary-900(딥네이비)를 화면 전면 배경으로 쓰는 것은 금지한다(포인트 색이 배경까지 잠식하지 않도록).
+- **Heart — 구 Warm Coral**: 따뜻함·환대의 뉘앙스는 하트·찜(좋아요) 인터랙션에 국한해서 남긴다. 에어비앤비(Rausch)가 검증한 "숙박·만남 서비스 + 코랄 계열" 조합의 유산.
+- **Secondary — Trust Teal**: 신뢰·안정·차분함. 블루의 신뢰와 그린의 안전을 잇는 색. 인증·안전·보조 버튼 담당. (블루 전환 후에도 무변경)
+- **Accent — Apricot Amber**: 뱃지·하이라이트·프로모션용 포인트. 무변경.
+- **상태색**: 관용적 의미(초록=성공, 호박=경고, 빨강=오류)를 따르되 채도를 한 단계 낮춰 네온 느낌을 없앤다. 무변경.
+- **Neutral**: **쿨 그레이(zinc 계열) + 순백 배경**. 초기안은 웜 그레이(stone)였으나, 크림 배경 + 코랄 조합이 Claude/Anthropic 브랜드를 연상시킨다는 피드백으로 쿨 그레이로 교체했다. 바탕은 중립을 유지하고 포인트 색(블루·하트·앰버)이 온도를 담당한다. 크림/아이보리 톤(`#faf9f7` 류) 배경 사용 금지.
 
 ### Tailwind v4 `@theme` 토큰 (globals.css에 그대로 복사 가능)
 
 ```css
 @theme {
-	/* Primary — Warm Coral */
-	--color-primary-50: #fff5f2;
-	--color-primary-100: #ffe8e1;
-	--color-primary-200: #ffd0c2;
-	--color-primary-300: #ffab93;
-	--color-primary-400: #fb8666;
-	--color-primary-500: #f26b4a; /* 메인. CTA, 활성 상태 */
-	--color-primary-600: #dd5230;
-	--color-primary-700: #b83f23;
-	--color-primary-800: #963621;
-	--color-primary-900: #7a3020;
+	/* Primary — Blue (하이브리드 전환: 기존 코랄은 --color-heart-*로 이관) */
+	--color-primary-50: #f0f5fe;
+	--color-primary-100: #dce8fd;
+	--color-primary-200: #b9d2fb;
+	--color-primary-300: #8db4f8;
+	--color-primary-400: #5990f5;
+	--color-primary-500: #2b6ef5; /* 메인. CTA, 활성 상태 */
+	--color-primary-600: #1f56d6;
+	--color-primary-700: #1949b8;
+	--color-primary-800: #163c93;
+	--color-primary-900: #10254d;
+
+	/* Heart — 구 Warm Coral, 하트·찜 전용 */
+	--color-heart-50: #fff5f2;
+	--color-heart-100: #ffe8e1;
+	--color-heart-200: #ffd0c2;
+	--color-heart-300: #ffab93;
+	--color-heart-400: #fb8666;
+	--color-heart-500: #f26b4a; /* 메인. 하트·찜 아이콘 */
+	--color-heart-600: #dd5230;
+	--color-heart-700: #b83f23;
+	--color-heart-800: #963621;
+	--color-heart-900: #7a3020;
 
 	/* Secondary — Trust Teal */
 	--color-secondary-50: #f0faf9;
@@ -112,11 +125,12 @@
 | `--color-border`       | `#e4e4e7` (neutral-200)   | `#3f3f46` (neutral-700)   | 구분선, 카드 테두리         |
 | `--color-text`         | `#18181b` (neutral-900)   | `#f4f4f5` (neutral-100)   | 본문                        |
 | `--color-text-sub`     | `#71717a` (neutral-500)   | `#a1a1aa` (neutral-400)   | 보조 텍스트, 캡션           |
-| `--color-brand`        | `#f26b4a` (primary-500)   | `#fb8666` (primary-400)   | CTA — 다크에선 한 단계 밝게 |
-| `--color-brand-subtle` | `#fff5f2` (primary-50)    | `#3a2620`                 | 선택 상태 배경              |
+| `--color-brand`        | `#2b6ef5` (primary-500)   | `#5990f5` (primary-400)   | CTA — 다크에선 한 단계 밝게 |
+| `--color-brand-subtle` | `#f0f5fe` (primary-50)    | `#16233f`                 | 선택 상태 배경              |
 | `--color-trust`        | `#2e9995` (secondary-500) | `#4bb3b0` (secondary-400) | 인증·안전 UI                |
+| `--color-heart`        | `#f26b4a` (heart-500)     | `#fb8666` (heart-400)     | 하트·찜(좋아요) 전용        |
 
-**금지 사항**: 배경에 순검정(#000)·네이비 금지, 보라(#8B00FF 계열)·마젠타 네온 금지, 글로우/네온 이펙트 금지, 붉은 조명 톤의 사진 필터 금지.
+**금지 사항**: 배경에 순검정(#000) 금지, primary-900(딥네이비)를 화면 전면 배경으로 쓰는 것 금지(블루는 포인트 전용 — bg/surface는 zinc 유지), 보라(#8B00FF 계열)·마젠타 네온 금지, 글로우/네온 이펙트 금지, 붉은 조명 톤의 사진 필터 금지.
 
 ---
 
