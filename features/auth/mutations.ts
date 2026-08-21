@@ -29,8 +29,10 @@ export function useSignInMutation(): UseMutationResult<void, Error, SignInInput>
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: postSignIn,
-		async onSuccess(): Promise<void> {
-			await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.myProfile });
+		onSuccess(): void {
+			// 다른 계정으로 로그인하면 이전 사용자의 캐시(파트너 홈·지갑 등)가 전부 무효 —
+			// 개별 invalidate로는 누락이 생겨 "이전 계정 화면이 그대로 보이는" 버그가 났었다
+			queryClient.clear();
 		},
 	});
 }
@@ -39,8 +41,8 @@ export function useSignOutMutation(): UseMutationResult<void, Error, void> {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: postSignOut,
-		async onSuccess(): Promise<void> {
-			await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.myProfile });
+		onSuccess(): void {
+			queryClient.clear();
 		},
 	});
 }
