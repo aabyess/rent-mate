@@ -1,6 +1,11 @@
 // features/partners/components/PartnerDetail/PartnerDetailQna.tsx
 import type { JSX } from "react";
-import { isQnaComplete, QNA_QUESTION_LABELS, type PartnerQna } from "@/features/partners/qna";
+import {
+	EMPTY_QNA,
+	isQnaComplete,
+	QNA_QUESTION_LABELS,
+	type PartnerQna,
+} from "@/features/partners/qna";
 
 type PartnerDetailQnaProps = {
 	qna: PartnerQna;
@@ -8,20 +13,23 @@ type PartnerDetailQnaProps = {
 
 // 필수 문항이 다 채워졌을 때만 렌더 — 미완성 프로필은 빈 카드를 보이지 않는다
 export function PartnerDetailQna({ qna }: PartnerDetailQnaProps): JSX.Element | null {
-	if (!isQnaComplete(qna)) {
+	// 기존 파트너는 qna가 '{}'(빈 객체)라 필드가 undefined일 수 있다 — 폼과 동일하게
+	// EMPTY_QNA로 보정하지 않으면 undefined.trim()으로 상세 화면 전체가 죽는다
+	const merged: PartnerQna = { ...EMPTY_QNA, ...qna };
+	if (!isQnaComplete(merged)) {
 		return null;
 	}
 
 	const entries = [
-		{ label: QNA_QUESTION_LABELS.firstImpression, value: qna.firstImpression },
-		{ label: QNA_QUESTION_LABELS.hobbies, value: qna.hobbies.join(", ") },
-		{ label: QNA_QUESTION_LABELS.genres, value: qna.genres.join(", ") },
-		{ label: QNA_QUESTION_LABELS.topicAllNight, value: qna.topicAllNight },
-		{ label: QNA_QUESTION_LABELS.courseCategories, value: qna.courseCategories.join(", ") },
-		{ label: QNA_QUESTION_LABELS.smallHappiness, value: qna.smallHappiness },
+		{ label: QNA_QUESTION_LABELS.firstImpression, value: merged.firstImpression },
+		{ label: QNA_QUESTION_LABELS.hobbies, value: merged.hobbies.join(", ") },
+		{ label: QNA_QUESTION_LABELS.genres, value: merged.genres.join(", ") },
+		{ label: QNA_QUESTION_LABELS.topicAllNight, value: merged.topicAllNight },
+		{ label: QNA_QUESTION_LABELS.courseCategories, value: merged.courseCategories.join(", ") },
+		{ label: QNA_QUESTION_LABELS.smallHappiness, value: merged.smallHappiness },
 	];
-	if (qna.mbti) {
-		entries.push({ label: QNA_QUESTION_LABELS.mbti, value: qna.mbti });
+	if (merged.mbti) {
+		entries.push({ label: QNA_QUESTION_LABELS.mbti, value: merged.mbti });
 	}
 
 	return (
