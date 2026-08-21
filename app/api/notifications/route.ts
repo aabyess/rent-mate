@@ -81,6 +81,63 @@ async function handlePartnerNotification(
 	return NextResponse.json({ ok: true });
 }
 
+// 관리자가 신고를 처리(조치 완료/기각)했을 때 신고자에게 알린다. 관리자 대시보드가
+// 이미 처리했다고 주장하는 걸 그대로 믿지 않고, DB에서 caller의 role과 신고 상태를
+// 다시 검증한 뒤에만 insert한다.
+async function handleReportNotification(
+	reportId: string,
+	callerId: string,
+	supabase: Awaited<ReturnType<typeof createClient>>,
+): Promise<NextResponse> {
+	const { data: callerProfile } = await supabase
+		.from("profiles")
+		.select("role")
+		.eq("id", callerId)
+		.maybeSingle();
+	if (callerProfile?.role !== "admin") {
+		return NextResponse.json({ error: "forbidden" }, { status: 403 });
+	}
+
+	const { data: report, error: reportError } = await supabase
+		.from("reports")
+		.select("reporter_id, status")
+		.eq("id", reportId)
+		.maybeSingle();
+	if (reportError || !report) {
+		return NextResponse.json({ error: "report_not_found" }, { status: 404 });
+	}
+	if (report.status !== "resolved" && report.status !== "dismissed") {
+		return NextResponse.json({ error: "status_mismatch" }, { status: 409 });
+	}
+
+	let admin;
+	try {
+		admin = createAdminClient();
+	} catch {
+		console.error("[notifications] SUPABASE_SERVICE_ROLE_KEY 미설정 — 알림 생성 실패", {
+			type: "report_resolved",
+			reportId,
+		});
+		return NextResponse.json({ error: "config" }, { status: 500 });
+	}
+
+	const { error: insertError } = await admin.from("notifications").insert({
+		recipient_id: report.reporter_id,
+		type: "report_resolved",
+		payload: { reportId },
+	});
+	if (insertError) {
+		console.error("[notifications] 삽입 실패", {
+			type: "report_resolved",
+			reportId,
+			message: insertError.message,
+		});
+		return NextResponse.json({ error: "insert_failed" }, { status: 500 });
+	}
+
+	return NextResponse.json({ ok: true });
+}
+
 // 예약 당사자(고객·파트너 누구든) + status=accepted + 시작까지 24시간 미만일 때만
 // 허용 — 클라 판단을 그대로 믿지 않고 서버가 3중 조건을 다시 검증한다.
 // 통과하면 고객·파트너 양쪽에 리마인더를 보낸다(크론과 동일하게).
@@ -171,6 +228,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			return NextResponse.json({ error: "invalid_params" }, { status: 400 });
 		}
 		return handleBookingReminder((body as { bookingId: string }).bookingId, user.id, supabase);
+	}
+
+	if (rawType === "report_resolved") {
+		if (!("reportId" in body) || typeof (body as { reportId: unknown }).reportId !== "string") {
+			return NextResponse.json({ error: "invalid_params" }, { status: 400 });
+		}
+		return handleReportNotification((body as { reportId: string }).reportId, user.id, supabase);
 	}
 
 	if (

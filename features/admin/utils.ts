@@ -5,6 +5,7 @@ export const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
 	open: "접수됨",
 	resolved: "조치 완료",
 	dismissed: "기각",
+	canceled: "신고 취소됨",
 };
 
 const UUID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;

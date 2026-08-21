@@ -91,8 +91,11 @@ export function useUpdateReportStatusMutation(): UseMutationResult<
 		mutationFn: function ({ reportId, status, adminNote }: UpdateReportStatusInput) {
 			return patchReportStatus(reportId, status, adminNote);
 		},
-		async onSuccess(): Promise<void> {
+		async onSuccess(_data, { reportId, status }): Promise<void> {
 			await queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.reports });
+			if (status === "resolved" || status === "dismissed") {
+				void postNotifyEvent({ type: "report_resolved", reportId });
+			}
 		},
 	});
 }

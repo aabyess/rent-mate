@@ -5,7 +5,7 @@ export type CreateReportInput = {
 	reason: string;
 };
 
-export type ReportStatus = "open" | "resolved" | "dismissed";
+export type ReportStatus = "open" | "resolved" | "dismissed" | "canceled";
 
 export type MyReportItem = {
 	id: string;

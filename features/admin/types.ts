@@ -2,7 +2,7 @@
 import type { BookingStatus } from "@/features/bookings/types";
 import type { PaymentRow } from "@/features/payments/types";
 
-export type ReportStatus = "open" | "resolved" | "dismissed";
+export type ReportStatus = "open" | "resolved" | "dismissed" | "canceled";
 
 export type AdminMetrics = {
 	pendingPartnerCount: number;
