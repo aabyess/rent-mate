@@ -12,7 +12,9 @@ import {
 	MIN_PARTNER_PHOTOS,
 	PartnerPhotoUploader,
 } from "@/features/partners/components/PartnerPhotoUploader";
+import { PartnerQnaFields } from "@/features/partners/components/PartnerQnaFields";
 import { useCreatePartnerProfileMutation } from "@/features/partners/mutations";
+import { EMPTY_QNA, type PartnerQna } from "@/features/partners/qna";
 import { useMyPartnerProfileQuery } from "@/features/partners/queries";
 import {
 	findFirstInvalidField,
@@ -43,6 +45,7 @@ export function PartnerRegisterForm(): JSX.Element {
 	const [photos, setPhotos] = useState<File[]>([]);
 	const [region, setRegion] = useState<string | null>(null);
 	const [purposeTags, setPurposeTags] = useState<string[]>([]);
+	const [qna, setQna] = useState<PartnerQna>(EMPTY_QNA);
 	const [fieldError, setFieldError] = useState<{ id: string; message: string } | null>(null);
 
 	function handlePurposeTagToggle(tag: string): void {
@@ -89,6 +92,9 @@ export function PartnerRegisterForm(): JSX.Element {
 		// 성매매 연상 표현은 프로필에 저장 자체를 막는다 (법적 제약 3번, DB 트리거와 이중 방어)
 		const nicknameBanned = findBannedPhrase(nickname);
 		const bioBanned = findBannedPhrase(bio);
+		const firstImpressionBanned = findBannedPhrase(qna.firstImpression);
+		const topicAllNightBanned = findBannedPhrase(qna.topicAllNight);
+		const smallHappinessBanned = findBannedPhrase(qna.smallHappiness);
 		const firstInvalid = findFirstInvalidField([
 			{
 				id: "nickname",
@@ -118,6 +124,51 @@ export function PartnerRegisterForm(): JSX.Element {
 					? `'${bioBanned}' 표현은 소개에 사용할 수 없어요.`
 					: "소개는 10자 이상 적어주세요",
 				isValid: bio.trim().length >= 10 && !bioBanned,
+			},
+			{
+				id: "qna-firstImpression",
+				message: firstImpressionBanned
+					? `'${firstImpressionBanned}' 표현은 사용할 수 없어요.`
+					: "첫인상을 20자 이내로 적어주세요",
+				isValid:
+					qna.firstImpression.trim().length > 0 &&
+					qna.firstImpression.trim().length <= 20 &&
+					!firstImpressionBanned,
+			},
+			{
+				id: "qna-hobbies",
+				message: "요즘 취미를 1~2개 선택해주세요",
+				isValid: qna.hobbies.length >= 1 && qna.hobbies.length <= 2,
+			},
+			{
+				id: "qna-genres",
+				message: "좋아하는 영화·드라마 장르를 1~2개 선택해주세요",
+				isValid: qna.genres.length >= 1 && qna.genres.length <= 2,
+			},
+			{
+				id: "qna-topicAllNight",
+				message: topicAllNightBanned
+					? `'${topicAllNightBanned}' 표현은 사용할 수 없어요.`
+					: "밤새 얘기할 수 있는 주제를 40자 이내로 적어주세요",
+				isValid:
+					qna.topicAllNight.trim().length > 0 &&
+					qna.topicAllNight.trim().length <= 40 &&
+					!topicAllNightBanned,
+			},
+			{
+				id: "qna-courseCategories",
+				message: "선호하는 데이트 장소를 1~2개 선택해주세요",
+				isValid: qna.courseCategories.length >= 1 && qna.courseCategories.length <= 2,
+			},
+			{
+				id: "qna-smallHappiness",
+				message: smallHappinessBanned
+					? `'${smallHappinessBanned}' 표현은 사용할 수 없어요.`
+					: "소소한 행복을 40자 이내로 적어주세요",
+				isValid:
+					qna.smallHappiness.trim().length > 0 &&
+					qna.smallHappiness.trim().length <= 40 &&
+					!smallHappinessBanned,
 			},
 			{
 				id: "partner-register-photos",
@@ -176,6 +227,12 @@ export function PartnerRegisterForm(): JSX.Element {
 				photos,
 				region: region ?? "",
 				purposeTags,
+				qna: {
+					...qna,
+					firstImpression: qna.firstImpression.trim(),
+					topicAllNight: qna.topicAllNight.trim(),
+					smallHappiness: qna.smallHappiness.trim(),
+				},
 			},
 			{
 				onSuccess: function (): void {
@@ -306,6 +363,8 @@ export function PartnerRegisterForm(): JSX.Element {
 				/>
 				{fieldError?.id === "bio" && <p className="text-error-500 text-xs">{fieldError.message}</p>}
 			</section>
+
+			<PartnerQnaFields qna={qna} onChange={setQna} fieldError={fieldError} />
 
 			<section id="partner-register-photos" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">프로필 사진 (3~9장 필수)</span>

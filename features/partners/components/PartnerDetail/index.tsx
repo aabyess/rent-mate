@@ -12,6 +12,7 @@ import { PartnerDetailAvailability } from "@/features/partners/components/Partne
 import { PartnerDetailMenu } from "@/features/partners/components/PartnerDetail/PartnerDetailMenu";
 import { PartnerDetailPhotoCarousel } from "@/features/partners/components/PartnerDetail/PartnerDetailPhotoCarousel";
 import { PartnerDetailPricing } from "@/features/partners/components/PartnerDetail/PartnerDetailPricing";
+import { PartnerDetailQna } from "@/features/partners/components/PartnerDetail/PartnerDetailQna";
 import { usePartnerDetailQuery } from "@/features/partners/queries";
 import { calculateAgeFromBirthYear } from "@/features/partners/utils";
 import { useMyBlocksQuery } from "@/features/safety/queries";
@@ -217,6 +218,8 @@ export function PartnerDetail({ profileId }: PartnerDetailProps): JSX.Element {
 						</div>
 					)}
 				</section>
+
+				<PartnerDetailQna qna={partner.qna} />
 
 				<PartnerDetailPricing hourlyRateKrw={partner.hourly_rate_krw} />
 
