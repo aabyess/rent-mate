@@ -6,9 +6,13 @@ export type ReportStatus = "open" | "resolved" | "dismissed";
 
 export type AdminMetrics = {
 	pendingPartnerCount: number;
+	pendingPartnerOldestAt: string | null;
 	openReportCount: number;
+	openReportOldestAt: string | null;
 	flaggedMessageCount: number;
+	flaggedMessageOldestAt: string | null;
 	safetyFlaggedReviewCount: number;
+	safetyFlaggedReviewOldestAt: string | null;
 	activePartnerCount: number;
 	todaySignupCount: number;
 	todayBookingCount: number;
