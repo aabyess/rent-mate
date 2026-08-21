@@ -2,8 +2,15 @@
 "use client";
 
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
-import { postSpendToken } from "@/features/tokens/apis";
+import { postCreateTokenPurchase, postSpendToken } from "@/features/tokens/apis";
 import { TOKENS_QUERY_KEYS } from "@/features/tokens/queries";
+import type { TokenProduct } from "@/features/tokens/products";
+
+export function useCreateTokenPurchaseMutation(): UseMutationResult<string, Error, TokenProduct> {
+	return useMutation({
+		mutationFn: postCreateTokenPurchase,
+	});
+}
 
 export function useSpendTokenMutation(): UseMutationResult<number, Error, string> {
 	const queryClient = useQueryClient();
