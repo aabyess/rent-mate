@@ -6,7 +6,11 @@ import type { JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { useCancelBookingWithRefundMutation } from "@/features/bookings/mutations";
 import type { MyBookingItem } from "@/features/bookings/types";
-import { calculateCancellationQuote, formatBookingPeriod } from "@/features/bookings/utils";
+import {
+	calculateCancellationQuote,
+	formatBookingPeriod,
+	getCancellationTier,
+} from "@/features/bookings/utils";
 import { formatKrw } from "@/features/partners/utils";
 
 type MyBookingListCancelDialogProps = {
@@ -19,6 +23,7 @@ export function MyBookingListCancelDialog({
 	onClose,
 }: MyBookingListCancelDialogProps): JSX.Element {
 	const cancelMutation = useCancelBookingWithRefundMutation();
+	const tier = getCancellationTier(booking.starts_at);
 	const quote = calculateCancellationQuote(booking.starts_at, booking.total_amount_krw);
 
 	function handleCancelConfirm(): void {
@@ -55,6 +60,20 @@ export function MyBookingListCancelDialog({
 							)}
 							<Button fullWidth onClick={onClose}>
 								확인
+							</Button>
+						</div>
+					) : tier === "none" ? (
+						<div className="flex flex-col gap-4">
+							<DialogTitle className="text-lg font-semibold">취소할 수 없어요</DialogTitle>
+							<p className="bg-surface-alt text-sub rounded-xl px-4 py-3 text-sm tabular-nums">
+								{booking.counterpartName} ·{" "}
+								{formatBookingPeriod(booking.starts_at, booking.ends_at)}
+							</p>
+							<p className="text-sub text-sm">
+								이미 시작된 예약은 취소할 수 없어요. 문제가 있다면 신고 기능을 이용해주세요.
+							</p>
+							<Button fullWidth onClick={onClose}>
+								돌아가기
 							</Button>
 						</div>
 					) : (
