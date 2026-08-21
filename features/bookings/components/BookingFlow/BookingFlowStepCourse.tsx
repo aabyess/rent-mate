@@ -17,6 +17,9 @@ export const COURSE_CATEGORIES = [
 	{ label: "놀이공원", emoji: "🎡" },
 	{ label: "공연", emoji: "🎤" },
 	{ label: "쇼핑", emoji: "🛍️" },
+	{ label: "배드민턴", emoji: "🏸" },
+	{ label: "풋살", emoji: "⚽" },
+	{ label: "볼링", emoji: "🎳" },
 ];
 
 type BookingFlowStepCourseProps = {
