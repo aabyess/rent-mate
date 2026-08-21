@@ -101,7 +101,9 @@ export function PartnerHome({ partnerProfile }: PartnerHomeProps): JSX.Element {
 				)}
 			</section>
 
-			<div className="bg-brand-subtle flex items-center justify-between rounded-2xl px-4.5 py-4">
+			<Link
+				href="/partner/likers"
+				className="bg-brand-subtle flex items-center justify-between rounded-2xl px-4.5 py-4">
 				<span className="text-primary-700 text-sm font-semibold">받은 좋아요</span>
 				<span className="text-primary-700 flex items-center gap-1.5 text-base font-bold tabular-nums">
 					<svg
@@ -117,7 +119,7 @@ export function PartnerHome({ partnerProfile }: PartnerHomeProps): JSX.Element {
 					</svg>
 					{likeCount ?? 0}
 				</span>
-			</div>
+			</Link>
 
 			<Link
 				href="/partner/earnings"

@@ -107,3 +107,18 @@ export async function getMyBookmarkedPartners(): Promise<BookmarkedPartner[]> {
 			return partner !== null;
 		});
 }
+
+export type PartnerLiker = {
+	liker_name: string;
+	liked_at: string;
+};
+
+// 파트너 본인 전용 — 내 프로필에 좋아요를 누른 고객 목록(이름·시각)
+export async function getPartnerLikers(): Promise<PartnerLiker[]> {
+	const supabase = createClient();
+	const { data, error } = await supabase.rpc("get_partner_likers");
+	if (error) {
+		throw error;
+	}
+	return (data ?? []) as PartnerLiker[];
+}
