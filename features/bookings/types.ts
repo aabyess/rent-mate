@@ -1,6 +1,7 @@
 // features/bookings/types.ts
 
-export type BookingStatus = "requested" | "accepted" | "rejected" | "canceled" | "completed";
+export type BookingStatus =
+	"requested" | "accepted" | "rejected" | "canceled" | "completed" | "no_show";
 
 export type CreateBookingInput = {
 	partnerId: string;
