@@ -38,6 +38,17 @@ export async function patchMarkNotificationRead(notificationId: string): Promise
 	}
 }
 
+export async function patchMarkAllNotificationsRead(): Promise<void> {
+	const supabase = createClient();
+	const { error } = await supabase
+		.from("notifications")
+		.update({ read_at: new Date().toISOString() })
+		.is("read_at", null);
+	if (error) {
+		throw error;
+	}
+}
+
 // 실제 쓰기는 서버 라우트가 admin 클라이언트로 처리한다 (CLAUDE.md: 남의 행에 쓰는 작업).
 // best-effort — 실패해도 호출부(예약/후기 작업)를 막지 않고 콘솔에만 남긴다.
 export async function postNotifyEvent(input: NotifyEventInput): Promise<void> {
