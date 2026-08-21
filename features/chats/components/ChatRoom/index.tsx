@@ -14,6 +14,7 @@ import { useChatRoomRealtime } from "@/features/chats/hooks";
 import { useMarkChatReadMutation, useSendChatMessageMutation } from "@/features/chats/mutations";
 import { useChatMessagesQuery } from "@/features/chats/queries";
 import { findBannedPhrase } from "@/utils/bannedPhrases";
+import { findContactInfoLeak } from "@/utils/contactLeakKeywords";
 import { BlockConfirmDialog } from "@/features/safety/components/BlockConfirmDialog";
 import { ReportDialog } from "@/features/safety/components/ReportDialog";
 
@@ -48,6 +49,8 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 	const [isReportOpen, setIsReportOpen] = useState(false);
 	const [isBlockOpen, setIsBlockOpen] = useState(false);
 	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
+	// 연락처 유도는 차단이 아니라 소프트 경고 — bannedPhrase와 달리 전송을 막지 않는다
+	const [showContactLeakNotice, setShowContactLeakNotice] = useState(false);
 	// 메시지 지목 신고 시 사유에 태깅할 맥락 — 헤더 메뉴 신고는 null(전체 신고)
 	const [reportContext, setReportContext] = useState<string | null>(null);
 	const imageInputRef = useRef<HTMLInputElement>(null);
@@ -102,6 +105,9 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 				return;
 			}
 		}
+		// 전화번호·이메일·메신저 아이디 유도는 차단하지 않는다 — 정당한 연락처 교환까지
+		// 막지 않되, 기록이 남는다는 걸 알리기 위한 소프트 경고만 띄운다
+		setShowContactLeakNotice(trimmed.length > 0 && findContactInfoLeak(trimmed) !== null);
 		sendMessageMutation.mutate(
 			{ bookingId, content: trimmed, imageFile: image ?? undefined },
 			{
@@ -221,6 +227,11 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 						금지 행위는 제재 대상입니다.
 					</p>
 				)}
+				{showContactLeakNotice && (
+					<p className="bg-warning-100 text-warning-700 rounded-lg px-3 py-2 text-xs">
+						외부 연락처 공유는 안전을 위해 기록됩니다.
+					</p>
+				)}
 				{imagePreviewUrl && (
 					<div className="relative size-20">
 						<Image
@@ -279,6 +290,7 @@ export function ChatRoom({ bookingId }: ChatRoomProps): JSX.Element {
 						onChange={function (event) {
 							setContent(event.target.value);
 							setBannedPhrase(null);
+							setShowContactLeakNotice(false);
 						}}
 						placeholder="메시지 보내기"
 						maxLength={2000}
