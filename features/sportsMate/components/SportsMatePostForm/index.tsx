@@ -3,7 +3,6 @@
 
 import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
-import { REGIONS } from "@/constants/regions";
 import {
 	GENDER_MODE_OPTIONS,
 	SPORTS_MATE_COMMENT_MAX_LENGTH,
@@ -15,6 +14,7 @@ import type {
 	SportsMatePostInput,
 	SportsMateTimeSlot,
 } from "@/features/sportsMate/types";
+import { RegionPicker } from "@/features/shared/components/RegionPicker";
 import { findBannedPhrase } from "@/utils/bannedPhrases";
 import { cn } from "@/utils/cn";
 
@@ -103,26 +103,12 @@ export function SportsMatePostForm({
 
 			<section className="flex flex-col gap-2">
 				<span className="text-sm font-medium">지역</span>
-				<div className="flex flex-wrap gap-2">
-					{REGIONS.map(function (option) {
-						const selected = region === option;
-						return (
-							<button
-								key={option}
-								type="button"
-								onClick={function () {
-									setRegion(option);
-								}}
-								className={cn(
-									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-inverse text-inverse-fg font-semibold",
-									!selected && "bg-surface-alt text-body",
-								)}>
-								{option}
-							</button>
-						);
-					})}
-				</div>
+				<RegionPicker
+					selectedValues={region ? [region] : []}
+					onToggle={function (value) {
+						setRegion(value);
+					}}
+				/>
 			</section>
 
 			<section className="flex flex-col gap-2">

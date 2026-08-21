@@ -2,16 +2,15 @@
 "use client";
 
 import { useState, type JSX } from "react";
-import { REGIONS } from "@/constants/regions";
+import { RegionPicker } from "@/features/shared/components/RegionPicker";
 import { resolveRegionFromCoords } from "@/utils/geoRegion";
-import { cn } from "@/utils/cn";
 
 type HomeRegionPickerProps = {
 	value: string | null;
 	onSelect: (region: string) => void;
 };
 
-type LocateStatus = "idle" | "locating" | "denied" | "outside-seoul";
+type LocateStatus = "idle" | "locating" | "denied" | "unmatched";
 
 // 프라이버시 헌장: 좌표는 이 컴포넌트 안에서 권역으로 변환되는 즉시 버려진다 — 서버로 전송·저장되지 않는다.
 export function HomeRegionPicker({ value, onSelect }: HomeRegionPickerProps): JSX.Element {
@@ -27,7 +26,7 @@ export function HomeRegionPicker({ value, onSelect }: HomeRegionPickerProps): JS
 			function (position) {
 				const region = resolveRegionFromCoords(position.coords.latitude, position.coords.longitude);
 				if (region === null) {
-					setStatus("outside-seoul");
+					setStatus("unmatched");
 					return;
 				}
 				setStatus("idle");
@@ -64,31 +63,12 @@ export function HomeRegionPicker({ value, onSelect }: HomeRegionPickerProps): JS
 			{status === "denied" && (
 				<p className="text-sub text-xs">위치 권한을 확인할 수 없어요. 아래에서 직접 골라주세요.</p>
 			)}
-			{status === "outside-seoul" && (
+			{status === "unmatched" && (
 				<p className="text-sub text-xs">
-					서울 권역 밖이라 자동 인식이 안 돼요. 아래에서 직접 골라주세요.
+					지역을 자동으로 인식하지 못했어요. 아래에서 직접 골라주세요.
 				</p>
 			)}
-			<div className="flex flex-wrap gap-2">
-				{REGIONS.map(function (regionOption) {
-					const selected = value === regionOption;
-					return (
-						<button
-							key={regionOption}
-							type="button"
-							onClick={function () {
-								onSelect(regionOption);
-							}}
-							className={cn(
-								"h-10 rounded-full px-4 text-sm",
-								selected && "bg-inverse text-inverse-fg font-semibold",
-								!selected && "bg-surface-alt text-body",
-							)}>
-							{regionOption}
-						</button>
-					);
-				})}
-			</div>
+			<RegionPicker selectedValues={value ? [value] : []} onToggle={onSelect} />
 		</div>
 	);
 }
