@@ -3,10 +3,8 @@
 
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import Link from "next/link";
+import { InquirySection } from "@/features/inquiries/components/InquirySection";
 import type { JSX } from "react";
-
-// TODO: 사용자 확정 전 플레이스홀더 이메일 — 실제 고객센터 주소로 교체 필요
-const SUPPORT_EMAIL = "support@rentmate.example";
 
 const FAQ_ITEMS = [
 	{
@@ -51,16 +49,7 @@ export default function SupportPage(): JSX.Element {
 				<h1 className="text-lg font-bold">고객센터</h1>
 			</div>
 
-			<section className="flex flex-col gap-2.5">
-				<h2 className="text-[17px] font-semibold">문의하기</h2>
-				<p className="bg-surface-alt text-body rounded-2xl px-4 py-4 text-sm leading-relaxed">
-					서비스 이용 중 궁금한 점이나 불편한 점이 있으면 이메일로 문의해주세요.
-					<br />
-					<a href={`mailto:${SUPPORT_EMAIL}`} className="text-brand font-medium underline">
-						{SUPPORT_EMAIL}
-					</a>
-				</p>
-			</section>
+			<InquirySection />
 
 			<section className="flex flex-col gap-2.5">
 				<h2 className="text-[17px] font-semibold">자주 묻는 질문</h2>

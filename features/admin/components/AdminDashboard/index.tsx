@@ -3,6 +3,7 @@
 
 import type { JSX } from "react";
 import { AdminDashboardFlaggedSection } from "@/features/admin/components/AdminDashboard/AdminDashboardFlaggedSection";
+import { AdminDashboardInquirySection } from "@/features/admin/components/AdminDashboard/AdminDashboardInquirySection";
 import { AdminDashboardMetrics } from "@/features/admin/components/AdminDashboard/AdminDashboardMetrics";
 import { AdminDashboardPartnerSection } from "@/features/admin/components/AdminDashboard/AdminDashboardPartnerSection";
 import { AdminDashboardPaymentSection } from "@/features/admin/components/AdminDashboard/AdminDashboardPaymentSection";
@@ -16,6 +17,8 @@ export function AdminDashboard(): JSX.Element {
 			<AdminDashboardPaymentSection />
 			<AdminDashboardReportSection />
 			<AdminDashboardFlaggedSection />
+
+			<AdminDashboardInquirySection />
 		</div>
 	);
 }
