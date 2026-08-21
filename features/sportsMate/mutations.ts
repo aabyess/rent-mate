@@ -5,7 +5,11 @@ import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/r
 import {
 	patchSportsMatePost,
 	patchSportsMatePostStatus,
+	patchSportsMateRequestStatus,
+	postAcceptSportsMateRequest,
 	postCreateSportsMatePost,
+	postCreateSportsMateRequest,
+	postSportsMateMessage,
 } from "@/features/sportsMate/apis";
 import { SPORTS_MATE_QUERY_KEYS } from "@/features/sportsMate/queries";
 import type {
@@ -64,6 +68,71 @@ export function usePatchSportsMatePostStatusMutation(): UseMutationResult<
 					queryKey: SPORTS_MATE_QUERY_KEYS.detail(variables.postId),
 				}),
 			]);
+		},
+	});
+}
+
+export function useCreateSportsMateRequestMutation(): UseMutationResult<void, Error, string> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: postCreateSportsMateRequest,
+		async onSuccess(): Promise<void> {
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: SPORTS_MATE_QUERY_KEYS.list }),
+				queryClient.invalidateQueries({ queryKey: SPORTS_MATE_QUERY_KEYS.myRequests }),
+			]);
+		},
+	});
+}
+
+type PatchSportsMateRequestStatusInput = {
+	requestId: string;
+	status: "declined" | "cancelled";
+};
+
+export function usePatchSportsMateRequestStatusMutation(
+	postId: string,
+): UseMutationResult<void, Error, PatchSportsMateRequestStatusInput> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: function ({ requestId, status }: PatchSportsMateRequestStatusInput) {
+			return patchSportsMateRequestStatus(requestId, status);
+		},
+		async onSuccess(): Promise<void> {
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: SPORTS_MATE_QUERY_KEYS.postRequests(postId) }),
+				queryClient.invalidateQueries({ queryKey: SPORTS_MATE_QUERY_KEYS.myRequests }),
+			]);
+		},
+	});
+}
+
+export function useAcceptSportsMateRequestMutation(
+	postId: string,
+): UseMutationResult<void, Error, string> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: postAcceptSportsMateRequest,
+		async onSuccess(): Promise<void> {
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: SPORTS_MATE_QUERY_KEYS.postRequests(postId) }),
+				queryClient.invalidateQueries({ queryKey: SPORTS_MATE_QUERY_KEYS.myList }),
+				queryClient.invalidateQueries({ queryKey: SPORTS_MATE_QUERY_KEYS.detail(postId) }),
+			]);
+		},
+	});
+}
+
+export function useSendSportsMateMessageMutation(
+	requestId: string,
+): UseMutationResult<void, Error, string> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: function (content: string) {
+			return postSportsMateMessage(requestId, content);
+		},
+		async onSuccess(): Promise<void> {
+			await queryClient.invalidateQueries({ queryKey: SPORTS_MATE_QUERY_KEYS.messages(requestId) });
 		},
 	});
 }

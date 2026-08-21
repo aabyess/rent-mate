@@ -29,8 +29,33 @@ export type SportsMatePostInput = {
 	comment: string;
 };
 
-// matched는 2단계 수락 로직 몫이라 앱에서 세팅 가능한 값은 closed뿐이다
+// matched는 accept_sports_mate_request RPC 몫이라 앱에서 직접 세팅 가능한 값은 closed뿐이다
 export type PatchSportsMatePostStatusInput = {
 	postId: string;
 	status: "closed";
+};
+
+export type SportsMateRequestStatus = "pending" | "accepted" | "declined" | "cancelled";
+
+export type SportsMateRequest = {
+	id: string;
+	post_id: string;
+	requester_id: string;
+	requester_name: string;
+	status: SportsMateRequestStatus;
+	created_at: string;
+};
+
+// 신청자 쪽 "내 신청" 목록 — 신청과 신청 대상 글 정보를 함께 보여줘야 해서 join한 뷰
+export type MySportsMateRequestItem = SportsMateRequest & {
+	post: SportsMatePost;
+};
+
+export type SportsMateMessage = {
+	id: string;
+	request_id: string;
+	sender_id: string;
+	content: string;
+	flagged: boolean;
+	created_at: string;
 };

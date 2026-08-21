@@ -3,8 +3,12 @@ import Link from "next/link";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { usePatchSportsMatePostStatusMutation } from "@/features/sportsMate/mutations";
-import type { SportsMatePost } from "@/features/sportsMate/types";
+import { SportsMatePostListCardRequests } from "@/features/sportsMate/components/SportsMatePostList/SportsMatePostListCardRequests";
+import {
+	useCreateSportsMateRequestMutation,
+	usePatchSportsMatePostStatusMutation,
+} from "@/features/sportsMate/mutations";
+import type { SportsMatePost, SportsMateRequestStatus } from "@/features/sportsMate/types";
 import {
 	formatPreferredDate,
 	getGenderModeLabel,
@@ -15,7 +19,9 @@ import { useToastStore } from "@/store/useToastStore";
 
 type SportsMatePostListCardProps = {
 	post: SportsMatePost;
-	showOwnerActions: boolean;
+	mode: "all" | "mine";
+	/** mode가 "all"일 때만 의미 있음 — 내가 이 글에 이미 신청했는지 */
+	myRequestStatus?: SportsMateRequestStatus;
 };
 
 const STATUS_LABELS: Record<SportsMatePost["status"], string> = {
@@ -24,11 +30,20 @@ const STATUS_LABELS: Record<SportsMatePost["status"], string> = {
 	closed: "마감",
 };
 
+const REQUEST_BUTTON_LABELS: Record<SportsMateRequestStatus, string> = {
+	pending: "신청 완료",
+	accepted: "매칭됨",
+	declined: "신청 거절됨",
+	cancelled: "신청 취소함",
+};
+
 export function SportsMatePostListCard({
 	post,
-	showOwnerActions,
+	mode,
+	myRequestStatus,
 }: SportsMatePostListCardProps): JSX.Element {
 	const patchStatusMutation = usePatchSportsMatePostStatusMutation();
+	const createRequestMutation = useCreateSportsMateRequestMutation();
 	const showToast = useToastStore(function (state) {
 		return state.showToast;
 	});
@@ -44,6 +59,14 @@ export function SportsMatePostListCard({
 		);
 	}
 
+	function handleRequest(): void {
+		createRequestMutation.mutate(post.id, {
+			onSuccess: function (): void {
+				showToast("신청했어요");
+			},
+		});
+	}
+
 	return (
 		<div className="bg-surface flex flex-col gap-3 rounded-2xl p-4.5">
 			<div className="flex items-start justify-between gap-2">
@@ -54,7 +77,7 @@ export function SportsMatePostListCard({
 						<span className="text-sub text-xs">{post.author_name}</span>
 					</div>
 				</div>
-				{showOwnerActions && (
+				{mode === "mine" && (
 					<Badge variant={post.status === "open" ? "trust" : "neutral"}>
 						{STATUS_LABELS[post.status]}
 					</Badge>
@@ -70,7 +93,27 @@ export function SportsMatePostListCard({
 				<span>{getGenderModeLabel(post.gender_mode)}</span>
 			</div>
 			{post.comment !== "" && <p className="text-body text-sm leading-relaxed">{post.comment}</p>}
-			{showOwnerActions && post.status === "open" && (
+
+			{mode === "all" &&
+				(myRequestStatus ? (
+					<div className="bg-surface-alt text-sub flex h-10 items-center justify-center rounded-xl text-sm font-medium">
+						{REQUEST_BUTTON_LABELS[myRequestStatus]}
+					</div>
+				) : (
+					<Button
+						fullWidth
+						size="sm"
+						className="h-10"
+						onClick={handleRequest}
+						isLoading={createRequestMutation.isPending}>
+						같이 하고 싶어요
+					</Button>
+				))}
+			{mode === "all" && createRequestMutation.isError && (
+				<p className="text-error-500 text-xs">{createRequestMutation.error.message}</p>
+			)}
+
+			{mode === "mine" && post.status === "open" && (
 				<div className="flex gap-2 pt-1">
 					<Link
 						href={`/sports-mate/${post.id}/edit`}
@@ -87,6 +130,7 @@ export function SportsMatePostListCard({
 					</Button>
 				</div>
 			)}
+			{mode === "mine" && <SportsMatePostListCardRequests post={post} />}
 		</div>
 	);
 }
