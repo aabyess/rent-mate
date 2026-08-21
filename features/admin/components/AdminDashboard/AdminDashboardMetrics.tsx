@@ -60,10 +60,21 @@ export function AdminDashboardMetrics(): JSX.Element {
 
 	if (isPending) {
 		return (
-			<div className="grid grid-cols-3 gap-2">
-				{Array.from({ length: 6 }, function (_, index) {
-					return <div key={index} className="bg-surface-alt h-[72px] animate-pulse rounded-2xl" />;
-				})}
+			<div className="flex flex-col gap-2">
+				<div className="grid grid-cols-2 gap-2">
+					{Array.from({ length: 4 }, function (_, index) {
+						return (
+							<div key={index} className="bg-surface-alt h-[72px] animate-pulse rounded-2xl" />
+						);
+					})}
+				</div>
+				<div className="grid grid-cols-3 gap-2">
+					{Array.from({ length: 3 }, function (_, index) {
+						return (
+							<div key={index} className="bg-surface-alt h-[72px] animate-pulse rounded-2xl" />
+						);
+					})}
+				</div>
 			</div>
 		);
 	}
@@ -74,7 +85,7 @@ export function AdminDashboardMetrics(): JSX.Element {
 
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="grid grid-cols-3 gap-2">
+			<div className="grid grid-cols-2 gap-2">
 				<UrgentMetricCard
 					label="승인 대기"
 					value={metrics.pendingPartnerCount}
@@ -90,6 +101,7 @@ export function AdminDashboardMetrics(): JSX.Element {
 					value={metrics.flaggedMessageCount}
 					sectionId="admin-metrics-flagged"
 				/>
+				<UrgentMetricCard label="안전 우려 후기" value={metrics.safetyFlaggedReviewCount} />
 			</div>
 			<div className="grid grid-cols-3 gap-2">
 				<StatusMetricCard label="활동 파트너" value={metrics.activePartnerCount} />

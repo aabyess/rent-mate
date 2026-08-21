@@ -79,6 +79,17 @@ export function PartnerReviewList({ partnerId }: PartnerReviewListProps): JSX.El
 									</button>
 								</div>
 							</div>
+							{review.timeliness_rating !== null &&
+								review.manner_rating !== null &&
+								review.safety_rating !== null &&
+								review.would_meet_again_rating !== null && (
+									<div className="text-sub flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+										<span>시간 약속 {review.timeliness_rating}</span>
+										<span>매너 {review.manner_rating}</span>
+										<span>안전 {review.safety_rating}</span>
+										<span>재만남 {review.would_meet_again_rating}</span>
+									</div>
+								)}
 							{review.content !== "" && (
 								<p className="text-body text-sm leading-relaxed">{review.content}</p>
 							)}

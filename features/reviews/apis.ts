@@ -10,7 +10,10 @@ import { createClient } from "@/libs/supabase/client";
 export async function postCreateReview({
 	bookingId,
 	partnerId,
-	rating,
+	timelinessRating,
+	mannerRating,
+	safetyRating,
+	wouldMeetAgainRating,
 	content,
 }: CreateReviewInput): Promise<void> {
 	const supabase = createClient();
@@ -25,7 +28,12 @@ export async function postCreateReview({
 		booking_id: bookingId,
 		partner_id: partnerId,
 		author_id: user.id,
-		rating,
+		// 기존 평균·목록 로직과 호환되도록 총점(rating)은 "다시 만나고 싶어요" 값을 그대로 복사한다
+		rating: wouldMeetAgainRating,
+		timeliness_rating: timelinessRating,
+		manner_rating: mannerRating,
+		safety_rating: safetyRating,
+		would_meet_again_rating: wouldMeetAgainRating,
 		content,
 	});
 	if (error) {
@@ -37,7 +45,9 @@ export async function getReviewByBookingId(bookingId: string): Promise<ReviewRow
 	const supabase = createClient();
 	const { data, error } = await supabase
 		.from("reviews")
-		.select("id, booking_id, partner_id, author_id, rating, content, created_at")
+		.select(
+			"id, booking_id, partner_id, author_id, rating, timeliness_rating, manner_rating, safety_rating, would_meet_again_rating, content, created_at",
+		)
 		.eq("booking_id", bookingId)
 		.maybeSingle();
 	if (error) {
@@ -50,7 +60,9 @@ export async function getPartnerReviews(partnerId: string): Promise<ReviewRow[]>
 	const supabase = createClient();
 	const { data, error } = await supabase
 		.from("reviews")
-		.select("id, booking_id, partner_id, author_id, rating, content, created_at")
+		.select(
+			"id, booking_id, partner_id, author_id, rating, timeliness_rating, manner_rating, safety_rating, would_meet_again_rating, content, created_at",
+		)
 		.eq("partner_id", partnerId)
 		.order("created_at", { ascending: false });
 	if (error) {
@@ -70,7 +82,9 @@ export async function getMyReviews(): Promise<MyReviewItem[]> {
 
 	const { data, error } = await supabase
 		.from("reviews")
-		.select("id, booking_id, partner_id, author_id, rating, content, created_at")
+		.select(
+			"id, booking_id, partner_id, author_id, rating, timeliness_rating, manner_rating, safety_rating, would_meet_again_rating, content, created_at",
+		)
 		.eq("author_id", user.id)
 		.order("created_at", { ascending: false });
 	if (error) {

@@ -312,6 +312,7 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
 		pendingPartners,
 		openReports,
 		flaggedMessages,
+		safetyFlaggedReviews,
 		activePartners,
 		todaySignups,
 		todayBookings,
@@ -322,6 +323,10 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
 			.eq("is_approved", false),
 		supabase.from("reports").select("id", { count: "exact", head: true }).eq("status", "open"),
 		supabase.from("chat_messages").select("id", { count: "exact", head: true }).eq("flagged", true),
+		supabase
+			.from("reviews")
+			.select("id", { count: "exact", head: true })
+			.eq("safety_flagged", true),
 		supabase
 			.from("partner_profiles")
 			.select("profile_id", { count: "exact", head: true })
@@ -341,6 +346,7 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
 		pendingPartners,
 		openReports,
 		flaggedMessages,
+		safetyFlaggedReviews,
 		activePartners,
 		todaySignups,
 		todayBookings,
@@ -354,6 +360,7 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
 		pendingPartnerCount: pendingPartners.count ?? 0,
 		openReportCount: openReports.count ?? 0,
 		flaggedMessageCount: flaggedMessages.count ?? 0,
+		safetyFlaggedReviewCount: safetyFlaggedReviews.count ?? 0,
 		activePartnerCount: activePartners.count ?? 0,
 		todaySignupCount: todaySignups.count ?? 0,
 		todayBookingCount: todayBookings.count ?? 0,
