@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
+import { SPORTS_MATE_ENABLED } from "@/constants/featureFlags";
 import { MyPageContentMenuGroup } from "@/features/auth/components/MyPageContent/MyPageContentMenuGroup";
 import { useSignOutMutation } from "@/features/auth/mutations";
 import { useMyProfileQuery } from "@/features/auth/queries";
@@ -199,6 +200,7 @@ export function MyPageContent(): JSX.Element {
 					{ label: "취향 설정", href: "/preferences" },
 					{ label: "후기 관리", href: "/my-reviews" },
 					{ label: "차단 목록", href: "/safety-center/blocks" },
+					...(SPORTS_MATE_ENABLED ? [{ label: "운동 메이트", href: "/sports-mate" }] : []),
 				]}
 			/>
 
