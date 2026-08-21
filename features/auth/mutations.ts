@@ -10,6 +10,7 @@ import {
 	postSignIn,
 	postSignOut,
 	postSignUp,
+	putHomeRegion,
 } from "@/features/auth/apis";
 import { AUTH_QUERY_KEYS } from "@/features/auth/queries";
 import type {
@@ -52,7 +53,10 @@ export function useCreateProfileMutation(): UseMutationResult<void, Error, Creat
 	return useMutation({
 		mutationFn: postCreateProfile,
 		async onSuccess(): Promise<void> {
-			await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.myProfile });
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.myProfile }),
+				queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.myProfilePrivate }),
+			]);
 		},
 	});
 }
@@ -67,6 +71,16 @@ export function usePatchMyProfileMutation(): UseMutationResult<void, Error, Patc
 				// 성별이 바뀌면 홈의 이성 필터 결과가 즉시 갱신돼야 한다
 				queryClient.invalidateQueries({ queryKey: PARTNERS_QUERY_KEYS.list }),
 			]);
+		},
+	});
+}
+
+export function usePatchHomeRegionMutation(): UseMutationResult<void, Error, string> {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: putHomeRegion,
+		async onSuccess(): Promise<void> {
+			await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.myProfilePrivate });
 		},
 	});
 }

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { useCreateProfileMutation } from "@/features/auth/mutations";
 import type { Gender } from "@/features/auth/types";
 import { isAdultByYouthProtectionAct } from "@/features/auth/utils";
+import { HomeRegionPicker } from "@/features/shared/components/HomeRegionPicker";
 import { cn } from "@/utils/cn";
 
 const GENDER_OPTIONS: { value: Gender; label: string }[] = [
@@ -21,6 +22,7 @@ export default function OnboardingPage(): JSX.Element {
 	const [name, setName] = useState("");
 	const [birthDate, setBirthDate] = useState("");
 	const [gender, setGender] = useState<Gender | null>(null);
+	const [homeRegion, setHomeRegion] = useState<string | null>(null);
 	const [isUnderage, setIsUnderage] = useState(false);
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
@@ -37,7 +39,7 @@ export default function OnboardingPage(): JSX.Element {
 		setIsUnderage(false);
 
 		createProfileMutation.mutate(
-			{ name, birthDate, gender },
+			{ name, birthDate, gender, homeRegion },
 			{
 				onSuccess: function (): void {
 					router.replace("/welcome");
@@ -98,6 +100,12 @@ export default function OnboardingPage(): JSX.Element {
 								);
 							})}
 						</div>
+					</div>
+					<div className="flex flex-col gap-1.5">
+						<span className="text-sub text-xs">
+							내 지역 (선택, 나중에 마이페이지에서 설정 가능)
+						</span>
+						<HomeRegionPicker value={homeRegion} onSelect={setHomeRegion} />
 					</div>
 					{isUnderage && (
 						<p className="text-error-500 text-sm">

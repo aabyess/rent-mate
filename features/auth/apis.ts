@@ -3,6 +3,7 @@ import type {
 	ChangePasswordInput,
 	CreateProfileInput,
 	MyProfile,
+	MyProfilePrivate,
 	PatchMyProfileInput,
 	SignInInput,
 	SignUpInput,
@@ -62,6 +63,7 @@ export async function postCreateProfile({
 	name,
 	birthDate,
 	gender,
+	homeRegion,
 }: CreateProfileInput): Promise<void> {
 	const supabase = createClient();
 	const {
@@ -77,6 +79,55 @@ export async function postCreateProfile({
 		birth_date: birthDate,
 		gender,
 	});
+	if (error) {
+		throw error;
+	}
+
+	if (homeRegion !== null) {
+		const { error: regionError } = await supabase
+			.from("profile_private")
+			.insert({ profile_id: user.id, home_region: homeRegion });
+		if (regionError) {
+			throw regionError;
+		}
+	}
+}
+
+// 예약 상대에게 노출되면 안 되는 민감 필드 전용 테이블 — RLS로 본인·admin만 select 가능
+// (profiles는 profiles_select_booking_counterpart 정책 때문에 예약 성립 상대에게 행 전체가
+// 보여서 여기 넣으면 안 된다)
+export async function getMyProfilePrivate(): Promise<MyProfilePrivate | null> {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		return null;
+	}
+
+	const { data, error } = await supabase
+		.from("profile_private")
+		.select("profile_id, home_region")
+		.eq("profile_id", user.id)
+		.maybeSingle();
+	if (error) {
+		throw error;
+	}
+	return (data ?? null) as MyProfilePrivate | null;
+}
+
+export async function putHomeRegion(homeRegion: string): Promise<void> {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		throw new Error("로그인이 필요합니다.");
+	}
+
+	const { error } = await supabase
+		.from("profile_private")
+		.upsert({ profile_id: user.id, home_region: homeRegion });
 	if (error) {
 		throw error;
 	}
