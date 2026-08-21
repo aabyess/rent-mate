@@ -16,6 +16,15 @@ type ReviewDialogProps = {
 	partnerName: string;
 };
 
+type AxisKey = "timeliness" | "manner" | "safety" | "wouldMeetAgain";
+
+const AXES: { key: AxisKey; label: string }[] = [
+	{ key: "timeliness", label: "시간 약속" },
+	{ key: "manner", label: "대화·매너" },
+	{ key: "safety", label: "안전하다고 느꼈어요" },
+	{ key: "wouldMeetAgain", label: "다시 만나고 싶어요" },
+];
+
 export function ReviewDialog({
 	onClose,
 	bookingId,
@@ -23,13 +32,28 @@ export function ReviewDialog({
 	partnerName,
 }: ReviewDialogProps): JSX.Element {
 	const createReviewMutation = useCreateReviewMutation();
-	const [rating, setRating] = useState(0);
+	const [axisRatings, setAxisRatings] = useState<Record<AxisKey, number>>({
+		timeliness: 0,
+		manner: 0,
+		safety: 0,
+		wouldMeetAgain: 0,
+	});
 	const [content, setContent] = useState("");
 	const [bannedPhrase, setBannedPhrase] = useState<string | null>(null);
 
+	const isAllRated = AXES.every(function (axis) {
+		return axisRatings[axis.key] > 0;
+	});
+
+	function handleAxisSelect(key: AxisKey, value: number): void {
+		setAxisRatings(function (current) {
+			return { ...current, [key]: value };
+		});
+	}
+
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
 		event.preventDefault();
-		if (rating === 0) {
+		if (!isAllRated) {
 			return;
 		}
 		// 후기도 공개 지면이므로 성매매 연상 표현을 차단한다 (DB 트리거와 이중 방어)
@@ -39,7 +63,15 @@ export function ReviewDialog({
 			return;
 		}
 		setBannedPhrase(null);
-		createReviewMutation.mutate({ bookingId, partnerId, rating, content });
+		createReviewMutation.mutate({
+			bookingId,
+			partnerId,
+			timelinessRating: axisRatings.timeliness,
+			mannerRating: axisRatings.manner,
+			safetyRating: axisRatings.safety,
+			wouldMeetAgainRating: axisRatings.wouldMeetAgain,
+			content,
+		});
 	}
 
 	return (
@@ -62,8 +94,21 @@ export function ReviewDialog({
 							<DialogTitle className="text-lg font-semibold">
 								{partnerName}님과의 데이트, 어떠셨나요?
 							</DialogTitle>
-							<div className="flex justify-center py-2">
-								<ReviewStars rating={rating} size={32} onSelect={setRating} />
+							<div className="flex flex-col gap-3">
+								{AXES.map(function (axis) {
+									return (
+										<div key={axis.key} className="flex items-center justify-between gap-2">
+											<span className="text-sm font-medium">{axis.label}</span>
+											<ReviewStars
+												rating={axisRatings[axis.key]}
+												size={22}
+												onSelect={function (value) {
+													handleAxisSelect(axis.key, value);
+												}}
+											/>
+										</div>
+									);
+								})}
 							</div>
 							<textarea
 								value={content}
@@ -89,9 +134,9 @@ export function ReviewDialog({
 								<Button
 									type="submit"
 									fullWidth
-									disabled={rating === 0}
+									disabled={!isAllRated}
 									isLoading={createReviewMutation.isPending}>
-									{createReviewMutation.isPending ? "등록 중..." : "후기 등록"}
+									후기 등록
 								</Button>
 							</div>
 						</form>

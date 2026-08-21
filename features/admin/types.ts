@@ -8,6 +8,7 @@ export type AdminMetrics = {
 	pendingPartnerCount: number;
 	openReportCount: number;
 	flaggedMessageCount: number;
+	safetyFlaggedReviewCount: number;
 	activePartnerCount: number;
 	todaySignupCount: number;
 	todayBookingCount: number;

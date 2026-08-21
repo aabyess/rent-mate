@@ -6,6 +6,10 @@ export type ReviewRow = {
 	partner_id: string;
 	author_id: string;
 	rating: number;
+	timeliness_rating: number | null;
+	manner_rating: number | null;
+	safety_rating: number | null;
+	would_meet_again_rating: number | null;
 	content: string;
 	created_at: string;
 };
@@ -13,7 +17,10 @@ export type ReviewRow = {
 export type CreateReviewInput = {
 	bookingId: string;
 	partnerId: string;
-	rating: number;
+	timelinessRating: number;
+	mannerRating: number;
+	safetyRating: number;
+	wouldMeetAgainRating: number;
 	content: string;
 };
 
