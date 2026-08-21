@@ -44,9 +44,15 @@ export function getCancellationTier(startsAt: string): CancellationTier {
 }
 
 export const MIN_DURATION_MINUTES = 120;
-export const MAX_DURATION_MINUTES = 480;
+export const MAX_DURATION_MINUTES = 720;
 export const DURATION_STEP_MINUTES = 30;
 export const START_HOURS = [11, 12, 13, 14, 15, 16, 17, 18];
+
+// 종일권(최대 12시간)을 열되 모든 데이트는 자정 전에 끝나야 한다 —
+// 시작 시각이 늦을수록 선택 가능한 이용 시간이 줄어든다.
+export function getMaxDurationMinutesForStartHour(startHour: number): number {
+	return Math.min(MAX_DURATION_MINUTES, (24 - startHour) * 60);
+}
 
 const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
