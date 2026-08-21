@@ -13,6 +13,7 @@ import type {
 	CancellationResult,
 	CreateBookingInput,
 } from "@/features/bookings/types";
+import { isWithinReminderWindow } from "@/features/bookings/utils";
 import { postNotifyEvent } from "@/features/notifications/apis";
 import type { BookingNotificationType } from "@/features/notifications/types";
 
@@ -39,7 +40,7 @@ const STATUS_NOTIFICATION_TYPES: Partial<Record<BookingStatus, BookingNotificati
 };
 
 export function useUpdateBookingStatusMutation(): UseMutationResult<
-	void,
+	string,
 	Error,
 	UpdateBookingStatusInput
 > {
@@ -48,7 +49,7 @@ export function useUpdateBookingStatusMutation(): UseMutationResult<
 		mutationFn: function ({ bookingId, status }: UpdateBookingStatusInput) {
 			return patchBookingStatus(bookingId, status);
 		},
-		async onSuccess(_data, { bookingId, status }): Promise<void> {
+		async onSuccess(startsAt, { bookingId, status }): Promise<void> {
 			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: BOOKINGS_QUERY_KEYS.myList }),
 				queryClient.invalidateQueries({ queryKey: BOOKINGS_QUERY_KEYS.detail(bookingId) }),
@@ -56,6 +57,10 @@ export function useUpdateBookingStatusMutation(): UseMutationResult<
 			const notificationType = STATUS_NOTIFICATION_TYPES[status];
 			if (notificationType) {
 				void postNotifyEvent({ type: notificationType, bookingId });
+			}
+			// 수락~시작이 24시간 미만이면 하루 1회 크론이 이 예약을 놓친다 — 리마인더 커버리지 구멍 방어
+			if (status === "accepted" && isWithinReminderWindow(startsAt)) {
+				void postNotifyEvent({ type: "booking_reminder", bookingId });
 			}
 		},
 	});

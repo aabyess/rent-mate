@@ -43,12 +43,23 @@ export async function postCreateBooking({
 	return (data as { id: string }).id;
 }
 
-export async function patchBookingStatus(bookingId: string, status: BookingStatus): Promise<void> {
+// 반환값(starts_at)은 호출부가 리마인더 즉시 발송 여부(24시간 이내 수락)를
+// 판단하는 데 쓰인다.
+export async function patchBookingStatus(
+	bookingId: string,
+	status: BookingStatus,
+): Promise<string> {
 	const supabase = createClient();
-	const { error } = await supabase.from("bookings").update({ status }).eq("id", bookingId);
+	const { data, error } = await supabase
+		.from("bookings")
+		.update({ status })
+		.eq("id", bookingId)
+		.select("starts_at")
+		.single();
 	if (error) {
 		throw error;
 	}
+	return (data as { starts_at: string }).starts_at;
 }
 
 // 취소·환불 처리 — 결제 게이트웨이 취소(있다면)까지 서버 라우트가 순서대로 처리한다

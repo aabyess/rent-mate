@@ -32,6 +32,17 @@ export function calculateCancellationQuote(
 	return { feeKrw, refundKrw, isFreeCancellation };
 }
 
+// 리마인더 커버리지 구멍 방어 — 크론(하루 1회) 예상 커버 범위와 동일하게 24시간.
+// DB의 handle_booking_reminder(app/api/notifications/route.ts)와 동일하게 유지할 것.
+export const REMINDER_LEAD_WINDOW_HOURS = 24;
+
+// 예약 수락 직후 시작까지 24시간 미만이면 다음 크론까지 리마인더를 못 받는다 —
+// 이 경우에만 클라에서 즉시 리마인더 발송을 요청한다.
+export function isWithinReminderWindow(startsAt: string): boolean {
+	const hoursUntilStart = (new Date(startsAt).getTime() - Date.now()) / (1000 * 60 * 60);
+	return hoursUntilStart > 0 && hoursUntilStart < REMINDER_LEAD_WINDOW_HOURS;
+}
+
 export type CancellationTier = "free" | "partial" | "none";
 
 // 예약 확인 단계의 정책 타임라인 카드에서 "지금 취소하면" 몇 번째 구간에 해당하는지.
