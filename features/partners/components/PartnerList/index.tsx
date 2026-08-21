@@ -54,9 +54,15 @@ function shuffleWithSeed<T>(items: T[], seed: number): T[] {
 
 type PartnerListProps = {
 	searchQuery?: string;
+	nearbyOnly?: boolean;
+	homeRegion?: string | null;
 };
 
-export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element {
+export function PartnerList({
+	searchQuery = "",
+	nearbyOnly = false,
+	homeRegion = null,
+}: PartnerListProps): JSX.Element {
 	const router = useRouter();
 	const { data: partners, isPending, isError } = usePartnerListQuery();
 	const { data: blocks, isPending: isBlocksPending } = useMyBlocksQuery();
@@ -88,11 +94,17 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const visiblePartners = (partners ?? []).filter(function (partner) {
 		return !blockedIds.has(partner.profile_id);
 	});
+	const nearbyPartners =
+		nearbyOnly && homeRegion
+			? visiblePartners.filter(function (partner) {
+					return partner.region === homeRegion;
+				})
+			: visiblePartners;
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 	const filteredPartners =
 		normalizedQuery === ""
-			? visiblePartners
-			: visiblePartners.filter(function (partner) {
+			? nearbyPartners
+			: nearbyPartners.filter(function (partner) {
 					return (
 						partner.nickname.toLowerCase().includes(normalizedQuery) ||
 						partner.region.toLowerCase().includes(normalizedQuery) ||
@@ -129,7 +141,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	const deckCount = deckItems.length;
 
 	// 필터·검색이 바뀌면 스택을 처음부터 다시 쌓는다 (렌더 중 상태 조정 패턴)
-	const filterSignature = normalizedQuery;
+	const filterSignature = `${normalizedQuery}::${nearbyOnly}`;
 	const [prevFilterSignature, setPrevFilterSignature] = useState(filterSignature);
 	if (prevFilterSignature !== filterSignature) {
 		setPrevFilterSignature(filterSignature);
@@ -239,7 +251,13 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 	}
 
 	function getEmptyMessage(): string {
-		return `'${searchQuery.trim()}' 검색 결과가 없어요.`;
+		if (normalizedQuery !== "") {
+			return `'${searchQuery.trim()}' 검색 결과가 없어요.`;
+		}
+		if (nearbyOnly) {
+			return "내 권역에는 아직 파트너가 없어요. 전체 보기로 둘러보세요.";
+		}
+		return "조건에 맞는 파트너가 없어요.";
 	}
 
 	// 아래 카드부터 그려서 맨 위 카드가 마지막(위)에 오도록 한다
