@@ -75,7 +75,7 @@ export function InquirySection(): JSX.Element {
 					/>
 					{createInquiryMutation.isSuccess && (
 						<p className="text-trust text-sm">
-							문의가 접수됐어요. 답변은 이 화면에서 확인할 수 있어요.
+							문의가 접수됐어요. 보통 1~2 영업일 내 답변드려요. 답변은 이 화면에서 확인할 수 있어요.
 						</p>
 					)}
 					{createInquiryMutation.isError && (
