@@ -1,4 +1,4 @@
-// app/(main)/sports-mate/page.tsx
+// app/(main)/(tabs)/sports-mate/page.tsx
 import Link from "next/link";
 import type { JSX } from "react";
 import { SportsMatePostList } from "@/features/sportsMate/components/SportsMatePostList";
