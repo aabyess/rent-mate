@@ -1,8 +1,9 @@
 // features/chats/components/ChatRoom/ChatRoomMessageList.tsx
 "use client";
 
-import { useEffect, useRef, type JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import { ChatImage } from "@/features/chats/components/ChatImage";
+import { ChatImageLightbox } from "@/features/chats/components/ChatImageLightbox";
 import type { ChatMessage } from "@/features/chats/types";
 import { cn } from "@/utils/cn";
 
@@ -26,6 +27,7 @@ export function ChatRoomMessageList({
 	onReportClick,
 }: ChatRoomMessageListProps): JSX.Element {
 	const bottomRef = useRef<HTMLDivElement>(null);
+	const [lightboxImagePath, setLightboxImagePath] = useState<string | null>(null);
 
 	useEffect(
 		function () {
@@ -46,6 +48,7 @@ export function ChatRoomMessageList({
 		<div className="flex flex-col gap-2">
 			{messages.map(function (message) {
 				const isMine = message.sender_id === myProfileId;
+				const imageUrl = message.image_url;
 				return (
 					<div
 						key={message.id}
@@ -56,8 +59,16 @@ export function ChatRoomMessageList({
 									"flex max-w-[75%] flex-col gap-1",
 									isMine ? "items-end" : "items-start",
 								)}>
-								{message.image_url !== null && (
-									<ChatImage imagePath={message.image_url} alt="채팅 이미지" className="size-56" />
+								{imageUrl !== null && (
+									<button
+										type="button"
+										onClick={function () {
+											setLightboxImagePath(imageUrl);
+										}}
+										aria-label="이미지 크게 보기"
+										className="block">
+										<ChatImage imagePath={imageUrl} alt="채팅 이미지" className="size-56" />
+									</button>
 								)}
 								{message.content.length > 0 && (
 									<p
@@ -114,6 +125,14 @@ export function ChatRoomMessageList({
 				);
 			})}
 			<div ref={bottomRef} />
+			{lightboxImagePath && (
+				<ChatImageLightbox
+					imagePath={lightboxImagePath}
+					onClose={function () {
+						setLightboxImagePath(null);
+					}}
+				/>
+			)}
 		</div>
 	);
 }
