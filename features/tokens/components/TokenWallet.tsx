@@ -19,6 +19,7 @@ const REASON_LABELS: Record<string, string> = {
 	booking_request: "예약 신청",
 	date_completed: "데이트 완료",
 	purchase: "토큰 충전",
+	review_reward: "후기 작성 보상",
 };
 
 function formatLedgerDate(createdAt: string): string {

@@ -6,7 +6,10 @@ import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { ReviewStars } from "@/features/reviews/components/ReviewStars";
 import { useCreateReviewMutation } from "@/features/reviews/mutations";
+import { findAppearanceKeyword } from "@/utils/appearanceKeywords";
 import { findBannedPhrase } from "@/utils/bannedPhrases";
+
+const REVIEW_REWARD_MIN_LENGTH = 20;
 
 // 닫히면 언마운트되는 전제라 열릴 때마다 입력·뮤테이션 상태가 초기화된다
 type ReviewDialogProps = {
@@ -44,6 +47,8 @@ export function ReviewDialog({
 	const isAllRated = AXES.every(function (axis) {
 		return axisRatings[axis.key] > 0;
 	});
+	const appearanceKeyword = findAppearanceKeyword(content);
+	const isRewardEarned = content.trim().length >= REVIEW_REWARD_MIN_LENGTH;
 
 	function handleAxisSelect(key: AxisKey, value: number): void {
 		setAxisRatings(function (current) {
@@ -85,6 +90,9 @@ export function ReviewDialog({
 							<p className="text-sub text-sm">
 								소중한 후기 감사합니다. 다른 고객이 파트너를 선택하는 데 큰 도움이 돼요.
 							</p>
+							{isRewardEarned && (
+								<p className="text-trust text-sm font-semibold">🪙 토큰 20개가 적립됐어요!</p>
+							)}
 							<Button fullWidth onClick={onClose}>
 								확인
 							</Button>
@@ -119,6 +127,14 @@ export function ReviewDialog({
 								rows={4}
 								className="bg-surface-alt text-body placeholder:text-sub w-full resize-none rounded-xl p-4 text-base focus:outline-none"
 							/>
+							<p className="text-sub text-xs">
+								{REVIEW_REWARD_MIN_LENGTH}자 이상 정성 후기에 토큰 20개를 드려요
+							</p>
+							{appearanceKeyword !== null && (
+								<p className="text-warning-500 text-xs">
+									외모보다 매너·대화·시간약속 경험을 남겨주세요
+								</p>
+							)}
 							{bannedPhrase !== null && (
 								<p className="text-error-500 text-sm">
 									&lsquo;{bannedPhrase}&rsquo; 표현은 후기에 사용할 수 없어요.
