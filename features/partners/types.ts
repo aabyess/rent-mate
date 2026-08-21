@@ -1,4 +1,5 @@
 // features/partners/types.ts
+import type { PartnerQna } from "@/features/partners/qna";
 
 export type PartnerCardItem = PartnerListItem & {
 	isNew: boolean;
@@ -25,6 +26,7 @@ export type CreatePartnerProfileInput = {
 	photos: File[];
 	region: string;
 	purposeTags: string[];
+	qna: PartnerQna;
 };
 
 export type PatchPartnerProfileInput = {
@@ -39,6 +41,7 @@ export type PatchPartnerProfileInput = {
 	availableEndHour: number;
 	region: string;
 	purposeTags: string[];
+	qna: PartnerQna;
 	existingPhotoUrls: string[];
 	newPhotos: File[];
 };
@@ -61,5 +64,6 @@ export type PartnerListItem = {
 	gender: "male" | "female";
 	blog_greeting: string | null;
 	blog_cover_url: string | null;
+	qna: PartnerQna;
 	created_at: string;
 };
