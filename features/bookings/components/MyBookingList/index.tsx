@@ -22,6 +22,7 @@ const STATUS_BADGE_VARIANTS: Record<BookingStatus, "warning" | "trust" | "neutra
 	rejected: "error",
 	canceled: "neutral",
 	completed: "neutral",
+	no_show: "error",
 };
 
 function isCancelable(booking: MyBookingItem): boolean {

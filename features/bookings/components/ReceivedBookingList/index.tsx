@@ -11,6 +11,7 @@ import type { BookingStatus } from "@/features/bookings/types";
 import {
 	BOOKING_STATUS_LABELS,
 	canCompleteBookingNow,
+	canMarkNoShowNow,
 	formatBookingPeriod,
 	getBookingAcceptErrorMessage,
 	sumBookingAmountsKrw,
@@ -25,6 +26,7 @@ const STATUS_BADGE_VARIANTS: Record<BookingStatus, "warning" | "trust" | "neutra
 	rejected: "error",
 	canceled: "neutral",
 	completed: "neutral",
+	no_show: "error",
 };
 
 export function ReceivedBookingList(): JSX.Element {
@@ -116,6 +118,7 @@ export function ReceivedBookingList(): JSX.Element {
 			{received.map(function (booking) {
 				const paymentStatus = paymentStatuses?.[booking.id];
 				const isCompletable = canCompleteBookingNow(booking);
+				const isNoShowMarkable = canMarkNoShowNow(booking);
 				return (
 					<article
 						key={booking.id}
@@ -182,20 +185,39 @@ export function ReceivedBookingList(): JSX.Element {
 						)}
 						{booking.status === "accepted" && (
 							<div className="flex flex-col gap-1.5">
-								<Button
-									variant="outline"
-									size="sm"
-									fullWidth
-									disabled={!isCompletable}
-									isLoading={updateStatusMutation.isPending}
-									onClick={function () {
-										handleStatusUpdate(booking.id, "completed");
-									}}>
-									데이트 완료 처리
-								</Button>
+								<div className="flex gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										fullWidth
+										disabled={!isNoShowMarkable}
+										isLoading={updateStatusMutation.isPending}
+										onClick={function () {
+											handleStatusUpdate(booking.id, "no_show");
+										}}
+										className="text-error-500">
+										노쇼 처리
+									</Button>
+									<Button
+										variant="outline"
+										size="sm"
+										fullWidth
+										disabled={!isCompletable}
+										isLoading={updateStatusMutation.isPending}
+										onClick={function () {
+											handleStatusUpdate(booking.id, "completed");
+										}}>
+										데이트 완료 처리
+									</Button>
+								</div>
 								{!isCompletable && (
 									<p className="text-sub text-center text-xs">
 										예약 시작 시각 이후에 완료 처리할 수 있어요.
+									</p>
+								)}
+								{isCompletable && !isNoShowMarkable && (
+									<p className="text-sub text-center text-xs">
+										노쇼 처리는 시작 1시간 이후부터 할 수 있어요.
 									</p>
 								)}
 							</div>

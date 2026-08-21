@@ -153,6 +153,16 @@ export function canCompleteBookingNow(booking: MyBookingItem): boolean {
 	return booking.status === "accepted" && Date.now() >= new Date(booking.starts_at).getTime();
 }
 
+// 노쇼 처리 유예 — DB 전이 트리거(시작 1시간 이후)와 동일하게 유지할 것
+export const NO_SHOW_GRACE_MINUTES = 60;
+
+export function canMarkNoShowNow(booking: MyBookingItem): boolean {
+	return (
+		booking.status === "accepted" &&
+		Date.now() >= new Date(booking.starts_at).getTime() + NO_SHOW_GRACE_MINUTES * 60 * 1000
+	);
+}
+
 // 플랫폼 수수료 — DB의 complete_partner_settlement RPC와 동일하게 유지할 것.
 // 클라이언트는 미리보기용, DB 쪽이 최종 권위.
 export const PLATFORM_FEE_RATIO = 0.05;
@@ -238,4 +248,5 @@ export const BOOKING_STATUS_LABELS: Record<BookingStatus, string> = {
 	rejected: "거절됨",
 	canceled: "취소됨",
 	completed: "완료",
+	no_show: "노쇼",
 };
