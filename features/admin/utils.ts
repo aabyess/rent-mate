@@ -5,6 +5,7 @@ export const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
 	open: "접수됨",
 	resolved: "조치 완료",
 	dismissed: "기각",
+	canceled: "신고 취소됨",
 };
 
 // 긴급 큐 카드의 "최장 N일" 배지 — 가장 오래된 미처리 항목이 생긴 지 며칠 됐는지

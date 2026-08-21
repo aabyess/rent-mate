@@ -9,7 +9,8 @@ export type NotificationType =
 	| "booking_reminder"
 	| "partner_approved"
 	| "partner_rejected"
-	| "payout_released";
+	| "payout_released"
+	| "report_resolved";
 
 // 클라이언트(postNotifyEvent)가 직접 보낼 수 있는 예약류 타입. booking_reminder는
 // 원래 크론(하루 1회) 전용이었으나, 수락~시작이 24시간 미만인 예약은 크론이 그
@@ -17,12 +18,13 @@ export type NotificationType =
 // 서버가 caller 당사자 여부·status=accepted·24시간 이내를 다시 검증한다.
 export type BookingNotificationType = Exclude<
 	NotificationType,
-	"partner_approved" | "partner_rejected" | "payout_released"
+	"partner_approved" | "partner_rejected" | "payout_released" | "report_resolved"
 >;
 
 export type NotificationPayload = {
 	bookingId?: string;
 	partnerId?: string;
+	reportId?: string;
 };
 
 export type NotificationRow = {
@@ -36,4 +38,5 @@ export type NotificationRow = {
 
 export type NotifyEventInput =
 	| { type: BookingNotificationType; bookingId: string }
-	| { type: "partner_approved" | "partner_rejected"; partnerId: string };
+	| { type: "partner_approved" | "partner_rejected"; partnerId: string }
+	| { type: "report_resolved"; reportId: string };

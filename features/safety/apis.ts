@@ -50,6 +50,18 @@ export async function postCreateReport({ targetId, reason }: CreateReportInput):
 	}
 }
 
+// 접수(open) 상태인 본인 신고만 취소할 수 있다 — RLS + 트리거가 서버에서 강제한다.
+export async function patchCancelReport(reportId: string): Promise<void> {
+	const supabase = createClient();
+	const { error } = await supabase
+		.from("reports")
+		.update({ status: "canceled" })
+		.eq("id", reportId);
+	if (error) {
+		throw error;
+	}
+}
+
 export async function getMyReports(): Promise<MyReportItem[]> {
 	const supabase = createClient();
 	const {

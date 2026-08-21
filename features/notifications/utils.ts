@@ -11,6 +11,8 @@ export const NOTIFICATION_LABELS: Record<NotificationType, string> = {
 	partner_approved: "파트너 승인이 완료됐어요 — 활동을 시작해보세요!",
 	partner_rejected: "파트너 승인이 거절됐어요. 프로필을 보완해 다시 신청할 수 있어요.",
 	payout_released: "정산이 완료됐어요",
+	// 조치 내용(경고·비활성화 등)은 신고 대상에 대한 정보라 노출하지 않는다 — 중립 톤
+	report_resolved: "신고하신 건의 처리가 완료되었어요",
 };
 
 export function getNotificationHref(notification: NotificationRow): string {
@@ -22,6 +24,9 @@ export function getNotificationHref(notification: NotificationRow): string {
 	}
 	if (notification.type === "payout_released") {
 		return "/partner/earnings";
+	}
+	if (notification.type === "report_resolved") {
+		return "/safety-center/reports";
 	}
 	return `/bookings/${notification.payload.bookingId}`;
 }

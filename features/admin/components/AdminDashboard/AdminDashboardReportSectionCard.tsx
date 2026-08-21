@@ -14,6 +14,7 @@ const STATUS_BADGE_VARIANTS: Record<ReportStatus, "warning" | "trust" | "neutral
 	open: "warning",
 	resolved: "trust",
 	dismissed: "neutral",
+	canceled: "neutral",
 };
 
 type AdminDashboardReportSectionCardProps = {
