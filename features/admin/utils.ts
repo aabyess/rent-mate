@@ -7,6 +7,11 @@ export const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
 	dismissed: "기각",
 };
 
+// 긴급 큐 카드의 "최장 N일" 배지 — 가장 오래된 미처리 항목이 생긴 지 며칠 됐는지
+export function getDaysElapsed(createdAt: string): number {
+	return Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+}
+
 const UUID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 
 // ReportDialog가 만드는 "[라벨 uuid] 사유" 프리픽스를 파싱한다 — 정식 스키마 없이

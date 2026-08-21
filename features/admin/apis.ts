@@ -304,6 +304,17 @@ function getStartOfTodayIso(): string {
 	return new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
 }
 
+// 긴급 큐 카드의 "최장 N일" 배지용 — 가장 오래된 미처리 항목의 생성일
+async function getOldestCreatedAt(
+	query: PromiseLike<{ data: { created_at: string }[] | null; error: { message: string } | null }>,
+): Promise<string | null> {
+	const { data, error } = await query;
+	if (error) {
+		throw error;
+	}
+	return data?.[0]?.created_at ?? null;
+}
+
 export async function getAdminMetrics(): Promise<AdminMetrics> {
 	const supabase = createClient();
 	const startOfTodayIso = getStartOfTodayIso();
@@ -316,6 +327,10 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
 		activePartners,
 		todaySignups,
 		todayBookings,
+		pendingPartnerOldestAt,
+		openReportOldestAt,
+		flaggedMessageOldestAt,
+		safetyFlaggedReviewOldestAt,
 	] = await Promise.all([
 		supabase
 			.from("partner_profiles")
@@ -340,6 +355,38 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
 			.from("bookings")
 			.select("id", { count: "exact", head: true })
 			.gte("created_at", startOfTodayIso),
+		getOldestCreatedAt(
+			supabase
+				.from("partner_profiles")
+				.select("created_at")
+				.eq("is_approved", false)
+				.order("created_at", { ascending: true })
+				.limit(1),
+		),
+		getOldestCreatedAt(
+			supabase
+				.from("reports")
+				.select("created_at")
+				.eq("status", "open")
+				.order("created_at", { ascending: true })
+				.limit(1),
+		),
+		getOldestCreatedAt(
+			supabase
+				.from("chat_messages")
+				.select("created_at")
+				.eq("flagged", true)
+				.order("created_at", { ascending: true })
+				.limit(1),
+		),
+		getOldestCreatedAt(
+			supabase
+				.from("reviews")
+				.select("created_at")
+				.eq("safety_flagged", true)
+				.order("created_at", { ascending: true })
+				.limit(1),
+		),
 	]);
 
 	for (const result of [
@@ -358,9 +405,13 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
 
 	return {
 		pendingPartnerCount: pendingPartners.count ?? 0,
+		pendingPartnerOldestAt,
 		openReportCount: openReports.count ?? 0,
+		openReportOldestAt,
 		flaggedMessageCount: flaggedMessages.count ?? 0,
+		flaggedMessageOldestAt,
 		safetyFlaggedReviewCount: safetyFlaggedReviews.count ?? 0,
+		safetyFlaggedReviewOldestAt,
 		activePartnerCount: activePartners.count ?? 0,
 		todaySignupCount: todaySignups.count ?? 0,
 		todayBookingCount: todayBookings.count ?? 0,
