@@ -20,7 +20,10 @@
 
 ## 3. 마이그레이션·DB
 
-- **타임스탬프 예약은 [마이그레이션 통보] → 상대 ack 후 확정** (두 세션이 동번호를 고른 충돌 사례 있음).
+- **타임스탬프 예약은 [마이그레이션 통보] → 상대 ack 후 확정** (두 세션이 동번호를 고른 충돌 사례 있음 — ack 전 착수 금지, PM도 예외 아님).
+- 번호 대역제(8/21 신설): 충돌이 잦으면 PM이 세션별 대역을 나눠준다 (예: 담당1 201000대 / 담당2 203000대 / PM 205000대).
+- **CREATE OR REPLACE FUNCTION은 반드시 최신 버전 기반으로**: `grep -rn "<함수명>" supabase/migrations/`로 마지막 정의를 찾아 그 본문에 수정을 얹는다. 최초 버전 기반으로 쓰면 중간 마이그레이션의 변경이 조용히 증발한다 (#136에서 오버랩 사전 체크가 빠질 뻔한 실사례).
+- **enum ADD VALUE는 단독 파일로 분리**: 새 값을 참조하는 정책·트리거의 문자열 본문은 같은 파일에 있어도 되지만, **partial index WHERE절·CHECK·즉시 실행 문장은 같은 트랜잭션에서 55P04로 실패**한다. ⚠️ `supabase db query` 리허설은 문장별 자동커밋이라 이 제약을 재현하지 못한다 — enum 관련은 리허설 통과를 믿지 말고 처음부터 파일 분리.
 - push는 각자 `supabase db push --include-all --yes` (worktree는 `supabase link --project-ref xvnuvdsidzibpwrldink` 선행).
 - 원격에만 적용되고 내 로컬에 없는 피어 마이그레이션 때문에 push가 막히면: 피어 브랜치에서 `git show origin/<branch>:<파일>`로 임시 복사 → push → 삭제 (피어 브랜치가 없으면 동일 버전명의 placeholder 파일).
 - **BEGIN~ROLLBACK 리허설 필수**: `supabase db query --linked`에 stdin으로 SQL 전달. ⚠️ 멀티스테이트먼트에서 중간 에러가 삼켜질 수 있으니 케이스를 **statement별로 분리하고 select-back으로 실제 반영을 확인**한다.
@@ -36,6 +39,9 @@
 - develop 머지 = 프로덕션 자동 배포 (원격에 main 없음 — develop이 배포 브랜치).
 - **vercel.json의 `ignoreCommand`(develop 외 브랜치 빌드 스킵)를 제거하지 말 것** — 프리뷰 빌드가 무료 한도(100회/일)를 소모해 프로덕션까지 막혔던 사고(2026-08-20)의 재발 방지 장치.
 - 한도 초과 시 해제까지 약 24시간. **프로젝트 재생성은 계정 단위 한도라 무효.**
+- **develop 머지도 배포 1회씩 카운트된다** (롤링 24h 61회 도달 사례, 8/21). 머지 커밋 제목에 `[skip deploy]`가 있으면 빌드 스킵 — docs 전용 / 플래그 꺼진 기능 / 연속 머지 배치의 중간 건은 태그, **사용자에게 보이는 변경의 마지막 머지만 실배포**. `gh pr merge --subject "... [skip deploy]"`.
+- ⚠️ PR 제목·본문에 "[skip deploy]" 문자열을 언급만 해도 머지 커밋에 포함돼 의도치 않게 스킵된다 — 배포가 필요한 PR에서는 이 문자열을 쓰지 말 것.
+- 공유 체크아웃에서 브랜치 전환은 남의 HEAD를 옮긴다 — **워커는 각자 git worktree에서 작업** (8/21부터 담당1: rent-mate-safety, 담당2: rent-mate-w2). 커밋 전 `git rev-parse --abbrev-ref HEAD`로 현재 브랜치 확인.
 - 크론 리마인더: Vercel env `CRON_SECRET` 필요, `/api/reminders/run`은 인증 미들웨어 예외(PUBLIC_PATHS) — 자체 Bearer 검증.
 
 ## 5. 도메인·법적 (CLAUDE.md 보완 — 세션 간 합의사항)
