@@ -37,6 +37,10 @@ const STEPS: { key: StepKey; title: string; caption: string; options: readonly s
 	},
 ];
 
+// 게이지가 0%가 아니라 "가입·프로필 완료"를 이미 끝낸 선행 단계로 쳐서 절반 가까이
+// 채워진 채로 시작한다 (endowed progress effect) — 분모에 1을 더해 계산한다.
+const COMPLETED_STEPS_BEFORE_WIZARD = 1;
+
 // 책장을 넘기듯 다음 페이지는 오른쪽에서 접혀 들어오고, 이전 페이지는 왼쪽으로 젖혀 나간다
 const pageVariants = {
 	initial: function (direction: number) {
@@ -120,7 +124,9 @@ export function PreferenceWizardForm({
 				<div className="bg-surface-alt mr-4 h-2 grow overflow-hidden rounded-full">
 					<div
 						className="bg-brand h-full rounded-full transition-all duration-500 ease-out"
-						style={{ width: `${((stepIndex + 1) / STEPS.length) * 100}%` }}
+						style={{
+							width: `${((stepIndex + 1 + COMPLETED_STEPS_BEFORE_WIZARD) / (STEPS.length + COMPLETED_STEPS_BEFORE_WIZARD)) * 100}%`,
+						}}
 					/>
 				</div>
 				<button

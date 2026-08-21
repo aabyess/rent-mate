@@ -32,6 +32,17 @@ export function calculateCancellationQuote(
 	return { feeKrw, refundKrw, isFreeCancellation };
 }
 
+export type CancellationTier = "free" | "partial" | "none";
+
+// 예약 확인 단계의 정책 타임라인 카드에서 "지금 취소하면" 몇 번째 구간에 해당하는지.
+export function getCancellationTier(startsAt: string): CancellationTier {
+	const hoursUntilStart = (new Date(startsAt).getTime() - Date.now()) / (1000 * 60 * 60);
+	if (hoursUntilStart <= 0) {
+		return "none";
+	}
+	return hoursUntilStart >= FREE_CANCELLATION_WINDOW_HOURS ? "free" : "partial";
+}
+
 export const MIN_DURATION_MINUTES = 120;
 export const MAX_DURATION_MINUTES = 480;
 export const DURATION_STEP_MINUTES = 30;
