@@ -129,7 +129,7 @@
 | `--color-brand-subtle` | `#f0f5fe` (primary-50)    | `#16233f`                 | 선택 상태 배경              |
 | `--color-trust`        | `#2e9995` (secondary-500) | `#4bb3b0` (secondary-400) | 인증·안전 UI                |
 | `--color-heart`        | `#f26b4a` (heart-500)     | `#fb8666` (heart-400)     | 하트·찜(좋아요) 전용        |
-| `--color-heart-subtle` | `#fff5f2` (heart-50)      | `#3a1e17`                 | 좋아요 활성 배경(2단계 추가, PM 확인 전 임시값) |
+| `--color-heart-subtle` | `#fff5f2` (heart-50)      | `#3a1e17`                 | 좋아요 활성 배경            |
 
 **금지 사항**: 배경에 순검정(#000) 금지, primary-900(딥네이비)를 화면 전면 배경으로 쓰는 것 금지(블루는 포인트 전용 — bg/surface는 zinc 유지), 보라(#8B00FF 계열)·마젠타 네온 금지, 글로우/네온 이펙트 금지, 붉은 조명 톤의 사진 필터 금지.
 
