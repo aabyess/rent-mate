@@ -7,7 +7,6 @@ import { useState, type FormEvent, type JSX } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PURPOSE_TAGS } from "@/constants/purposeTags";
-import { REGIONS } from "@/constants/regions";
 import {
 	MIN_PARTNER_PHOTOS,
 	PartnerPhotoUploader,
@@ -24,6 +23,7 @@ import {
 	scrollToFieldError,
 	WEEKDAY_OPTIONS,
 } from "@/features/partners/utils";
+import { RegionPicker } from "@/features/shared/components/RegionPicker";
 import { findBannedPhrase } from "@/utils/bannedPhrases";
 import { cn } from "@/utils/cn";
 
@@ -382,26 +382,12 @@ export function PartnerRegisterForm(): JSX.Element {
 
 			<section id="partner-register-region" className="flex flex-col gap-2">
 				<span className="text-sm font-medium">활동 지역</span>
-				<div className="flex flex-wrap gap-2">
-					{REGIONS.map(function (regionOption) {
-						const selected = region === regionOption;
-						return (
-							<button
-								key={regionOption}
-								type="button"
-								onClick={function () {
-									setRegion(regionOption);
-								}}
-								className={cn(
-									"h-10 rounded-full px-4 text-sm",
-									selected && "bg-inverse text-inverse-fg font-semibold",
-									!selected && "bg-surface-alt text-body",
-								)}>
-								{regionOption}
-							</button>
-						);
-					})}
-				</div>
+				<RegionPicker
+					selectedValues={region ? [region] : []}
+					onToggle={function (value) {
+						setRegion(value);
+					}}
+				/>
 				{fieldError?.id === "partner-register-region" && (
 					<p className="text-error-500 text-xs">{fieldError.message}</p>
 				)}

@@ -19,6 +19,7 @@ import { usePartnerRatingsQuery } from "@/features/reviews/queries";
 import { useMyBlocksQuery } from "@/features/safety/queries";
 import { useSpendTokenMutation } from "@/features/tokens/mutations";
 import { useMyTokenBalanceQuery } from "@/features/tokens/queries";
+import { regionsMatch } from "@/utils/regionMatch";
 
 const AD_INTERVAL = 5; // 파트너 카드 5장마다 광고 카드 1장
 const AUTOPLAY_MS = 3000;
@@ -97,7 +98,7 @@ export function PartnerList({
 	const nearbyPartners =
 		nearbyOnly && homeRegion
 			? visiblePartners.filter(function (partner) {
-					return partner.region === homeRegion;
+					return regionsMatch(partner.region, homeRegion);
 				})
 			: visiblePartners;
 	const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -126,7 +127,11 @@ export function PartnerList({
 		score += partner.interests.filter(function (interest) {
 			return myPreferences.interests.includes(interest);
 		}).length;
-		if (myPreferences.regions.includes(partner.region)) {
+		if (
+			myPreferences.regions.some(function (region) {
+				return regionsMatch(region, partner.region);
+			})
+		) {
 			score += 1;
 		}
 		score += partner.purpose_tags.filter(function (tag) {

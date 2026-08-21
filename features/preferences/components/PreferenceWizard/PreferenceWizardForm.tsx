@@ -12,6 +12,7 @@ import {
 	useSkipPreferencesMutation,
 } from "@/features/preferences/mutations";
 import type { CustomerPreferences } from "@/features/preferences/types";
+import { RegionPicker } from "@/features/shared/components/RegionPicker";
 import { cn } from "@/utils/cn";
 
 type StepKey = "interests" | "regions" | "purposes";
@@ -157,26 +158,30 @@ export function PreferenceWizardForm({
 							<h2 className="text-xl font-bold">{step.title}</h2>
 							<p className="text-sub text-sm">{step.caption}</p>
 						</div>
-						<div className="flex flex-wrap gap-2">
-							{step.options.map(function (option) {
-								const selected = selections[step.key].includes(option);
-								return (
-									<button
-										key={option}
-										type="button"
-										onClick={function () {
-											handleToggleOption(option);
-										}}
-										className={cn(
-											"h-10 rounded-full px-4 text-sm transition-colors",
-											selected && "bg-inverse text-inverse-fg font-semibold",
-											!selected && "bg-surface-alt text-body",
-										)}>
-										{option}
-									</button>
-								);
-							})}
-						</div>
+						{step.key === "regions" ? (
+							<RegionPicker selectedValues={selections.regions} onToggle={handleToggleOption} />
+						) : (
+							<div className="flex flex-wrap gap-2">
+								{step.options.map(function (option) {
+									const selected = selections[step.key].includes(option);
+									return (
+										<button
+											key={option}
+											type="button"
+											onClick={function () {
+												handleToggleOption(option);
+											}}
+											className={cn(
+												"h-10 rounded-full px-4 text-sm transition-colors",
+												selected && "bg-inverse text-inverse-fg font-semibold",
+												!selected && "bg-surface-alt text-body",
+											)}>
+											{option}
+										</button>
+									);
+								})}
+							</div>
+						)}
 					</motion.section>
 				</AnimatePresence>
 			</div>
