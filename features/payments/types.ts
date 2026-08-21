@@ -25,3 +25,10 @@ export type StartTossCheckoutInput = {
 	amountKrw: number;
 	orderName: string;
 };
+
+export type StartTokenCheckoutInput = {
+	purchaseId: string;
+	customerKey: string;
+	amountKrw: number;
+	orderName: string;
+};

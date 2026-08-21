@@ -2,8 +2,14 @@
 "use client";
 
 import type { JSX } from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { getTossClientKey } from "@/features/payments/apis";
+import { TokenWalletChargeDialog } from "@/features/tokens/components/TokenWalletChargeDialog";
 import { useMyTokenBalanceQuery, useMyTokenLedgerQuery } from "@/features/tokens/queries";
 import { cn } from "@/utils/cn";
+
+const IS_TOSS_ENABLED = getTossClientKey() !== null;
 
 // 원장 reason → 사용자 표시 라벨. 새 reason이 생기면 여기에 추가한다.
 const REASON_LABELS: Record<string, string> = {
@@ -12,6 +18,7 @@ const REASON_LABELS: Record<string, string> = {
 	rewind: "덱 되감기",
 	booking_request: "예약 신청",
 	date_completed: "데이트 완료",
+	purchase: "토큰 충전",
 };
 
 function formatLedgerDate(createdAt: string): string {
@@ -22,6 +29,7 @@ function formatLedgerDate(createdAt: string): string {
 export function TokenWallet(): JSX.Element {
 	const { data: balance, isPending: isBalancePending } = useMyTokenBalanceQuery();
 	const { data: ledger, isPending: isLedgerPending, isError } = useMyTokenLedgerQuery();
+	const [isChargeDialogOpen, setIsChargeDialogOpen] = useState(false);
 
 	return (
 		<div className="flex flex-col gap-5">
@@ -32,8 +40,27 @@ export function TokenWallet(): JSX.Element {
 				) : (
 					<span className="text-3xl font-bold tabular-nums">🪙 {balance ?? 0}</span>
 				)}
-				<span className="text-sub text-xs">충전 기능은 준비 중이에요</span>
+				{IS_TOSS_ENABLED ? (
+					<Button
+						size="sm"
+						className="mt-1.5"
+						onClick={function () {
+							setIsChargeDialogOpen(true);
+						}}>
+						충전하기
+					</Button>
+				) : (
+					<span className="text-sub text-xs">충전 기능은 준비 중이에요</span>
+				)}
 			</div>
+
+			{isChargeDialogOpen && (
+				<TokenWalletChargeDialog
+					onClose={function () {
+						setIsChargeDialogOpen(false);
+					}}
+				/>
+			)}
 
 			<section className="flex flex-col gap-2.5">
 				<h2 className="text-[15px] font-semibold">사용 내역</h2>

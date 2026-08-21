@@ -1,6 +1,11 @@
 // features/payments/apis.ts
 import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
-import type { PaymentRow, PaymentStatus, StartTossCheckoutInput } from "@/features/payments/types";
+import type {
+	PaymentRow,
+	PaymentStatus,
+	StartTokenCheckoutInput,
+	StartTossCheckoutInput,
+} from "@/features/payments/types";
 import { createClient } from "@/libs/supabase/client";
 
 export function getTossClientKey(): string | null {
@@ -28,6 +33,30 @@ export async function startTossCheckout({
 		orderName,
 		successUrl: `${window.location.origin}/payments/success`,
 		failUrl: `${window.location.origin}/payments/fail`,
+	});
+}
+
+// 토큰 충전 결제창 호출 — booking 결제와 별개 successUrl/failUrl로 분리한다
+export async function startTokenCheckout({
+	purchaseId,
+	customerKey,
+	amountKrw,
+	orderName,
+}: StartTokenCheckoutInput): Promise<void> {
+	const clientKey = getTossClientKey();
+	if (!clientKey) {
+		throw new Error("결제 설정이 없어 결제를 진행할 수 없습니다.");
+	}
+
+	const tossPayments = await loadTossPayments(clientKey);
+	const payment = tossPayments.payment({ customerKey });
+	await payment.requestPayment({
+		method: "CARD",
+		amount: { currency: "KRW", value: amountKrw },
+		orderId: purchaseId,
+		orderName,
+		successUrl: `${window.location.origin}/payments/token-success`,
+		failUrl: `${window.location.origin}/payments/token-fail`,
 	});
 }
 
