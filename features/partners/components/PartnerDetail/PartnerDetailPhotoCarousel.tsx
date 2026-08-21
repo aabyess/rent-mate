@@ -20,7 +20,12 @@ export function PartnerDetailPhotoCarousel({
 	if (photoUrls.length === 0) {
 		return (
 			<div className="from-primary-100 via-primary-200 to-primary-300 flex h-full w-full items-end justify-center bg-gradient-to-br">
-				<svg width="230" height="230" viewBox="0 0 24 24" fill="#f26b4a" opacity="0.26">
+				<svg
+					width="230"
+					height="230"
+					viewBox="0 0 24 24"
+					fill="var(--color-primary-400)"
+					opacity="0.26">
 					<circle cx="12" cy="8.5" r="3.6" />
 					<path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7z" />
 				</svg>

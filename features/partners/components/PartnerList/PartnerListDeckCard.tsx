@@ -9,7 +9,10 @@ import type { PartnerRatingSummary } from "@/features/reviews/types";
 
 // 사진 없을 때 쓰는 플레이스홀더 팔레트 — 카드 순서대로 순환
 const PLACEHOLDER_STYLES = [
-	{ background: "linear-gradient(160deg, #ffe8e1, #ffd0c2)", icon: "#f26b4a" },
+	{
+		background: "linear-gradient(160deg, var(--color-heart-100), var(--color-heart-200))",
+		icon: "var(--color-heart-500)",
+	},
 	{ background: "linear-gradient(160deg, #d5f1ef, #aee3e0)", icon: "#2e9995" },
 	{ background: "linear-gradient(160deg, #e4e4e7, #d4d4d8)", icon: "#71717a" },
 ];

@@ -43,7 +43,7 @@ export function FavoriteActions({ partnerId }: FavoriteActionsProps): JSX.Elemen
 				aria-pressed={isLiked}
 				className={cn(
 					"flex h-10 items-center gap-1.5 rounded-full px-3.5 text-sm font-medium transition-transform active:scale-90",
-					isLiked ? "bg-brand-subtle text-brand" : "bg-surface-alt text-sub",
+					isLiked ? "bg-heart-subtle text-heart" : "bg-surface-alt text-sub",
 				)}>
 				<svg
 					width="17"

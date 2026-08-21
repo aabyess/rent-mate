@@ -89,6 +89,7 @@
 	--brand-subtle: var(--color-primary-50);
 	--trust: var(--color-secondary-500);
 	--heart: var(--color-heart-500);
+	--heart-subtle: var(--color-heart-50);
 	/* 다크에서 반전되는 "선택됨" 상태용 (필터 칩 등 raw #18181b 대체) */
 	--inverse: var(--color-neutral-900);
 	--inverse-fg: var(--color-neutral-0);
@@ -107,6 +108,9 @@
 		--brand-subtle: #16233f;
 		--trust: var(--color-secondary-400);
 		--heart: var(--color-heart-400);
+		/* 다크 전용 하트 서브틀 배경 — primary-subtle과 동일 원칙(raw heart-50은
+		   다크에서 대비가 깨져 별도 값 필요), PM 확인 전까지 임시값 */
+		--heart-subtle: #3a1e17;
 		--inverse: var(--color-neutral-100);
 		--inverse-fg: var(--color-neutral-900);
 	}
@@ -124,6 +128,7 @@
 	--color-brand-subtle: var(--brand-subtle);
 	--color-trust: var(--trust);
 	--color-heart: var(--heart);
+	--color-heart-subtle: var(--heart-subtle);
 	--color-inverse: var(--inverse);
 	--color-inverse-fg: var(--inverse-fg);
 }
