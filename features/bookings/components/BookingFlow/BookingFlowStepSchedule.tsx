@@ -6,7 +6,7 @@ import { cn } from "@/utils/cn";
 import type { BookingSchedule, BookingTimeRange } from "@/features/bookings/types";
 import {
 	DURATION_STEP_MINUTES,
-	MAX_DURATION_MINUTES,
+	getMaxDurationMinutesForStartHour,
 	MIN_DURATION_MINUTES,
 	START_HOURS,
 	formatDurationLabel,
@@ -84,11 +84,17 @@ export function BookingFlowStepSchedule({
 		});
 	}
 
+	// 자정 전 종료 상한 — 시작 시각이 늦으면 기존 선택 시간도 함께 줄인다
 	function handleStartHourSelect(startHour: number): void {
 		if (!schedule) {
 			return;
 		}
-		onScheduleChange({ ...schedule, startHour });
+		const durationCap = getMaxDurationMinutesForStartHour(startHour);
+		onScheduleChange({
+			...schedule,
+			startHour,
+			durationMinutes: Math.min(schedule.durationMinutes, durationCap),
+		});
 	}
 
 	function handleDurationChange(delta: number): void {
@@ -96,7 +102,7 @@ export function BookingFlowStepSchedule({
 			return;
 		}
 		const next = Math.min(
-			MAX_DURATION_MINUTES,
+			getMaxDurationMinutesForStartHour(schedule.startHour),
 			Math.max(MIN_DURATION_MINUTES, schedule.durationMinutes + delta),
 		);
 		onScheduleChange({ ...schedule, durationMinutes: next });
@@ -259,7 +265,7 @@ export function BookingFlowStepSchedule({
 			<section className="flex flex-col gap-3">
 				<div className="flex items-center justify-between">
 					<h2 className="text-[17px] font-semibold">이용 시간</h2>
-					<span className="text-sub text-xs">최소 2시간</span>
+					<span className="text-sub text-xs">최소 2시간 · 자정 전 종료</span>
 				</div>
 				<div className="bg-surface-alt flex items-center justify-between rounded-2xl p-2">
 					<button
@@ -286,7 +292,9 @@ export function BookingFlowStepSchedule({
 					</span>
 					<button
 						type="button"
-						disabled={!schedule || durationMinutes >= MAX_DURATION_MINUTES}
+						disabled={
+							!schedule || durationMinutes >= getMaxDurationMinutesForStartHour(schedule.startHour)
+						}
 						onClick={function () {
 							handleDurationChange(DURATION_STEP_MINUTES);
 						}}
