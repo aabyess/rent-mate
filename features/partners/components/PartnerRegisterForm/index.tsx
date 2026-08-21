@@ -270,6 +270,9 @@ export function PartnerRegisterForm(): JSX.Element {
 
 	return (
 		<form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+			<p className="bg-warning-500/15 text-warning-500 rounded-xl px-3.5 py-2.5 text-xs leading-relaxed">
+				RentMate는 앱 외부(문자·SNS 등)에서 파트너를 모집하지 않아요. 외부 모집은 사칭 사기입니다.
+			</p>
 			<section className="flex flex-col gap-2">
 				<label htmlFor="nickname" className="text-sm font-medium">
 					활동 닉네임
