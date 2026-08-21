@@ -39,6 +39,18 @@ begin
 		if old.partner_id <> auth.uid() then
 			raise exception '파트너만 예약을 수락·거절할 수 있습니다.';
 		end if;
+		-- 20260820130143의 오버랩 사전 조회 유지 — EXCLUDE 제약이 최종 방어선이고,
+		-- 이 블록은 단일 요청 기준으로 먼저 걸려 친절한 메시지를 준다.
+		-- (create or replace가 중간 버전을 덮어쓰지 않도록 리뷰에서 복원됨)
+		if new.status = 'accepted' and exists (
+			select 1 from public.bookings b
+			where b.partner_id = old.partner_id
+				and b.id <> old.id
+				and b.status = 'accepted'
+				and tstzrange(b.starts_at, b.ends_at, '[)') && tstzrange(old.starts_at, old.ends_at, '[)')
+		) then
+			raise exception '이미 확정된 예약과 시간이 겹쳐요.';
+		end if;
 		return new;
 	end if;
 
