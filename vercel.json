@@ -5,5 +5,5 @@
 			"schedule": "0 0 * * *"
 		}
 	],
-	"ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" != \"develop\" ] || echo \"$VERCEL_GIT_COMMIT_MESSAGE\" | grep -qF '[skip deploy]'"
+	"ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" != \"develop\" ] || ! echo \"$VERCEL_GIT_COMMIT_MESSAGE\" | grep -qF '[deploy]'"
 }
