@@ -16,7 +16,7 @@ export function AdminDashboardFlaggedSection(): JSX.Element {
 	return (
 		<section id="admin-metrics-flagged" className="flex flex-col gap-3">
 			<div className="flex items-center gap-2">
-				<h2 className="text-[17px] font-semibold">금칙어 감지 메시지</h2>
+				<h2 className="text-[17px] font-semibold">감지된 메시지</h2>
 				<span className="text-sub text-xs">최근 50건</span>
 			</div>
 			{isPending && <div className="bg-surface-alt h-24 animate-pulse rounded-2xl" />}
