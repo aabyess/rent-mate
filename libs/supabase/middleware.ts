@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // 비로그인 접근 허용 경로. 약관·정책은 가입 전에도 열람 가능해야 한다.
 // /api/reminders/run은 Vercel 크론이 세션 없이 호출한다 — 라우트 자체의 CRON_SECRET
 // Bearer 검증이 인증을 대신하므로 로그인 리다이렉트에서 제외해야 핸들러에 도달한다.
-const PUBLIC_PATHS = ["/login", "/signup", "/policies", "/api/reminders/run"];
+const PUBLIC_PATHS = ["/login", "/signup", "/policies", "/api/reminders/run", "/shared-date"];
 // 로그인 상태에서 접근하면 홈으로 돌려보내는 인증 전용 페이지
 const AUTH_PAGES = ["/login", "/signup"];
 

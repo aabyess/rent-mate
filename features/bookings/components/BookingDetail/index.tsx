@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { BookingDetailCounterpart } from "@/features/bookings/components/BookingDetail/BookingDetailCounterpart";
 import { BookingDetailPayment } from "@/features/bookings/components/BookingDetail/BookingDetailPayment";
 import { BookingDetailReview } from "@/features/bookings/components/BookingDetail/BookingDetailReview";
+import { BookingDetailShareButton } from "@/features/bookings/components/BookingDetail/BookingDetailShareButton";
 import { BookingDetailStatusSteps } from "@/features/bookings/components/BookingDetail/BookingDetailStatusSteps";
 import { MyBookingListCancelDialog } from "@/features/bookings/components/MyBookingList/MyBookingListCancelDialog";
 import { useUpdateBookingStatusMutation } from "@/features/bookings/mutations";
@@ -144,6 +145,10 @@ export function BookingDetail({ bookingId }: BookingDetailProps): JSX.Element {
 							채팅 열기
 						</Button>
 					</Link>
+				)}
+
+				{(booking.status === "accepted" || booking.status === "completed") && (
+					<BookingDetailShareButton bookingId={booking.id} />
 				)}
 
 				{booking.isReceived && booking.status === "requested" && (
