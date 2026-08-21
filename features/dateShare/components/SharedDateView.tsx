@@ -4,6 +4,7 @@
 import type { JSX } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { useSharedDateQuery } from "@/features/dateShare/queries";
+import { getKakaoMapSearchUrl } from "@/utils/kakaoMapLink";
 
 type SharedDateViewProps = {
 	token: string;
@@ -64,7 +65,15 @@ export function SharedDateView({ token }: SharedDateViewProps): JSX.Element {
 						</div>
 						<div className="flex items-center justify-between">
 							<dt className="text-sub">장소</dt>
-							<dd className="font-medium">{data.place}</dd>
+							<dd className="font-medium">
+								<a
+									href={getKakaoMapSearchUrl(data.place)}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-brand underline underline-offset-2">
+									{data.place}
+								</a>
+							</dd>
 						</div>
 					</dl>
 					<div className="flex flex-wrap gap-2">

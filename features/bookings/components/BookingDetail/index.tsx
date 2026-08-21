@@ -26,6 +26,7 @@ import {
 	useMyReviewedBookingIdsQuery,
 	useReviewByBookingIdQuery,
 } from "@/features/reviews/queries";
+import { getKakaoMapSearchUrl } from "@/utils/kakaoMapLink";
 
 const NOW_MS = Date.now();
 
@@ -129,7 +130,15 @@ export function BookingDetail({ bookingId }: BookingDetailProps): JSX.Element {
 					</div>
 					<div className="flex items-center justify-between">
 						<dt className="text-sub">장소</dt>
-						<dd className="font-medium">{booking.place}</dd>
+						<dd className="font-medium">
+							<a
+								href={getKakaoMapSearchUrl(booking.place)}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-brand underline underline-offset-2">
+								{booking.place}
+							</a>
+						</dd>
 					</div>
 				</dl>
 			</section>
