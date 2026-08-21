@@ -73,7 +73,12 @@ export function ChatRoomList(): JSX.Element {
 						href={`/chats/${booking.id}`}
 						className="bg-surface flex items-center gap-3.5 rounded-2xl p-4">
 						<div className="from-primary-100 to-primary-200 flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="#f26b4a" opacity="0.4">
+							<svg
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="var(--color-primary-400)"
+								opacity="0.4">
 								<circle cx="12" cy="8.5" r="3.6" />
 								<path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7z" />
 							</svg>

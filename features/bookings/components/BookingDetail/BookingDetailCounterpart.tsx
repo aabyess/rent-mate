@@ -32,7 +32,7 @@ export function BookingDetailCounterpart({
 						width="56"
 						height="56"
 						viewBox="0 0 24 24"
-						fill="#f26b4a"
+						fill="var(--color-primary-400)"
 						opacity="0.4">
 						<circle cx="12" cy="8.5" r="3.6" />
 						<path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7z" />

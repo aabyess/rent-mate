@@ -47,8 +47,8 @@ export function PartnerListDeckCardActions({
 					width="18"
 					height="18"
 					viewBox="0 0 24 24"
-					fill={isLiked ? "#f26b4a" : "none"}
-					stroke={isLiked ? "#f26b4a" : "#ffffff"}
+					fill={isLiked ? "var(--color-heart-500)" : "none"}
+					stroke={isLiked ? "var(--color-heart-500)" : "#ffffff"}
 					strokeWidth="1.8"
 					strokeLinecap="round"
 					strokeLinejoin="round">

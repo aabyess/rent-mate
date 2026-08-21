@@ -43,13 +43,13 @@ export function PartnerLikerList(): JSX.Element {
 					<div
 						key={`${liker.liker_name}-${liker.liked_at}-${index}`}
 						className="bg-surface flex items-center gap-3 rounded-2xl px-4 py-3.5">
-						<span className="bg-brand-subtle flex size-10 shrink-0 items-center justify-center rounded-full">
+						<span className="bg-heart-subtle text-heart flex size-10 shrink-0 items-center justify-center rounded-full">
 							<svg
 								width="18"
 								height="18"
 								viewBox="0 0 24 24"
-								fill="#f26b4a"
-								stroke="#f26b4a"
+								fill="currentColor"
+								stroke="currentColor"
 								strokeWidth="1.5"
 								strokeLinecap="round"
 								strokeLinejoin="round">

@@ -258,7 +258,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 			{deckCount === 0 ? (
 				visiblePartners.length === 0 ? (
 					<div className="bg-surface flex flex-col items-center gap-4 rounded-xl px-6 py-16 text-center">
-						<div className="bg-brand-subtle flex size-14 items-center justify-center rounded-2xl">
+						<div className="bg-heart-subtle flex size-14 items-center justify-center rounded-2xl">
 							<svg
 								width="26"
 								height="26"
@@ -268,7 +268,7 @@ export function PartnerList({ searchQuery = "" }: PartnerListProps): JSX.Element
 								strokeWidth="1.8"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								className="text-brand">
+								className="text-heart">
 								<path d="M19.5 12.6L12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z" />
 							</svg>
 						</div>

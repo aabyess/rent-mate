@@ -56,7 +56,7 @@ export default function IntroPage(): JSX.Element {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.45, ease: "easeOut", delay: 0.55 }}
 					className="text-body text-[15px]">
-					연애, <span className="text-brand font-semibold">연습</span>이 필요하니까
+					연애, <span className="text-heart font-semibold">연습</span>이 필요하니까
 				</motion.p>
 			</div>
 		</motion.main>
